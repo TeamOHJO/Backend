@@ -16,14 +16,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public abstract class BaseTimeEntity {
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @Column(insertable = false)
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
     @Column(insertable = false)
-    private LocalDateTime deletedAt;
+    protected LocalDateTime deletedAt;
 
     protected void delete(LocalDateTime currentTime) {
         if (deletedAt == null) {
