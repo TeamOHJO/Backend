@@ -9,5 +9,4 @@ public class YanoljaApplication {
     public static void main(String[] args) {
         SpringApplication.run(YanoljaApplication.class, args);
     }
-
 }
