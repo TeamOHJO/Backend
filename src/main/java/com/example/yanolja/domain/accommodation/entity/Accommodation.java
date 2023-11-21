@@ -50,4 +50,7 @@ public class Accommodation extends BaseTimeEntity {
 
     @Column(name = "reservationNotice", nullable = false)
     private String reservationNotice;
+
+    @Column(name = "serviceInfo")
+    private String serviceInfo;
 }
