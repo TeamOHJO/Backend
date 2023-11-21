@@ -8,14 +8,18 @@ public record CreateUserResponse(
     String email,
 
     @NotNull
-    String name
+    String name,
+
+    @NotNull
+    String phonenumber
 
 ) {
 
     public static CreateUserResponse fromEntity(User user) {
         return new CreateUserResponse(
             user.getEmail(),
-            user.getUsername()
+            user.getUsername(),
+            user.getPhonenumber()
         );
     }
 }
