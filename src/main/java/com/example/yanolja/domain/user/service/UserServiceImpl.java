@@ -9,6 +9,9 @@ import com.example.yanolja.domain.user.exception.EmailDuplicateError;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.domain.user.repository.UserRepository;
+import com.example.yanolja.global.exception.ApplicationException;
+import com.example.yanolja.global.exception.ErrorCode;
+import com.example.yanolja.global.util.ResponseDTO;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -57,37 +60,42 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseDTO<Object> join(CreateUserRequest createUserRequest) {
-        // 이메일 유효성 검사
-        if (!isValidEmail(createUserRequest.getEmail())) {
-            throw new InvalidEmailException();
-        }
+    public ResponseDTO<?> join(CreateUserRequest createUserRequest) {
 
-        // 소프트 삭제된 사용자 복구 또는 새 사용자 생성
-        User user;
         Optional<User> softDeletedUser = userRepository.findSoftDeletedByEmail(
-            createUserRequest.getEmail(), LocalDateTime.now().minusYears(1));
+            createUserRequest.email(), LocalDateTime.now().minusYears(1));
         if (softDeletedUser.isPresent()) {
-            user = softDeletedUser.get();
+            User user = softDeletedUser.get();
             user.restore();
+            userRepository.save(user);
+            return ResponseDTO.res(HttpStatus.OK, "기존 계정 복구 완료",
+                CreateUserResponse.fromEntity(user));
         } else {
-            user = createUserRequest.toEntity();
+
+            if (!isValidEmail(createUserRequest.email())) {
+                throw new InvalidEmailException();
+            }
+
+            User newUser = createUserRequest.toEntity();
+            userRepository.save(newUser);
+            return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
+                CreateUserResponse.fromEntity(newUser));
         }
-
-        // 사용자 정보 저장
-        userRepository.save(user);
-
-        // 성공 응답 반환
-        return ResponseDTO.res(HttpStatus.OK, "회원 가입 성공");
     }
 
 
-    @Override
-    public void deleteUser(Long userId) {
-        User user = userRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-        user.delete(LocalDateTime.now());
-        userRepository.save(user);
+    public ResponseDTO<Object> deleteUser(Long userId) {
+        try {
+            User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+            user.delete(LocalDateTime.now());
+            userRepository.save(user);
+            return ResponseDTO.res(HttpStatus.OK, "회원 탈퇴 처리 완료");
+        } catch (UserNotFoundException e) {
+            return ResponseDTO.res(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            return ResponseDTO.res(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + e.getMessage());
+        }
     }
 
 

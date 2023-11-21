@@ -13,15 +13,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUserId(Long userId);
 
-    Optional<User> findByNickname(String nickname);
-
-
-
-    boolean existsByEmail(String email);
 
     void deleteByDeletedAtBefore(LocalDateTime dateTime);
 
-    @Query("SELECT m FROM User m WHERE m.email = :email AND m.deletedAt > :dateTime")
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.deletedAt > :dateTime")
     Optional<User> findSoftDeletedByEmail(@Param("email") String email,
         @Param("dateTime") LocalDateTime dateTime);
 

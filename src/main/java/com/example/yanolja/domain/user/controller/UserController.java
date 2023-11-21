@@ -5,7 +5,7 @@ import com.example.yanolja.domain.user.dto.CreateUserResponse;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.service.UserService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.yanolja.global.util.ResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,30 +26,18 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    public ResponseEntity<ResponseDTO<?>> join(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        ResponseDTO<Object> response = userService.join(createUserRequest);
-        return ResponseEntity.status(HttpStatus.valueOf(response.getCode())).body(response);
+    public ResponseEntity<ResponseDTO<?>> join(
+        @Valid @RequestBody CreateUserRequest createUserRequest) {
+        ResponseDTO<?> response = userService.join(createUserRequest);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
-
-
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDTO<?>> deleteMember(HttpServletRequest request) {
-        try {
-            String token = request.getHeader("Authorization");
-            Long userId = jwtService.getUserIdFromToken(token);
-            userService.deleteUser(userId);
-
-            return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "회원 탈퇴가 완료되었습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseDTO.res(HttpStatus.INTERNAL_SERVER_ERROR, "회원 탈퇴 중 오류가 발생했습니다: " + e.getMessage()));
-        }
+    public ResponseEntity<ResponseDTO<?>> deleteUser(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        ResponseDTO<?> response = userService.deleteUser(principalDetails.getUser().getId());
+        return ResponseEntity.status(response.getCode()).body(response);
     }
-
-
-
-
 
 
     @PostMapping("/signup")
