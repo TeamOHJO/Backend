@@ -1,10 +1,12 @@
 package com.example.yanolja.global.jwt;
 
 import com.example.yanolja.domain.user.dto.LoginRequest;
+import com.example.yanolja.domain.user.dto.LoginResponse;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.springsecurity.CustomAuthenticationFailureHandler;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
+import com.example.yanolja.global.util.ResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,7 +33,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtProvider jwtProvider;
     UserRepository userRepository;
-
     CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     public JwtAuthenticationFilter(
@@ -93,7 +95,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //response.sendRedirect("/");  // 발급후 redirect로 이동 -> 클라이언트에게 http 리다이렉션 요청 코드
 
         // 로그인 성공 시 JSON 응답을 생성
-        String jsonResponse = "{ \"success\": true, \"message\": \"Login successful\" }";
+        ResponseDTO<Object> errorResponse = ResponseDTO.res(
+            HttpStatus.valueOf(HttpServletResponse.SC_OK),
+            "Login successful",
+            new LoginResponse(user.getEmail(), user.getUsername()));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
