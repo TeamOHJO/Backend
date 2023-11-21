@@ -44,6 +44,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonResponse);
