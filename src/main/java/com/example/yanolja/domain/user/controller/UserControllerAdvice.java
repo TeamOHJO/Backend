@@ -1,7 +1,7 @@
 package com.example.yanolja.domain.user.controller;
 
-import com.example.yanolja.domain.user.error.EmailDuplicateError;
-import com.example.yanolja.domain.user.error.InvalidEmailException;
+import com.example.yanolja.domain.user.exception.EmailDuplicateError;
+import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.global.exception.ErrorMessage;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;

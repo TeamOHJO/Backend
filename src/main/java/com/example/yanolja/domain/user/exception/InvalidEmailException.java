@@ -1,4 +1,4 @@
-package com.example.yanolja.domain.user.error;
+package com.example.yanolja.domain.user.exception;
 
 public class InvalidEmailException extends IllegalArgumentException {
 

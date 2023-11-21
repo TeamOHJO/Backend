@@ -1,6 +1,5 @@
 package com.example.yanolja.domain.user.controller;
 
-import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;

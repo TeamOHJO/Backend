@@ -3,7 +3,6 @@ package com.example.yanolja.global.springsecurity;
 import com.example.yanolja.global.jwt.JwtAuthenticationFilter;
 import com.example.yanolja.global.jwt.JwtAuthorizationFilter;
 import com.example.yanolja.global.jwt.JwtProperties;
-import com.example.yanolja.global.util.CustomResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
