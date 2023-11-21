@@ -20,12 +20,12 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
         response.setStatus(HttpServletResponse.SC_OK);
         // 로그아웃 JSON 응답을 생성
-        ResponseDTO<Object> errorResponse = ResponseDTO.res(
+        ResponseDTO<Object> logoutResponse = ResponseDTO.res(
             HttpStatus.valueOf(HttpServletResponse.SC_OK),
             "Logout successful");
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        String jsonResponse = objectMapper.writeValueAsString(logoutResponse);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

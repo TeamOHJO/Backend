@@ -95,13 +95,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //response.sendRedirect("/");  // 발급후 redirect로 이동 -> 클라이언트에게 http 리다이렉션 요청 코드
 
         // 로그인 성공 시 JSON 응답을 생성
-        ResponseDTO<Object> errorResponse = ResponseDTO.res(
+        ResponseDTO<Object> loginResponse = ResponseDTO.res(
             HttpStatus.valueOf(HttpServletResponse.SC_OK),
             "Login successful",
             new LoginResponse(user.getEmail(), user.getUsername()));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+        String jsonResponse = objectMapper.writeValueAsString(loginResponse);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
