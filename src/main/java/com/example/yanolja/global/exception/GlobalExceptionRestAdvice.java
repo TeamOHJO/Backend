@@ -1,6 +1,7 @@
 package com.example.yanolja.global.exception;
 
 
+import com.example.yanolja.global.util.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
