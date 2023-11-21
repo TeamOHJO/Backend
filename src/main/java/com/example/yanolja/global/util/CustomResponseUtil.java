@@ -28,12 +28,19 @@ public class CustomResponseUtil {
 
     public static void fail(HttpServletResponse response, String msg, HttpStatus httpStatus) {
         try {
-            ObjectMapper om = new ObjectMapper();
-            ResponseDTO<?> responseDto = new ResponseDTO<>(-1, msg, null);
-            String responseBody = om.writeValueAsString(responseDto);
-            response.setContentType("application/json; charset=utf-8");
+            ObjectMapper objectMapper = new ObjectMapper();
             response.setStatus(httpStatus.value());
-            response.getWriter().println(responseBody);
+
+            // 로그인 실패 JSON 응답을 생성
+            ResponseDTO<Object> errorResponse = ResponseDTO.res(
+                httpStatus,
+                msg);
+
+            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(jsonResponse);
+
         } catch (Exception e) {
             log.error("서버 파싱 에러");
         }

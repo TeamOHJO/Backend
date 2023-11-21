@@ -5,7 +5,8 @@ Content-Type: application/json
 {
   "email": "liyusang1@naver.com",
   "username": "liyusang1",
-  "password": "123456"
+  "password": "123456",
+  "phonenumber": "01011111111"
 }
 
 

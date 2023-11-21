@@ -13,7 +13,10 @@ public record CreateUserRequest(
     String username,
 
     @NotNull
-    String password
+    String password,
+
+    @NotNull
+    String phonenumber
 
 ) {
 
@@ -24,6 +27,7 @@ public record CreateUserRequest(
             .email(email)
             .username(username)
             .password(passwordEncoder.encode(password))
+            .phonenumber(phonenumber)
             .authority("ROLE_USER")
             .createdAt(LocalDateTime.now())
             .build();
