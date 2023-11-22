@@ -1,5 +1,7 @@
 package com.example.yanolja.domain.user.service;
 
+import static com.example.yanolja.global.exception.ErrorCode.INVALID_EMAIL;
+import static com.example.yanolja.global.exception.ErrorCode.INVALID_PHONENUMBER;
 import static com.example.yanolja.global.exception.ErrorCode.USER_ALREADY_REGISTERED;
 
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
@@ -7,10 +9,9 @@ import com.example.yanolja.domain.user.dto.CreateUserResponse;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.exception.EmailDuplicateError;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
+import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.domain.user.repository.UserRepository;
-import com.example.yanolja.global.exception.ApplicationException;
-import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -29,38 +30,23 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final String EMAIL_PATTERN =
         "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-
-    @Override
-    public CreateUserResponse signup(CreateUserRequest createUserRequest) {
-
-        //이메일 유효성 검사
-        if (!isValidEmail(createUserRequest.email())) {
-            throw new InvalidEmailException();
-        }
-
-        //TODO ::이메일 인증
-        //TODO ::이메일 인증
-        //TODO ::이메일 인증
-        //TODO ::이메일 인증
-        //TODO ::이메일 인증
-
-        if (userRepository.findByEmail(createUserRequest.email()).isPresent()) {
-            throw new EmailDuplicateError(USER_ALREADY_REGISTERED);
-        }
-
-        return CreateUserResponse.fromEntity(
-            userRepository.save(createUserRequest.toEntity()));
-    }
+    private static final String PHONENUMBER_REGEX =
+        "^010[0-9]{8}$";
+    private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
+    private static final Pattern phonenumberPattern = Pattern.compile(PHONENUMBER_REGEX);
 
     private static boolean isValidEmail(String email) {
-        Matcher matcher = pattern.matcher(email);
+        Matcher matcher = emailPattern.matcher(email);
         return matcher.matches();
     }
 
+    private static boolean isValidPhonenumber(String phonenumber) {
+        Matcher matcher = phonenumberPattern.matcher(phonenumber);
+        return matcher.matches();
+    }
 
     @Override
-    public ResponseDTO<?> join(CreateUserRequest createUserRequest) {
+    public ResponseDTO<?> signup(CreateUserRequest createUserRequest) {
 
         Optional<User> softDeletedUser = userRepository.findSoftDeletedByEmail(
             createUserRequest.email(), LocalDateTime.now().minusYears(1));
@@ -72,8 +58,17 @@ public class UserServiceImpl implements UserService {
                 CreateUserResponse.fromEntity(user));
         } else {
 
+            //이메일 유효성 검사
             if (!isValidEmail(createUserRequest.email())) {
-                throw new InvalidEmailException();
+                throw new InvalidEmailException(INVALID_EMAIL);
+            }
+            //휴대폰 번호 유효성 검사
+            if (!isValidPhonenumber(createUserRequest.phonenumber())) {
+                throw new InvalidPhonenumberError(INVALID_PHONENUMBER);
+            }
+            //이메일 중복 검사
+            if (userRepository.findByEmail(createUserRequest.email()).isPresent()) {
+                throw new EmailDuplicateError(USER_ALREADY_REGISTERED);
             }
 
             User newUser = createUserRequest.toEntity();
