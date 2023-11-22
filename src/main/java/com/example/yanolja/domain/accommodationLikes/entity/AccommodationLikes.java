@@ -47,12 +47,4 @@ public class AccommodationLikes extends BaseTimeEntity {
         return new AccommodationLikes();
     }
 
-//    public static AccommodationLikes create(User user, Accommodation accommodation, boolean isLike) {
-//        AccommodationLikes accommodationLikes = new AccommodationLikes();
-//        accommodationLikes.setUser(user);
-//        accommodationLikes.setAccommodation(accommodation);
-//        accommodationLikes.setLike(isLike);
-//        return accommodationLikes;
-//    }
-
 }

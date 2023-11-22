@@ -1,0 +1,5 @@
+### 숙소 좋아요 요청
+POST http://localhost:8080/accommodation/1/likes
+Content-Type: application/json
+
+{}
