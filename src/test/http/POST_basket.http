@@ -1,0 +1,8 @@
+POST http://localhost:8080/basket/1
+Content-Type: application/json
+
+{
+  "startDate": "2023-11-22",
+  "endDate": "2023-12-03",
+  "numberOfPerson": 2
+}
