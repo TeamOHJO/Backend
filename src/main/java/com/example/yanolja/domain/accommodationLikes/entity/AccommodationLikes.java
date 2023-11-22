@@ -1,6 +1,7 @@
 package com.example.yanolja.domain.accommodationLikes.entity;
 
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
+import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -11,13 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
-public class accommodationLikes extends BaseTimeEntity {
+@Builder
+
+public class AccommodationLikes extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +37,22 @@ public class accommodationLikes extends BaseTimeEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "AccommodationId", referencedColumnName = "AccommodationId")
+    @JoinColumn(name = "accommodationId", referencedColumnName = "accommodationId")
     private Accommodation accommodation;
 
     @Column(name = "isLike")
     private boolean isLike;
+
+    public static AccommodationLikes createInstance() {
+        return new AccommodationLikes();
+    }
+
+//    public static AccommodationLikes create(User user, Accommodation accommodation, boolean isLike) {
+//        AccommodationLikes accommodationLikes = new AccommodationLikes();
+//        accommodationLikes.setUser(user);
+//        accommodationLikes.setAccommodation(accommodation);
+//        accommodationLikes.setLike(isLike);
+//        return accommodationLikes;
+//    }
+
 }
