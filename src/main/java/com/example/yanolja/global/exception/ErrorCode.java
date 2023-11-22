@@ -13,6 +13,8 @@ public enum ErrorCode {
     REGISTRATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입 실패"),
     INVALID_PHONENUMBER(HttpStatus.BAD_REQUEST, "유효하지 않은 휴대폰 번호 형식"),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 이메일 형식"),
+    //Reservation
+    INVALID_ACCOMMODATION_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 방입니다."),
 
 
     // 5xx
