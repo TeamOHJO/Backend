@@ -1,5 +1,7 @@
 package com.example.yanolja.global.springsecurity;
 
+import com.example.yanolja.global.util.ResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,11 +36,15 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
                 authenticationErrorMessage = "인증 실패";
             }
 
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
             // 로그인 실패 JSON 응답을 생성
-            String jsonResponse =
-                "{ \"success\": false, \"message\": \"" + authenticationErrorMessage + "\" }";
+            ResponseDTO<Object> errorResponse = ResponseDTO.res(
+                HttpStatus.BAD_REQUEST,
+                authenticationErrorMessage);
 
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonResponse);

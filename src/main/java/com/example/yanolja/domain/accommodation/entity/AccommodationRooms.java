@@ -24,7 +24,7 @@ public class AccommodationRooms extends BaseTimeEntity {
     private Long roomId;
 
     @ManyToOne
-    @JoinColumn(name = "AccommodationId", nullable = false)
+    @JoinColumn(name = "accommodationId", nullable = false)
     private Accommodation accommodation;
 
     @Column(name = "name", nullable = false)
@@ -50,4 +50,7 @@ public class AccommodationRooms extends BaseTimeEntity {
 
     @Column(name = "explanation", nullable = false)
     private String explanation;
+
+    @Column(name = "serviceInfo")
+    private String serviceInfo;
 }

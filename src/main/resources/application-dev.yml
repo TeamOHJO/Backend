@@ -5,9 +5,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/yanolja?characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/yanolja?characterEncoding=UTF-8
     username: root
-    password: root
+    password: dnwnrlfls12
 
   jpa:
     show-sql: true
