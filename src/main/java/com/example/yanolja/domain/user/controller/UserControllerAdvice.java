@@ -1,8 +1,8 @@
 package com.example.yanolja.domain.user.controller;
 
-import com.example.yanolja.domain.user.error.EmailDuplicateError;
-import com.example.yanolja.domain.user.error.InvalidEmailException;
-import com.example.yanolja.domain.user.error.InvalidPhonenumberException;
+import com.example.yanolja.domain.user.exception.EmailDuplicateError;
+import com.example.yanolja.domain.user.exception.InvalidEmailException;
+import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +35,10 @@ public class UserControllerAdvice {
     }
 
     @ExceptionHandler(value = {
-        InvalidPhonenumberException.class
+        InvalidPhonenumberError.class
     })
     public ResponseEntity<ResponseDTO<Object>> handlePhonenumberException(
-        InvalidPhonenumberException exception
+        InvalidPhonenumberError exception
     ) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ResponseDTO.res(HttpStatus.BAD_REQUEST,

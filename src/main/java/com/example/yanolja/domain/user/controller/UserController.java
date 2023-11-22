@@ -8,9 +8,9 @@ import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,15 +25,17 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDTO<Object>> signup(
-        @RequestBody @Valid CreateUserRequest createUserRequest) {
-        CreateUserResponse response = userService.signup(createUserRequest);
-        ResponseDTO<Object> successResponse = ResponseDTO.res(
-            HttpStatus.CREATED,
-            "회원가입에 성공",
-            response);
+    public ResponseEntity<ResponseDTO<?>> signup(
+        @Valid @RequestBody CreateUserRequest createUserRequest) {
+        ResponseDTO<?> response = userService.signup(createUserRequest);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(successResponse);
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDTO<?>> deleteUser(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        ResponseDTO<?> response = userService.deleteUser(principalDetails.getUser().getId());
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     // Authenticated user 샘플테스트 코드입니다

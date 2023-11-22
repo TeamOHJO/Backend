@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+
 public record CreateUserRequest(
     @NotNull
     String email,
@@ -32,4 +33,6 @@ public record CreateUserRequest(
             .createdAt(LocalDateTime.now())
             .build();
     }
+
+
 }
