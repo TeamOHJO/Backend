@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,4 +53,10 @@ public class AccommodationRooms extends BaseTimeEntity {
 
     @Column(name = "explanation", nullable = false)
     private String explanation;
+
+    //    @Column(name = "serviceinfo", nullable = false)
+//    private List<String> serviceinfo = new ArrayList<>();
+
+
+
 }

@@ -9,6 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,5 +55,10 @@ public class Accommodation extends BaseTimeEntity {
     private String reservationNotice;
 
     @Column(name = "serviceInfo", nullable = false)
-    private String serviceInfo;
+    private String serviceinfo;
+//    private List<String> serviceinfo = new ArrayList<>(); //todo service info String 으로
+
+    @OneToMany(mappedBy = "accommodation")
+    private List<AccommodationRooms> roomlist = new ArrayList<>();
+
 }

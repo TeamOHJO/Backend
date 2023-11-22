@@ -2,6 +2,7 @@ package com.example.yanolja.domain.accommodation.service;
 
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.dto.AccommodationListFindResponse;
+import com.example.yanolja.domain.accommodation.dto.RoomsFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
@@ -27,7 +28,8 @@ public class AccommodationService {
 
     @Transactional
     public AccommodationFindResponse getAccommodationById(Long accommodationId){
-        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId).orElseThrow(); //todo optional?
+        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
+            .orElseThrow(); //todo 예외처리 미완성
         return AccommodationFindResponse.fromEntity(foundAccommodation);
     }
 
@@ -36,13 +38,23 @@ public class AccommodationService {
 //
 //    }
 //
-//    @Transactional
-//    public AccommodationRooms getAccommodationRoomsById(){
-//
-//    }
 
     @Transactional
-    public List<AccommodationListFindResponse> searchAccommodation(String accommodationName){
+    public List<RoomsFindResponse> getRoomsByAccommodationId(Long accommodationId){
+        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
+            .orElseThrow(); //todo 예외처리 미완성
+
+        List<RoomsFindResponse> roomFindResponses = new ArrayList<>();
+        for (AccommodationRooms room : foundAccommodation.getRoomlist()) {
+            RoomsFindResponse roomFindResponse = RoomsFindResponse.fromEntity(room);
+            roomFindResponses.add(roomFindResponse);
+        }
+
+        return roomFindResponses;
+    }
+
+    @Transactional
+    public List<AccommodationListFindResponse> searchAccommodationByName(String accommodationName){
         List<Accommodation> foundAccommodationList = accommodationRepository.findByNameContains(accommodationName);
         return listToResponse(foundAccommodationList);
     }

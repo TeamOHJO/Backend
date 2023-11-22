@@ -55,27 +55,21 @@ public class AccommodationListFindResponse {
     }
 
 
-    private List<AccommodationListFindResponse> listToResponse(List<Accommodation> accommodationList){
-        List<AccommodationListFindResponse> responseList = new ArrayList<>();
-        for(Accommodation found : accommodationList){
-
-            AccommodationListFindResponse accommodatonListFindResponse = AccommodationListFindResponse.builder()
-                    .accommodationId(found.getAccommodationId())
-                    .accommodationId(found.getAccommodationId())
-                    .accommodationName(found.getAccommodationName())
-                    .location(found.getLocation())
-                    .tag(found.getTag())
-                    .isDomestic(found.isDomestic())
-                    .explanation(found.getExplanation())
-                    .cancelInfo(found.getCancelInfo())
-                    .useGuide(found.getUseGuide())
-                    .reservationNotice(found.getReservationNotice())
-                    .serviceInfo(found.getServiceInfo())
-                    .build();
-
-            responseList.add(accommodatonListFindResponse);
-        }
-        return responseList;
+    public static AccommodationListFindResponse fromEntity(Accommodation accommodation) {
+        return AccommodationListFindResponse.builder()
+            .accommodationId(accommodation.getAccommodationId())
+            .category(accommodation.getCategory())
+            .accommodationName(accommodation.getAccommodationName())
+            .location(accommodation.getLocation())
+            .tag(accommodation.getTag())
+            .isDomestic(accommodation.isDomestic())
+            .explanation(accommodation.getExplanation())
+            .cancelInfo(accommodation.getCancelInfo())
+            .useGuide(accommodation.getUseGuide())
+            .reservationNotice(accommodation.getReservationNotice())
+            .serviceInfo(accommodation.getServiceInfo())
+            .build();
     }
+
 
 }

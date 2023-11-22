@@ -52,7 +52,6 @@ public class AccommodationFindResponse {
 
 // todo accommodation rooms
 
-
         return AccommodationFindResponse.builder()
                 .accommodationId(accommodation.getAccommodationId())
                 .accommodationId(accommodation.getAccommodationId())
