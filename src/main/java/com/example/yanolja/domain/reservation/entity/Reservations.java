@@ -35,11 +35,11 @@ public class Reservations extends BaseTimeEntity {
     @JoinColumn(name = "roomId", nullable = false)
     private AccommodationRooms room;
 
-    @Column(name = "startTime", nullable = false)
+    @Column(name = "startDate", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @Column(name = "endTime", nullable = false)
+    @Column(name = "endDate", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
