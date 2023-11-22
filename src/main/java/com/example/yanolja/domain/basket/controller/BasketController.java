@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,16 @@ public class BasketController {
 
         ResponseDTO<?> response = basketService.addBasket(
             createBasketRequest, user, roomsId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    //장바구니 조회
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO<?>> getBasket(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+
+        ResponseDTO<?> response = basketService.getBasket(user);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 

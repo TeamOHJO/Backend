@@ -9,4 +9,6 @@ public interface BasketService {
 
     ResponseDTO<?> addBasket(CreateBasketRequest createBasketRequest, User user,
         long roomsId);
+
+    ResponseDTO<?> getBasket(User user);
 }
