@@ -40,5 +40,21 @@ public class User extends BaseTimeEntity {
         super.deletedAt = deletedAt;
     }
 
+    @Override
+    public void delete(LocalDateTime currentTime) {
+        super.delete(currentTime);
+    }
+
+    @Override
+    public void restore() {
+        super.restore();
+    }
+
+    public Long getId() {
+        return this.userId;
+    }
+
+
     private String authority;
+
 }

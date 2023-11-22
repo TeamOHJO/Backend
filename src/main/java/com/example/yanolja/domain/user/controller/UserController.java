@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    @PostMapping("/join")
+    public ResponseEntity<ResponseDTO<?>> join(
+        @Valid @RequestBody CreateUserRequest createUserRequest) {
+        ResponseDTO<?> response = userService.join(createUserRequest);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDTO<?>> deleteUser(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        ResponseDTO<?> response = userService.deleteUser(principalDetails.getUser().getId());
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseDTO<Object>> signup(
