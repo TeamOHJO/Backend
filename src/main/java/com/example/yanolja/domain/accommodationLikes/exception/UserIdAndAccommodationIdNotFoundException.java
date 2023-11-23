@@ -1,12 +1,12 @@
-package com.example.yanolja.domain.user.exception;
+package com.example.yanolja.domain.accommodationLikes.exception;
 
 
 import com.example.yanolja.global.exception.ApplicationException;
 import com.example.yanolja.global.exception.ErrorCode;
 
-public class UserNotFoundException extends ApplicationException {
+public class UserIdAndAccommodationIdNotFoundException extends ApplicationException {
 
-    public UserNotFoundException(String message) {
-        super(ErrorCode.MEMBER_NOT_FOUND, message);
+    public UserIdAndAccommodationIdNotFoundException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

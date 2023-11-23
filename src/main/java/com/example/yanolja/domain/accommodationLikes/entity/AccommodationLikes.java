@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,8 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Builder
-
-public class AccommodationLikes extends BaseTimeEntity {
+public class AccommodationLikes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +43,12 @@ public class AccommodationLikes extends BaseTimeEntity {
     @Column(name = "isLike")
     private boolean isLike;
 
-    public static AccommodationLikes createInstance() {
-        return new AccommodationLikes();
+    public void setIsLike(boolean isLike) {
+        this.isLike = isLike;
+    }
+
+    public boolean getIsLike() {
+        return this.isLike;
     }
 
 }

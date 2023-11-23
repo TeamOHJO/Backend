@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccommodationLikesRepository extends JpaRepository<AccommodationLikes, Long> {
 
-    Optional<AccommodationLikes> findByUser_UserIdAndAccommodation_AccommodationId(Long userId, Long accommodationId);
+    Optional<AccommodationLikes> findByUser_UserIdAndAccommodation_AccommodationId(Long userId,
+        Long accommodationId);
+
 
 }

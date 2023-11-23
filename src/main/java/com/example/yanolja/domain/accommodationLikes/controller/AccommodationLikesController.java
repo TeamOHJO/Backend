@@ -1,7 +1,9 @@
 package com.example.yanolja.domain.accommodationLikes.controller;
 
+import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodationLikes.dto.AccommodationLikesResponse;
 import com.example.yanolja.domain.accommodationLikes.service.AccommodationLikesService;
+import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
@@ -29,12 +31,13 @@ public class AccommodationLikesController {
         @PathVariable Long accommodationId,
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        Long userId = principalDetails.getUser().getUserId();
-        boolean isLiked = accommodationLikesService.toggleAccommodationLike(userId,
+        User user = principalDetails.getUser();
+        ResponseDTO<Boolean> isLiked = accommodationLikesService.toggleAccommodationLike(user,
             accommodationId);
 
-        AccommodationLikesResponse response = new AccommodationLikesResponse(accommodationId,
-            isLiked);
+        AccommodationLikesResponse response = new AccommodationLikesResponse(
+            accommodationId,
+            isLiked.getData());
 
         return ResponseEntity.ok(
             ResponseDTO.res(HttpStatus.OK, "좋아요 상태가 성공적으로 변경되었습니다.", response));
