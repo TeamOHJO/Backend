@@ -1,0 +1,11 @@
+### 리뷰 수정
+PUT http://localhost:8080/reviews/1
+Content-Type: application/json
+
+{
+  "userId": 123,
+  "reservationId": 456,
+  "reviewContent": "수정된 리뷰내용",
+  "image": "updated_image_url",
+  "star": 4
+}
