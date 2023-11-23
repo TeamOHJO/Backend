@@ -39,7 +39,7 @@ public class Accommodation extends BaseTimeEntity {
     @Column(name = "tag", nullable = false)
     private String tag;
 
-    @Column(name = "isDomestic", nullable = false)
+    @Column(name = "isDomestic")
     private boolean isDomestic;
 
     @Column(name = "explanation", nullable = false)
@@ -56,7 +56,6 @@ public class Accommodation extends BaseTimeEntity {
 
     @Column(name = "serviceInfo", nullable = false)
     private String serviceInfo;
-//    private List<String> serviceinfo = new ArrayList<>(); //todo service info String 으로
 
     @OneToMany(mappedBy = "accommodation")
     private List<AccommodationRooms> roomlist = new ArrayList<>();

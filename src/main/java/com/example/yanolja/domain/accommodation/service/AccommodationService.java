@@ -1,11 +1,15 @@
 package com.example.yanolja.domain.accommodation.service;
 
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
-import com.example.yanolja.domain.accommodation.dto.AccommodationListFindResponse;
 import com.example.yanolja.domain.accommodation.dto.RoomsFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
+import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
+import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
+import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
+import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImageRepository;
+import com.example.yanolja.domain.accommodation.repository.AccommodationRoomsRepository;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
@@ -21,26 +25,158 @@ import java.util.List;
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
+    private final AccommodationRoomsRepository accommodationRoomsRepository;
     private final ReservationRepository reservationRepository;
+    private AccommodationImageRepository accommodationImageRepository;
+    private AccommodationRoomImageRepository accommodationRoomImageRepository;
+
+
+    @Transactional  //필터 조건에 맞춰 숙소 리스트 조회
+    public List<AccommodationFindResponse> searchAccommodationsWithFilters(
+        List<String> categories, Boolean isDomestic, LocalDate startDate, LocalDate endDate, Integer numberOfPerson) {
+        List<Accommodation> allAccommodations = accommodationRepository.findAll();
+
+        // 1. 카테고리 필터링
+        List<Accommodation> filteredByCategories = (categories == null || categories.isEmpty())
+            ? allAccommodations
+            : filterByCategory(allAccommodations, categories);
+
+        // 2. 국내/해외 필터링
+        List<Accommodation> filteredByDomestic = (isDomestic == null)
+            ? filteredByCategories
+            : filterByDomestic(filteredByCategories, isDomestic);
+
+        // 3. 인원 수 필터링
+        List<Accommodation> filteredByCapacity = (numberOfPerson == null)
+            ? filteredByDomestic
+            : filterByCapacity(filteredByDomestic, numberOfPerson);
+
+        // 4. 날짜 필터링
+        List<Accommodation> finalFilteredAccommodations = (startDate == null || endDate == null)
+            ? filteredByCapacity
+            : filterAccommodationsWithAvailableRooms(filteredByCapacity, startDate, endDate);
+
+        // 5. 결과 반환
+        return listToResponse(finalFilteredAccommodations);
+        //todo 반환 리스트(페이지)에 예약여부, 별점평균, 좋아요 포함 로직..
+//        List<AccommodationFindResponse> responses = new ArrayList<>();
+//        for (Accommodation accommodation : finalFilteredAccommodations) {
+//            AccommodationFindResponse response = AccommodationFindResponse.fromEntity(accommodation);
+//            response.isBookable(isBookable(accommodation.getId()));
+//            response.setAverageReviewScore(getAverageReviewScore(accommodation.getId()));
+//            response.isLiked(getLikeStatus(accommodation.getId()));
+//            responses.add(response);
+//        }
+//
+//        return responses;
+    }
+
+
+    @Transactional  //카테고리에 따라 숙소 목록 반환
+    public List<Accommodation> filterByCategory(List<Accommodation> accommodations, List<String> category) {
+        List<Accommodation> filteredAccommodations = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (accommodation.getCategory().equals(category)) {
+                filteredAccommodations.add(accommodation);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+
+    @Transactional  //국내/국외 여부에 따라 숙소 목록 반환
+    public List<Accommodation> filterByDomestic(List<Accommodation> accommodations, boolean isDomestic) {
+        List<Accommodation> filteredAccommodations = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (accommodation.isDomestic() == isDomestic) {
+                filteredAccommodations.add(accommodation);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+
+    @Transactional  //여행자 수 필터(인원수에 따라 숙소 목록 반환)
+    public List<Accommodation> filterByCapacity(List<Accommodation> accommodations, int numberOfPerson) {
+        List<Accommodation> filteredAccommodations = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (hasRoomForCapacity(accommodation, numberOfPerson)) {
+                filteredAccommodations.add(accommodation);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+
+    @Transactional  //날짜에 예약 가능한 숙소 목록 필터
+    public List<Accommodation> filterAccommodationsWithAvailableRooms(List<Accommodation> accommodations, LocalDate startDate, LocalDate endDate) {
+        List<Accommodation> filteredAccommodations = new ArrayList<>();
+        for (Accommodation accommodation : accommodations) {
+            if (isAccommodationAvailable(accommodation, startDate, endDate)) {
+                filteredAccommodations.add(accommodation);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+    @Transactional //특정 숙소가 주어진 날짜에 예약 가능한지 여부를 반환
+    public boolean isAccommodationAvailable(Accommodation accommodation, LocalDate startDate, LocalDate endDate) {
+        for (AccommodationRooms room : accommodation.getRoomlist()) {
+            if (isRoomAvailableForDateRange(room, startDate, endDate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Transactional// 방이 주어진 날짜에 예약 가능한지 확인
+    public boolean isRoomAvailableForDateRange(AccommodationRooms room, LocalDate startDate, LocalDate endDate) {
+        List<Reservations> reservations = reservationRepository.findByRoomId(room.getRoomId());
+
+        for (Reservations reservation : reservations) {
+            if (startDate != null && reservation.getEndDate().isBefore(startDate)) {
+                continue; // 예약 종료 날짜가 검색 시작 날짜 이전인 경우
+            }
+            if (endDate != null && reservation.getStartDate().isAfter(endDate)) {
+                continue; // 예약 시작 날짜가 검색 종료 날짜 이후인 경우
+            }
+            return false;
+        }
+        return true; // 겹치는 예약이 없는 경우
+    }
 
 
     @Transactional
-    public List<AccommodationListFindResponse> getAllAccommodation(){
+    public boolean hasRoomForCapacity(Accommodation accommodation, int numberOfPersons) {
+        for (AccommodationRooms room : accommodation.getRoomlist()) {
+            if (room.getMinCapacity() <= numberOfPersons && room.getMaxCapacity() >= numberOfPersons) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Transactional  //모든 숙소 목록 조회
+    public List<AccommodationFindResponse> getAllAccommodation(){
         List<Accommodation> foundAccommodationList = accommodationRepository.findAll();
         return listToResponse(foundAccommodationList);
     }
 
-    @Transactional
+
+    @Transactional  //특정 ID 숙소 조회
     public AccommodationFindResponse getAccommodationById(Long accommodationId){
         Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
-            .orElseThrow(); //todo 예외처리 미완성
+            .orElseThrow(); //todo 각종 예외처리 미완성
         return AccommodationFindResponse.fromEntity(foundAccommodation);
     }
 
-    @Transactional
+
+    @Transactional  //특정 숙소의 모든 방정보 조회
     public List<RoomsFindResponse> getRoomsByAccommodationId(Long accommodationId){
         Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
-            .orElseThrow(); //todo 예외처리 미완성
+            .orElseThrow();
 
         List<RoomsFindResponse> roomFindResponses = new ArrayList<>();
         for (AccommodationRooms room : foundAccommodation.getRoomlist()) {
@@ -52,50 +188,77 @@ public class AccommodationService {
     }
 
 
-    @Transactional
-    public List<AccommodationListFindResponse> searchAccommodationByName(String accommodationName){
-        List<Accommodation> foundAccommodationList = accommodationRepository.findByNameContains(accommodationName);
-        return listToResponse(foundAccommodationList);
-    }
+    @Transactional // 주어진 날짜에 예약가능한 숙소 목록 조회
+    public List<RoomsFindResponse> getAvailableAccommodationForDate(Accommodation accommodation, LocalDate startDate, LocalDate endDate) {
+        List<RoomsFindResponse> availableRooms = new ArrayList<>();
 
-    @Transactional
-    public List<AccommodationListFindResponse> searchAccommodations(Boolean isDomestic, LocalDate startDate, LocalDate endDate, int numberOfPerson){
-        List<Accommodation> allAccommodations = accommodationRepository.findAll();
-        List<AccommodationListFindResponse> filteredAccommodations = new ArrayList<>();
-
-        for(Accommodation filterd : allAccommodations){
-            if (isDomestic != null && filterd.isDomestic() != isDomestic) {
-                continue;
-            } //todo 체크 안하면 국내 기본
-
-            boolean isSuitable = false;
-            for (AccommodationRooms room : filterd.getRoomlist()) {
-                if (
-                    numberOfPerson >= room.getMinCapacity() &&
-                    numberOfPerson <= room.getMaxCapacity()) {
-
-                    if(isRoomAvailable(room, startDate, endDate)) {
-                        isSuitable = true;
-                        break;
-                    }
-                }
+        for (AccommodationRooms room : accommodation.getRoomlist()) {
+            if (isRoomAvailableForDateRange(room, startDate, endDate)) {
+                availableRooms.add(RoomsFindResponse.fromEntity(room));
             }
-
-            if (!isSuitable) continue;
-
-
-            filteredAccommodations.add(AccommodationListFindResponse.fromEntity(filterd));
         }
-        return filteredAccommodations;
+        return availableRooms;
     }
 
 
+    @Transactional
+    public List<RoomsFindResponse> findAllRoomsInAccommodations(List<AccommodationFindResponse> accommodations) {
+        List<RoomsFindResponse> allRooms = new ArrayList<>();
+        for (AccommodationFindResponse accommodationResponse : accommodations) {
+            Accommodation accommodation = accommodationRepository.findById(accommodationResponse.getAccommodationId())
+                .orElseThrow(); // 예외 처리 필요
+            for (AccommodationRooms room : accommodation.getRoomlist()) {
+                RoomsFindResponse roomResponse = RoomsFindResponse.fromEntity(room);
+                allRooms.add(roomResponse);
+            }
+        }
+        return allRooms;
+    }
 
-    private List<AccommodationListFindResponse> listToResponse(List<Accommodation> accommodationList){
-        List<AccommodationListFindResponse> responseList = new ArrayList<>();
+
+    @Transactional  //숙소 ID로 이미지 조회
+    public List<String> getImagesByAccommodationId(Long accommodationId) {
+        List<AccommodationImages> images = accommodationImageRepository.findByAccommodationId(accommodationId);
+        List<String> imageUrls = new ArrayList<>();
+
+        for (AccommodationImages image : images) {
+            imageUrls.add(image.getImage());
+        }
+
+        return imageUrls;
+    }
+
+
+    @Transactional  //방 ID로 이미지 조회
+    public List<String> getImagesByRoomId(Long roomId) {
+        List<AccommodationRoomImages> images = accommodationRoomImageRepository.findByRoomId(roomId);
+        List<String> imageUrls = new ArrayList<>();
+
+        for (AccommodationRoomImages image : images) {
+            imageUrls.add(image.getImage());
+        }
+        return imageUrls;
+    }
+
+//todo 예약여부, 별점평균, 좋아요 포함  메서드 구현?
+ /*   private boolean isBookable(Long accommodationId) {
+        // 예약 가능 여부 조회 로직
+    }
+
+    private float getAverageReviewScore(Long accommodationId) {
+        // 리뷰 평균 점수 조회 로직
+    }
+
+    private boolean getLikeStatus(Long accommodationId) {
+        // 좋아요 여부 조회 로직
+    }*/
+
+
+    private List<AccommodationFindResponse> listToResponse(List<Accommodation> accommodationList){
+        List<AccommodationFindResponse> responseList = new ArrayList<>();
         for(Accommodation found : accommodationList){
 
-            AccommodationListFindResponse accommodatonListFindResponse = AccommodationListFindResponse.builder()
+            AccommodationFindResponse accommodatonListFindResponse = AccommodationFindResponse.builder()
                     .accommodationId(found.getAccommodationId())
                     .accommodationId(found.getAccommodationId())
                     .accommodationName(found.getAccommodationName())
@@ -114,9 +277,6 @@ public class AccommodationService {
         return responseList;
     }
 
-    private boolean isRoomAvailable(AccommodationRooms room, LocalDate startDate, LocalDate endDate) { //todo
-        List<Reservations> reservations = reservationRepository.findReservationsByRoomIdAndDate(room.getRoomId(), startDate, endDate);
 
-        return reservations.isEmpty();
-    }
+
 }

@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservations, Long> {
 
-  List<Reservations> findReservationsByRoomIdAndDate(Long roomId, LocalDate startDate, LocalDate endDate ); //todo
+  List<Reservations> findByRoomId(Long roomId);
+
+
 }

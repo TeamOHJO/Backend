@@ -5,7 +5,11 @@ import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class AccommodationFindResponse {
 
     private Long accommodationId;
@@ -29,6 +33,11 @@ public class AccommodationFindResponse {
     private String reservationNotice;
 
     private String serviceInfo;
+
+
+    private boolean isBookable; // 예약 가능 여부
+    private double averageReviewScore; // 리뷰 평균 점수
+    private boolean isLiked; // 좋아요 여부
 
     @Builder
     public AccommodationFindResponse(
@@ -55,11 +64,9 @@ public class AccommodationFindResponse {
 
         List<String> serviceList = Arrays.asList(accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
 
-// todo accommodation rooms
-
         return AccommodationFindResponse.builder()
                 .accommodationId(accommodation.getAccommodationId())
-                .accommodationId(accommodation.getAccommodationId())
+               .category(accommodation.getCategory())
                 .accommodationName(accommodation.getAccommodationName())
                 .location(accommodation.getLocation())
                 .tag(accommodation.getTag())

@@ -4,7 +4,11 @@ import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class RoomsFindResponse {
 
   private Long roomId;
