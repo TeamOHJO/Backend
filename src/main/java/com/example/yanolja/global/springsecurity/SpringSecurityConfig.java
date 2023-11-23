@@ -51,6 +51,8 @@ public class SpringSecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("role sample", HttpMethod.POST.name())).hasRole("ADMIN") */
             .requestMatchers(new AntPathRequestMatcher("/login/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/user/signup/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/user/email/confirmation/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/user/verify/**")).permitAll()
 
             .anyRequest().authenticated());
 
