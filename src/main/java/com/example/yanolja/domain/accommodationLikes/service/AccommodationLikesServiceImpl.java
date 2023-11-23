@@ -28,7 +28,8 @@ public class AccommodationLikesServiceImpl implements AccommodationLikesService 
 
     @Override
     @Transactional
-    public ResponseDTO<Boolean> toggleAccommodationLike(User user, Long accommodationId) {
+    public ResponseDTO<AccommodationLikesResponse> toggleAccommodationLike(User user,
+        Long accommodationId) {
 
 //        // 사용자 유효성 검사
 //        if (user == null || !userRepository.existsById(user.getUserId())) {
@@ -44,21 +45,25 @@ public class AccommodationLikesServiceImpl implements AccommodationLikesService 
         Optional<AccommodationLikes> existingLike = accommodationLikesRepository
             .findByUser_UserIdAndAccommodation_AccommodationId(user.getId(), accommodationId);
 
+        boolean isLiked;
         if (existingLike.isPresent()) {
             AccommodationLikes like = existingLike.get();
-            like.setIsLike(!like.getIsLike()); // 현재 상태를 반전 (true -> false, false -> true)
+            like.setIsLike(!like.getIsLike());
             accommodationLikesRepository.save(like);
-            return ResponseDTO.res(HttpStatus.OK, like.getIsLike() ? "좋아요 추가됨" : "좋아요 해제됨",
-                like.getIsLike());
+            isLiked = like.getIsLike();
         } else {
-            // 좋아요 상태가 존재하지 않는 경우, 새로운 객체를 생성하고 저장
-            AccommodationLikesResponse accommodationLikesResponse = new AccommodationLikesResponse(
-                accommodationId, true);
-            AccommodationLikes newLike = accommodationLikesResponse.toEntity(user, accommodation,
-                true);
+            AccommodationLikes newLike = new AccommodationLikes(user, accommodation, true);
             accommodationLikesRepository.save(newLike);
-            return ResponseDTO.res(HttpStatus.CREATED, "좋아요 상태 생성", true);
+            isLiked = true;
         }
+
+        AccommodationLikesResponse response = new AccommodationLikesResponse(accommodationId,
+            isLiked);
+        return ResponseDTO.res(
+            existingLike.isPresent() ? HttpStatus.OK : HttpStatus.CREATED,
+            existingLike.isPresent() ? (isLiked ? "좋아요 추가됨" : "좋아요 해제됨") : "좋아요 상태 생성",
+            response
+        );
 
     }
 }

@@ -32,15 +32,11 @@ public class AccommodationLikesController {
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         User user = principalDetails.getUser();
-        ResponseDTO<Boolean> isLiked = accommodationLikesService.toggleAccommodationLike(user,
-            accommodationId);
+        ResponseDTO<AccommodationLikesResponse> response = accommodationLikesService.toggleAccommodationLike(
+            user, accommodationId);
 
-        AccommodationLikesResponse response = new AccommodationLikesResponse(
-            accommodationId,
-            isLiked.getData());
+        return ResponseEntity.ok(response);
 
-        return ResponseEntity.ok(
-            ResponseDTO.res(HttpStatus.OK, "좋아요 상태가 성공적으로 변경되었습니다.", response));
 
     }
 

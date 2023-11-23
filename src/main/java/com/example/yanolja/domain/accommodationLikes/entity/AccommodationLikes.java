@@ -51,4 +51,11 @@ public class AccommodationLikes {
         return this.isLike;
     }
 
+    public AccommodationLikes(User user, Accommodation accommodation, boolean isLike) {
+        this.user = user;
+        this.accommodation = accommodation;
+        this.isLike = isLike;
+    }
+
+
 }
