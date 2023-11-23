@@ -6,7 +6,10 @@ import com.example.yanolja.domain.accommodation.dto.RoomsFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
+import com.example.yanolja.domain.reservation.entity.Reservations;
+import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ import java.util.List;
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
+    private final ReservationRepository reservationRepository;
 
 
     @Transactional
@@ -33,12 +37,6 @@ public class AccommodationService {
         return AccommodationFindResponse.fromEntity(foundAccommodation);
     }
 
-//    @Transactional
-//    public Accommodation getAccommodationByName(){
-//
-//    }
-//
-
     @Transactional
     public List<RoomsFindResponse> getRoomsByAccommodationId(Long accommodationId){
         Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
@@ -53,10 +51,42 @@ public class AccommodationService {
         return roomFindResponses;
     }
 
+
     @Transactional
     public List<AccommodationListFindResponse> searchAccommodationByName(String accommodationName){
         List<Accommodation> foundAccommodationList = accommodationRepository.findByNameContains(accommodationName);
         return listToResponse(foundAccommodationList);
+    }
+
+    @Transactional
+    public List<AccommodationListFindResponse> searchAccommodations(Boolean isDomestic, LocalDate startDate, LocalDate endDate, int numberOfPerson){
+        List<Accommodation> allAccommodations = accommodationRepository.findAll();
+        List<AccommodationListFindResponse> filteredAccommodations = new ArrayList<>();
+
+        for(Accommodation filterd : allAccommodations){
+            if (isDomestic != null && filterd.isDomestic() != isDomestic) {
+                continue;
+            }
+
+            boolean isSuitable = false;
+            for (AccommodationRooms room : filterd.getRoomlist()) {
+                if (
+                    numberOfPerson >= room.getMinCapacity() &&
+                    numberOfPerson <= room.getMaxCapacity()) {
+
+                    if(isRoomAvailable(room, startDate, endDate)) {
+                        isSuitable = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isSuitable) continue;
+
+
+            filteredAccommodations.add(AccommodationListFindResponse.fromEntity(filterd));
+        }
+        return filteredAccommodations;
     }
 
 
@@ -84,5 +114,8 @@ public class AccommodationService {
         return responseList;
     }
 
+    private boolean isRoomAvailable(AccommodationRooms room, LocalDate startDate, LocalDate endDate) { //todo
+        List<Reservations> reservations = reservationRepository.findReservationsByRoomIdAndDate(room.getRoomId(), startDate, endDate);
 
-}
+        return reservations.isEmpty();
+    }}

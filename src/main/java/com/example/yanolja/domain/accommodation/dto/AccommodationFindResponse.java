@@ -2,6 +2,8 @@ package com.example.yanolja.domain.accommodation.dto;
 
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Builder;
 
 public class AccommodationFindResponse {
@@ -49,6 +51,9 @@ public class AccommodationFindResponse {
 
 
     public static AccommodationFindResponse fromEntity(Accommodation accommodation){
+
+
+        List<String> serviceList = Arrays.asList(accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
 
 // todo accommodation rooms
 

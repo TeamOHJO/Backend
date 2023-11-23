@@ -31,7 +31,7 @@ public class Reservations extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "roomId", nullable = false)
-    private AccommodationRooms room;
+    private AccommodationRooms roomId;
 
     @Column(name = "startTime", nullable = false)
     private LocalDateTime startDate;

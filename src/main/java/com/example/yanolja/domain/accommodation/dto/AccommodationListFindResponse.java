@@ -2,6 +2,7 @@ package com.example.yanolja.domain.accommodation.dto;
 
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
+import java.util.Arrays;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -56,6 +57,9 @@ public class AccommodationListFindResponse {
 
 
     public static AccommodationListFindResponse fromEntity(Accommodation accommodation) {
+
+        List<String> serviceList = Arrays.asList(accommodation.getServiceInfo().split(","));
+
         return AccommodationListFindResponse.builder()
             .accommodationId(accommodation.getAccommodationId())
             .category(accommodation.getCategory())

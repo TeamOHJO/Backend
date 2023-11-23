@@ -1,14 +1,7 @@
 package com.example.yanolja.domain.accommodation.dto;
 
-import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;
 
@@ -32,12 +25,12 @@ public class RoomsFindResponse {
 
   private String explanation;
 
-  private String serviceinfo;
+  private String serviceInfo;
 
   @Builder
   public RoomsFindResponse(Long roomId, String name, int price, int discountPercentage,
       String checkinExplanation, int minCapacity, int maxCapacity, String tag, String explanation,
-      String serviceinfo) {
+      String serviceInfo) {
     this.roomId = roomId;
     this.name = name;
     this.price = price;
@@ -47,11 +40,14 @@ public class RoomsFindResponse {
     this.maxCapacity = maxCapacity;
     this.tag = tag;
     this.explanation = explanation;
-    this.serviceinfo = serviceinfo;
+    this.serviceInfo = serviceInfo;
   }
 
 
   public static RoomsFindResponse fromEntity(AccommodationRooms rooms){
+
+    List<String> serviceList = Arrays.asList(rooms.getServiceInfo().split(","));
+
     return RoomsFindResponse.builder()
         .roomId(rooms.getRoomId())
         .name(rooms.getName())
@@ -62,6 +58,7 @@ public class RoomsFindResponse {
         .maxCapacity(rooms.getMaxCapacity())
         .tag(rooms.getTag())
         .explanation(rooms.getExplanation())
-        .build();  //todo serviceinfo 없음
+        .serviceInfo(rooms.getServiceInfo())
+        .build();
   }
 }

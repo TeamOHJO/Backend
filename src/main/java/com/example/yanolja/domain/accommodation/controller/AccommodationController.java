@@ -18,14 +18,14 @@ public class AccommodationController {
     private AccommodationService accommodationService;
 
     @GetMapping
-    public ResponseEntity<List<AccommodationListFindResponse>> getAllAccomodation(){
+    public ResponseEntity<List<AccommodationListFindResponse>> getAllAccommodation(){
         List<AccommodationListFindResponse> accomodations = accommodationService.getAllAccommodation();
 
         return ResponseEntity.ok(accomodations);
     }
 
     @GetMapping("/{accommodation_Id}")
-    public ResponseEntity<AccommodationFindResponse> getAccomodationById(
+    public ResponseEntity<AccommodationFindResponse> getAccommodationById(
             @PathVariable(name = "accommodation_Id") Long accommodationId
     ){
         AccommodationFindResponse accommodation = accommodationService.getAccommodationById(accommodationId);

@@ -55,7 +55,7 @@ public class Accommodation extends BaseTimeEntity {
     private String reservationNotice;
 
     @Column(name = "serviceInfo", nullable = false)
-    private String serviceinfo;
+    private String serviceInfo;
 //    private List<String> serviceinfo = new ArrayList<>(); //todo service info String 으로
 
     @OneToMany(mappedBy = "accommodation")
