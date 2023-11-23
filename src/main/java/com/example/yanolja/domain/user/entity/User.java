@@ -32,13 +32,13 @@ public class User extends BaseTimeEntity {
 
     @Builder
     public User(String email, String username, String password, String phonenumber,
-        String authority, LocalDateTime createdAt, LocalDateTime deletedAt) {
+        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.phonenumber = phonenumber;
         this.authority = authority;
-        super.createdAt = createdAt;
+        super.updatedAt = updatedAt;
         super.deletedAt = deletedAt;
     }
 

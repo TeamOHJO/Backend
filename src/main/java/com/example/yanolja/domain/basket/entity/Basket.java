@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,4 +42,11 @@ public class Basket extends BaseTimeEntity {
 
     @Column(name = "isSelected")
     private boolean isSelected;
+
+    @Builder
+    public Basket(User user, AccommodationRooms rooms, Reservations reservation) {
+        this.user = user;
+        this.room = rooms;
+        this.reservation = reservation;
+    }
 }
