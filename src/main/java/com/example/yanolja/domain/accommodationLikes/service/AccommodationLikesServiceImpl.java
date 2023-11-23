@@ -53,11 +53,11 @@ public class AccommodationLikesServiceImpl implements AccommodationLikesService 
         } else {
             // 좋아요 상태가 존재하지 않는 경우, 새로운 객체를 생성하고 저장
             AccommodationLikesResponse accommodationLikesResponse = new AccommodationLikesResponse(
-                accommodationId, true);
+                accommodationId, false);
             AccommodationLikes newLike = accommodationLikesResponse.toEntity(user, accommodation,
-                true);
+                false);
             accommodationLikesRepository.save(newLike);
-            return ResponseDTO.res(HttpStatus.CREATED, "좋아요 추가 성공", true);
+            return ResponseDTO.res(HttpStatus.CREATED, "좋아요 상태 생성", false);
         }
 
     }
