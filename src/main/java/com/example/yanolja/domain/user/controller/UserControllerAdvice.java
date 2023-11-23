@@ -29,8 +29,8 @@ public class UserControllerAdvice {
     public ResponseEntity<ResponseDTO<Object>> handleInvalidEmailException(
         InvalidEmailException exception
     ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ResponseDTO.res(HttpStatus.BAD_REQUEST,
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(
+            ResponseDTO.res(HttpStatus.PRECONDITION_FAILED,
                 exception.getMessage()));
     }
 
@@ -40,8 +40,8 @@ public class UserControllerAdvice {
     public ResponseEntity<ResponseDTO<Object>> handlePhonenumberException(
         InvalidPhonenumberError exception
     ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ResponseDTO.res(HttpStatus.BAD_REQUEST,
+        return ResponseEntity.status(HttpStatus.LENGTH_REQUIRED).body(
+            ResponseDTO.res(HttpStatus.LENGTH_REQUIRED,
                 exception.getMessage()));
     }
 }
