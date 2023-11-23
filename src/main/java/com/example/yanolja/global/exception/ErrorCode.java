@@ -15,6 +15,9 @@ public enum ErrorCode {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 이메일 형식"),
 
 
+    //ACCOMODATIONLIKES
+    INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "잘못된 사용자 ID 또는 숙소 ID입니다."),
+
     // 5xx
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 에러"),
     ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "숙소를 찾을 수 없습니다.");

@@ -19,15 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class AccommodationLikesServiceImpl implements AccommodationLikesService {
 
     private final AccommodationLikesRepository accommodationLikesRepository;
     private final AccommodationRepository accommodationRepository;
     private final UserRepository userRepository;
-
-    public AccommodationLikesServiceImpl(AccommodationLikesRepository accommodationLikesRepository) {
-        this.accommodationLikesRepository = accommodationLikesRepository;
-    }
 
     @Override
     @Transactional
