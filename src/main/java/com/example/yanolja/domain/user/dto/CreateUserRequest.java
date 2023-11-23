@@ -30,7 +30,7 @@ public record CreateUserRequest(
             .password(passwordEncoder.encode(password))
             .phonenumber(phonenumber)
             .authority("ROLE_USER")
-            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
             .build();
     }
 
