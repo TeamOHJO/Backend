@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public enum AccommodationCategory {
     HOTEL("호텔"),
-    HOTEL2("호텔2");
+    HANOK("한옥"), ;
     private final String category;
 
     AccommodationCategory(String category) {

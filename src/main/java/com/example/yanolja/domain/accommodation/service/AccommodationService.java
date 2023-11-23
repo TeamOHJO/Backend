@@ -66,7 +66,7 @@ public class AccommodationService {
         for(Accommodation filterd : allAccommodations){
             if (isDomestic != null && filterd.isDomestic() != isDomestic) {
                 continue;
-            }
+            } //todo 체크 안하면 국내 기본
 
             boolean isSuitable = false;
             for (AccommodationRooms room : filterd.getRoomlist()) {
@@ -118,4 +118,5 @@ public class AccommodationService {
         List<Reservations> reservations = reservationRepository.findReservationsByRoomIdAndDate(room.getRoomId(), startDate, endDate);
 
         return reservations.isEmpty();
-    }}
+    }
+}

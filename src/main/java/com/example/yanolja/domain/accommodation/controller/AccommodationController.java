@@ -41,14 +41,14 @@ public class AccommodationController {
         return ResponseEntity.ok(rooms);
     }
 
-    @GetMapping("/보류") //todo 검색 URL
-    public ResponseEntity<List<AccommodationListFindResponse>> searchAccommodationByName(
-            @RequestParam("accommodation_Name") String accommodationName
-    ){
-        List<AccommodationListFindResponse> accommodations = accommodationService.searchAccommodationByName(accommodationName);
-
-        return ResponseEntity.ok(accommodationName);
-    }
+//    @GetMapping("/보류") //todo 검색 URL
+//    public ResponseEntity<List<AccommodationListFindResponse>> searchAccommodationByName(
+//            @RequestParam("accommodation_Name") String accommodationName
+//    ){
+//        List<AccommodationListFindResponse> accommodations = accommodationService.searchAccommodationByName(accommodationName);
+//
+////        return ResponseEntity.ok(accommodationName);
+//    }
 
 
 
