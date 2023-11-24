@@ -1,13 +1,15 @@
 package com.example.yanolja.domain.basket.dto;
 
+import com.example.yanolja.domain.accommodation.entity.Accommodation;
+import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import java.time.LocalDate;
-import java.util.List;
 
 public record GetBasketResponse(
-
+    Long roomId,
     String tag,
+    AccommodationCategory category,
     String roomName,
     String roomInfo,
     LocalDate startDate,
@@ -15,15 +17,17 @@ public record GetBasketResponse(
     String checkInOutExplanation,
     int star,
     int price,
-    List<String> image,
+    String image,
     boolean canReserve
 ) {
 
-    public static GetBasketResponse fromEntity(
-        Reservations reservations, AccommodationRooms rooms, List<String> image,
+    public static GetBasketResponse fromEntity(Accommodation accommodation,
+        Reservations reservations, AccommodationRooms rooms, String image,
         boolean canReserve) {
         return new GetBasketResponse(
+            rooms.getRoomId(),
             rooms.getTag(),
+            accommodation.getCategory(),
             rooms.getName(),
             rooms.getExplanation(),
             reservations.getStartDate(),
