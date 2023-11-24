@@ -58,7 +58,7 @@ public class EmailService {
         message.setFrom(new InternetAddress(setFrom, "Your Name", "UTF-8"));
 
         String htmlContent = "<div style='margin:100px;'>";
-        htmlContent += "<h1>안녕하세요 OH!조 입니다.</h1>";
+        htmlContent += "<h1>안녕하세요 OHNOLZA 입니다.</h1>";
         htmlContent += "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요.</p>";
         htmlContent += "<br>";
         htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
