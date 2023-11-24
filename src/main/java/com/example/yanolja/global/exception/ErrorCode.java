@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     //Reservation
     INVALID_ACCOMMODATION_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 방입니다."),
+    RESERVATION_CONFLICT(HttpStatus.BAD_REQUEST, "예약하려는 시간대에 예약이 존재합니다."),
     //Basket
     DUPLICATED_BASKET_CONTENT(HttpStatus.BAD_REQUEST, "이미 장바구니에 같은 상품이 있습니다."),
 
