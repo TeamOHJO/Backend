@@ -10,6 +10,7 @@ import com.example.yanolja.domain.reservation.dto.CreateReservationResponse;
 import com.example.yanolja.domain.reservation.dto.GetReservationDetailsResponse;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
+import com.example.yanolja.domain.reservation.exception.ReservationConflictException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
@@ -44,11 +45,14 @@ public class ReservationServiceImpl implements ReservationService {
             throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
         });
 
-        //TODO :: 이미해당날짜에 예약이 차있는 경우
-        //TODO :: 이미해당날짜에 예약이 차있는 경우
-        //TODO :: 이미해당날짜에 예약이 차있는 경우
-        //TODO :: 이미해당날짜에 예약이 차있는 경우
-        //TODO :: 이미해당날짜에 예약이 차있는 경우
+        Optional<Reservations> conflictingReservations =
+            reservationRepository.findConflictingReservations(
+                roomId,
+                createReservationRequest.startDate(), createReservationRequest.endDate()
+            );
+        if (conflictingReservations.isPresent()) {
+            throw new ReservationConflictException(ErrorCode.RESERVATION_CONFLICT);
+        }
 
         Reservations reservations =
             reservationRepository.save(
