@@ -48,7 +48,7 @@ public class AccommodationRooms extends BaseTimeEntity {
     @Column(name = "tag", nullable = false)
     private String tag;
 
-    @Column(name = "explanation", nullable = false)
+    @Column(name = "explanation", nullable = false, length = 1500)
     private String explanation;
 
     @Column(name = "serviceInfo")

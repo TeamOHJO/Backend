@@ -33,22 +33,22 @@ public class Accommodation extends BaseTimeEntity {
     @Column(name = "location", nullable = false)
     private String location;
 
-    @Column(name = "tag", nullable = false)
+    @Column(name = "tag")
     private String tag;
 
     @Column(name = "isDomestic", nullable = false)
     private boolean isDomestic;
 
-    @Column(name = "explanation", nullable = false)
+    @Column(name = "explanation", nullable = false, length = 1500)
     private String explanation;
 
-    @Column(name = "cancelInfo", nullable = false)
+    @Column(name = "cancelInfo", nullable = false, length = 1500)
     private String cancelInfo;
 
     @Column(name = "useGuide", nullable = false)
     private String useGuide;
 
-    @Column(name = "reservationNotice", nullable = false)
+    @Column(name = "reservationNotice", nullable = false, length = 1500)
     private String reservationNotice;
 
     @Column(name = "serviceInfo")
