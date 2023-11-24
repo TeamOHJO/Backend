@@ -1,11 +1,11 @@
 ### 리뷰 수정
-PUT http://localhost:8080/review/1
+PUT http://localhost:8080/review/10
 Content-Type: application/json
 
 {
   "userId": 1,
-  "reservationId": 2,
-  "reviewContent": "수정된 리뷰내용",
+  "reservationId": 10,
+  "reviewContent": "수정된 리뷰내용 Test2",
   "image": "updated_image_url",
   "star": 4
 }
