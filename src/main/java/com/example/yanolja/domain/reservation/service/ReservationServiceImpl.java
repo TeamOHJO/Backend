@@ -1,10 +1,13 @@
 package com.example.yanolja.domain.reservation.service;
 
+import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
+import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.dto.CreateReservationResponse;
+import com.example.yanolja.domain.reservation.dto.GetReservationDetailsResponse;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
@@ -27,13 +30,14 @@ public class ReservationServiceImpl implements ReservationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReservationRepository reservationRepository;
+    private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
 
     @Override
     public ResponseDTO<?> createReservation(CreateReservationRequest createReservationRequest,
-        User user, long roomsId) {
+        User user, long roomId) {
 
         Optional<AccommodationRooms> accommodationRooms =
-            accommodationRoomRepository.findById(roomsId);
+            accommodationRoomRepository.findById(roomId);
 
         //roomsId에 해당하는 방이 존재하지 않는 경우
         AccommodationRooms rooms = accommodationRooms.orElseThrow(() -> {
@@ -53,6 +57,25 @@ public class ReservationServiceImpl implements ReservationService {
         return ResponseDTO.res(HttpStatus.CREATED, "예약 성공",
             CreateReservationResponse.fromEntity(user, rooms, reservations));
 
+    }
+
+    @Override
+    public ResponseDTO<?> getReservationDetails(long roomId) {
+
+        Optional<AccommodationRooms> accommodationRooms =
+            accommodationRoomRepository.findById(roomId);
+
+        //roomsId에 해당하는 방이 존재하지 않는 경우
+        AccommodationRooms rooms = accommodationRooms.orElseThrow(() -> {
+            throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
+        });
+
+        AccommodationRoomImages accommodationRoomImages =
+            accommodationRoomImagesRepository.findFirstByAccommodationRoomsRoomId(roomId);
+
+        return ResponseDTO.res(HttpStatus.CREATED, "예약 상세페이지 조회 성공",
+            GetReservationDetailsResponse.fromEntity(rooms.getAccommodation(),
+                rooms, accommodationRoomImages.getImage()));
     }
 }
 
