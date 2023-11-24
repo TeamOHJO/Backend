@@ -39,3 +39,4 @@ out/
 # Ignore .env files
 .env
 /logs/spring-boot-logger.log
+/logs/archived/**

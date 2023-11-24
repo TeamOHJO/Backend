@@ -26,19 +26,35 @@ public class User extends BaseTimeEntity {
 
     private String username;
 
-    //@Column(name = "phonenumber", nullable = false)
-    //private String phonenumber;
+    private String phonenumber;
 
     @Builder
-    public User(String email, String username, String password, String authority,
-        LocalDateTime createdAt, LocalDateTime deletedAt) {
+    public User(String email, String username, String password, String phonenumber,
+        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         this.email = email;
         this.username = username;
         this.password = password;
+        this.phonenumber = phonenumber;
         this.authority = authority;
-        super.createdAt = createdAt;
+        super.updatedAt = updatedAt;
         super.deletedAt = deletedAt;
     }
 
+    @Override
+    public void delete(LocalDateTime currentTime) {
+        super.delete(currentTime);
+    }
+
+    @Override
+    public void restore() {
+        super.restore();
+    }
+
+    public Long getId() {
+        return this.userId;
+    }
+
+
     private String authority;
+
 }

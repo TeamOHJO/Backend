@@ -58,4 +58,5 @@ public class AccommodationRooms extends BaseTimeEntity {
     private String serviceInfo;
 
 
+
 }

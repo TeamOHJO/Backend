@@ -17,4 +17,5 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     List<Accommodation> findByCategoryIn(List<String> categories);
     Page<Accommodation> findAll(Pageable pageable);
 
+
 }

@@ -12,7 +12,7 @@ public class ResponseDTO<T> {
     private final T data;
 
     @Builder
-    ResponseDTO(int code, String message, T data) {
+    private ResponseDTO(int code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;

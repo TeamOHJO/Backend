@@ -1,3 +1,4 @@
+
 package com.example.yanolja.domain.accommodation.entity;
 
 import com.example.yanolja.global.entity.BaseTimeEntity;
@@ -8,24 +9,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class AccommodationRoomImages extends BaseTimeEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "imageId")
-  private String imageId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long imageId;
 
-  @Column(name = "image", nullable = false)
-  private String image;
+    @ManyToOne
+    @JoinColumn(name = "roomId", nullable = false)
+    private AccommodationRooms accommodationRooms;
 
-  @ManyToOne
-  @JoinColumn(name = "roomId", nullable = false)
-  private AccommodationRooms accommodationRooms;
-
+    @Column(name = "image", nullable = false)
+    private String image;
 }

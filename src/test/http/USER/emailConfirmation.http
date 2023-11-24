@@ -1,0 +1,8 @@
+### 이메일 인증번호 전송
+POST http://localhost:8080/user/email/confirmation
+Content-Type: application/json
+
+{
+  "email": "TEST@naver.com"
+
+}

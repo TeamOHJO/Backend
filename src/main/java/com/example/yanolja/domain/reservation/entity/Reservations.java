@@ -3,6 +3,7 @@ package com.example.yanolja.domain.reservation.entity;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.entity.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,8 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,10 +35,13 @@ public class Reservations extends BaseTimeEntity {
     @JoinColumn(name = "roomId", nullable = false)
     private AccommodationRooms roomId;
 
-    @Column(name = "startTime", nullable = false)
+
+    @Column(name = "startDate", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
-    @Column(name = "endTime", nullable = false)
+    @Column(name = "endDate", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     @Column(name = "numberOfPerson", nullable = false)
@@ -45,4 +49,16 @@ public class Reservations extends BaseTimeEntity {
 
     @Column(name = "paymentCompleted", nullable = false)
     private boolean paymentCompleted;
+
+    @Builder
+    public Reservations(
+        User user, AccommodationRooms rooms, LocalDate startDate,
+        LocalDate endDate, int numberOfPerson, boolean paymentCompleted) {
+        this.user = user;
+        this.room = rooms;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.numberOfPerson = numberOfPerson;
+        this.paymentCompleted = paymentCompleted;
+    }
 }
