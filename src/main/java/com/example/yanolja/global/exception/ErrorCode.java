@@ -17,6 +17,8 @@ public enum ErrorCode {
     INVALID_ACCOMMODATION_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 방입니다."),
     //Basket
     DUPLICATED_BASKET_CONTENT(HttpStatus.BAD_REQUEST, "이미 장바구니에 같은 상품이 있습니다."),
+    //Review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
 
 
     // 5xx

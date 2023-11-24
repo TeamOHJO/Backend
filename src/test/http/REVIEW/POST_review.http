@@ -3,8 +3,8 @@ POST http://localhost:8080/review/1
 Content-Type: application/json
 
 {
-  "userId": 123,
-  "reservationId": 456,
+  "userId": 1,
+  "reservationId": 1,
   "reviewContent": "이것은 샘플 리뷰입니다.",
   "image": "image_url",
   "star": 5

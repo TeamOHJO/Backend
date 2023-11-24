@@ -12,12 +12,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Data
+@Builder
+@AllArgsConstructor
 public class Review extends BaseTimeEntity {
 
     @Id
@@ -45,5 +51,9 @@ public class Review extends BaseTimeEntity {
 
     @Column(name = "star", nullable = false)
     private int star;
+
+    private boolean active;
+
+
 }
 
