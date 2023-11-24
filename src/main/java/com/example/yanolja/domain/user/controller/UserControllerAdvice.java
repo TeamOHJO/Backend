@@ -3,6 +3,7 @@ package com.example.yanolja.domain.user.controller;
 import com.example.yanolja.domain.user.exception.EmailDuplicateError;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
+import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class UserControllerAdvice {
     public ResponseEntity<ResponseDTO<Object>> handleInvalidEmailException(
         InvalidEmailException exception
     ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ResponseDTO.res(HttpStatus.BAD_REQUEST,
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(
+            ResponseDTO.res(HttpStatus.PRECONDITION_FAILED,
                 exception.getMessage()));
     }
 
@@ -40,8 +41,19 @@ public class UserControllerAdvice {
     public ResponseEntity<ResponseDTO<Object>> handlePhonenumberException(
         InvalidPhonenumberError exception
     ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ResponseDTO.res(HttpStatus.BAD_REQUEST,
+        return ResponseEntity.status(HttpStatus.LENGTH_REQUIRED).body(
+            ResponseDTO.res(HttpStatus.LENGTH_REQUIRED,
                 exception.getMessage()));
     }
+
+    @ExceptionHandler(value = {
+        UserNotFoundException.class
+    })
+    public ResponseEntity<ResponseDTO<Object>> handleUserNotFoundException(
+        UserNotFoundException exception
+    ) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ResponseDTO.res(HttpStatus.NOT_FOUND, exception.getMessage()));
+    }
 }
+
