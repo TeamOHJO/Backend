@@ -20,8 +20,12 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
 
 
+    //ACCOMODATIONLIKES
+    INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "잘못된 사용자 ID 또는 숙소 ID입니다."),
+
     // 5xx
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 에러");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 에러"),
+    ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "숙소를 찾을 수 없습니다.");
 
     private HttpStatus httpStatus;
     private String message;
