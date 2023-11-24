@@ -29,25 +29,27 @@ public class ReviewController {
     public ResponseEntity<ResponseDTO<ReviewResponse>> createReview(@PathVariable Long roomId,
         @Valid @RequestBody ReviewCreateRequest request) {
         ReviewResponse reviewResponse = reviewService.createReview(roomId, request);
-        return new ResponseEntity<>(
-            ResponseDTO.res(HttpStatus.CREATED, "리뷰가 성공적으로 생성되었습니다.", reviewResponse),
-            HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ResponseDTO.res(HttpStatus.CREATED, "리뷰가 성공적으로 생성되었습니다.", reviewResponse));
     }
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<ResponseDTO<ReviewResponse>> getReview(@PathVariable Long reviewId) {
-
+        ReviewResponse reviewResponse = reviewService.getReview(reviewId);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰 조회 성공", reviewResponse));
     }
 
     @PutMapping("/{reviewId}")
     public ResponseEntity<ResponseDTO<ReviewResponse>> updateReview(@PathVariable Long reviewId, @Valid @RequestBody
         ReviewUpdateRequest request) {
-
+        ReviewResponse reviewResponse = reviewService.updateReview(reviewId, request);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰 업데이트 성공", reviewResponse));
     }
 
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<HttpStatus> deleteReview(@PathVariable Long reviewId) {
-
+        reviewService.deleteReview(reviewId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
