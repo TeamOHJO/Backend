@@ -10,12 +10,14 @@ import com.example.yanolja.domain.reservation.dto.CreateReservationResponse;
 import com.example.yanolja.domain.reservation.dto.GetReservationDetailsResponse;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
+import com.example.yanolja.domain.reservation.exception.InvalidCancelReservationRequestException;
 import com.example.yanolja.domain.reservation.exception.ReservationConflictException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -80,6 +82,22 @@ public class ReservationServiceImpl implements ReservationService {
         return ResponseDTO.res(HttpStatus.CREATED, "예약 상세페이지 조회 성공",
             GetReservationDetailsResponse.fromEntity(rooms.getAccommodation(),
                 rooms, accommodationRoomImages.getImage()));
+    }
+
+    @Override
+    public ResponseDTO<?> cancelReservation(User user, long reservationId) {
+
+        Reservations reservation =
+            reservationRepository.findByIdAndDeletedAt(reservationId).orElseThrow(() -> {
+                throw new
+                    InvalidCancelReservationRequestException
+                    (ErrorCode.INVALID_CANCEL_RESERVATION_REQUEST);
+            });
+
+        reservation.delete(LocalDateTime.now());
+        reservationRepository.save(reservation);
+
+        return ResponseDTO.res(HttpStatus.OK, "예약 취소 완료");
     }
 }
 

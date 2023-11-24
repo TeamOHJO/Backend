@@ -24,4 +24,7 @@ public interface ReservationRepository
     Optional<Reservations> findConflictingReservations(@Param("roomId") Long roomId,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT r FROM Reservations r WHERE r.reservationId = :id AND (r.deletedAt IS NULL)")
+    Optional<Reservations> findByIdAndDeletedAt(@Param("id") Long id);
 }
