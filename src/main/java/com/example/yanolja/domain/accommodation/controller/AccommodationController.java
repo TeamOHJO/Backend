@@ -3,8 +3,10 @@ package com.example.yanolja.domain.accommodation.controller;
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.service.AccommodationService;
 import com.example.yanolja.global.util.ResponseDTO;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,75 +23,41 @@ public class AccommodationController {
     private final AccommodationService accommodationService;
 
     @GetMapping
-    public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAllAccommodation(){
-        List<AccommodationFindResponse> accomodations = accommodationService.getAllAccommodation();
-
-        ResponseDTO<List<AccommodationFindResponse>> response = ResponseDTO.<List<AccommodationFindResponse>>builder()
-            .code(HttpStatus.OK.value())
-            .message("숙박 전체 조회 성공")
-            .data(accomodations)
-            .build();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAllAccommodation(
+        @PageableDefault(size = 16) Pageable pageable) {
+        Page<AccommodationFindResponse> accommodations = accommodationService.getAllAccommodation(pageable);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "전체 숙소 목록 조회 성공", accommodations));
     }
 
-
-    @GetMapping("/default")
-    public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getDefaultAccommodations() {
-        List<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByCategoryAndDomestic("HOTEL", true);
-
-        ResponseDTO<List<AccommodationFindResponse>> response = ResponseDTO.<List<AccommodationFindResponse>>builder()
-            .code(HttpStatus.OK.value())
-            .message("디폴트 숙박 조회 성공")
-            .data(accommodations)
-            .build();
-        return ResponseEntity.ok(response);
-    }
-
-
-    @GetMapping("/{accommodation_Id}")
+    @GetMapping("/{accommodationId}")
     public ResponseEntity<ResponseDTO<AccommodationFindResponse>> getAccommodationById(
-            @PathVariable(name = "accommodation_Id") Long accommodationId
-    ){
+        @PathVariable Long accommodationId) {
         AccommodationFindResponse accommodation = accommodationService.getAccommodationById(accommodationId);
-
-        ResponseDTO<AccommodationFindResponse> response = ResponseDTO.<AccommodationFindResponse>builder()
-            .code(HttpStatus.OK.value())
-            .message("ID로 숙박 조회 성공")
-            .data(accommodation)
-            .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "ID로 숙소 조회 성공", accommodation));
     }
-
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAccommodationsByCategory(
-        @PathVariable("category") String category) {
-        List<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByCategory(category);
-
-
-        ResponseDTO<List<AccommodationFindResponse>> response = ResponseDTO.<List<AccommodationFindResponse>>builder()
-            .code(HttpStatus.OK.value())
-            .message("카테고리별로 숙박 조회 성공")
-            .data(accommodations)
-            .build();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAccommodationsByCategory(
+        @PathVariable String category, @PageableDefault(size = 16) Pageable pageable) {
+        Page<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByCategory(category, pageable);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "카테고리별 숙소 조회 성공", accommodations));
     }
-
 
     @GetMapping("/domestic")
-    public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAccommodationsByDomestic(
-        @RequestParam("isDomestic") boolean isDomestic) {
-        List<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByDomestic(isDomestic);
-
-        ResponseDTO<List<AccommodationFindResponse>> response = ResponseDTO.<List<AccommodationFindResponse>>builder()
-            .code(HttpStatus.OK.value())
-            .message("국내/국외별로 숙박 조회 성공")
-            .data(accommodations)
-            .build();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAccommodationsByDomestic(
+        @RequestParam boolean isDomestic, @PageableDefault(size = 16) Pageable pageable) {
+        Page<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByDomestic(isDomestic, pageable);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "국내/국외별 숙소 조회 성공", accommodations));
     }
 
-
+    @GetMapping("/category/{category}/domestic")
+    public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAccommodationsByCategoryAndDomestic(
+        @PathVariable String category,
+        @RequestParam boolean isDomestic,
+        @PageableDefault(size = 16) Pageable pageable) {
+        Page<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByCategoryAndDomestic(category, isDomestic, pageable);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "카테고리와 국내/국외별 숙소 조회 성공", accommodations));
+    }
 
 
 }
