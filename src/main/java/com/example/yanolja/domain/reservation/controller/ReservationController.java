@@ -36,7 +36,7 @@ public class ReservationController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping("/details/{roomId}")
+    @GetMapping("/details/rooms/{roomId}")
     public ResponseEntity<ResponseDTO<?>> getReservationDetails(
         @PathVariable long roomId) {
 
