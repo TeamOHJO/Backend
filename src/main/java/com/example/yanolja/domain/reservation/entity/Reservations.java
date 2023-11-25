@@ -66,4 +66,8 @@ public class Reservations extends BaseTimeEntity {
     public void delete(LocalDateTime currentTime) {
         super.delete(currentTime);
     }
+
+    public void createReservationInBasket() {
+        this.paymentCompleted = true;
+    }
 }
