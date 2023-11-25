@@ -1,0 +1,23 @@
+GET http://localhost:8080/user/test
+
+###
+
+GET http://localhost:8080/accommodation
+###
+
+GET http://localhost:8080/accommodation/default
+###
+
+GET http://localhost:8080/accommodation/1
+###
+
+GET http://localhost:8080/accommodation/2
+
+###
+GET http://localhost:8080/accommodation/2/1
+
+###
+GET http://localhost:8080/accommodation/category/HOTEL
+
+###
+GET http://localhost:8080/accommodation/domestic?isDomestic=true
