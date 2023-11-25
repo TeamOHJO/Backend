@@ -76,6 +76,22 @@ public class ReviewServiceImpl implements ReviewService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public List<RoomReviewResponse> getReviewsByRoomId(Long roomId) {
+        return reviewRepository.findByRoom_RoomId(roomId).stream()
+            .map(review -> new RoomReviewResponse(
+                review.getReviewId(),
+                review.getRoom().getRoomId(),
+                review.getUser().getUsername(),
+                review.getRoom().getName(),
+                review.getRoom().getAccommodation().getCategory(),
+                review.getReviewContent(),
+                review.getImage(),
+                review.getStar(),
+                review.getUpdatedAt()))
+            .collect(Collectors.toList());
+    }
+
 //    @Override
 //    @Transactional
 //    public RoomReviewResponse updateReview(Long reviewId, ReviewUpdateRequest request) {

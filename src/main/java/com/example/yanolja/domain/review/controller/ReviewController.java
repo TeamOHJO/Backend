@@ -28,18 +28,20 @@ public class ReviewController {
 //            .body(ResponseDTO.res(HttpStatus.CREATED, "리뷰가 성공적으로 생성되었습니다.", reviewResponse));
 //    }
 
-//    @GetMapping("/room/{roomId}")
-//    public ResponseEntity<List<RoomReviewResponse>> getReviewsByRoomId(@PathVariable Long roomId) {
-//        List<RoomReviewResponse> reviews = reviewService.getReviewsByRoomId(roomId);
-//        return ResponseEntity.ok(reviews);
-//    }
 
     @GetMapping("/accommodation/{accommodationId}")
     public ResponseEntity<ResponseDTO<List<AccommodationReviewResponse>>> getReviewsByAccommodationId(
         @PathVariable Long accommodationId) {
         List<AccommodationReviewResponse> reviews = reviewService.getReviewsByAccommodationId(
             accommodationId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, reviews));
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "조회 성공", reviews));
+    }
+
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<ResponseDTO<List<RoomReviewResponse>>> getReviewsByRoomId(
+        @PathVariable Long roomId) {
+        List<RoomReviewResponse> reviews = reviewService.getReviewsByRoomId(roomId);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "조회 성공", reviews));
     }
 
 //    @PutMapping("/{reviewId}")

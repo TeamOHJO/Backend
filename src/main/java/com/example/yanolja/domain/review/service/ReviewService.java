@@ -8,6 +8,7 @@ public interface ReviewService {
 
     //    RoomReviewResponse createReview(Long roomId, ReviewCreateRequest request);
     List<AccommodationReviewResponse> getReviewsByAccommodationId(Long accommodationId);
+    List<RoomReviewResponse> getReviewsByRoomId(Long roomId);
 
     //    RoomReviewResponse updateReview(Long reviewId, ReviewUpdateRequest request);
     //    void deleteReview(Long reviewId);
