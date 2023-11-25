@@ -24,7 +24,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/{roomId}")
+    @PostMapping("/rooms/{roomId}")
     public ResponseEntity<ResponseDTO<?>> createReservation(
         @PathVariable long roomId,
         @AuthenticationPrincipal PrincipalDetails principalDetails,

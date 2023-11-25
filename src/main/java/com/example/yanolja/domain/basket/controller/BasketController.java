@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class BasketController {
     private final BasketService basketService;
 
     //장바구니 추가
-    @PostMapping("/{roomsId}")
+    @PostMapping("/rooms/{roomsId}")
     public ResponseEntity<ResponseDTO<?>> addBasket(
         @PathVariable long roomsId,
         @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -46,4 +47,14 @@ public class BasketController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
+    //장바구니 삭제
+    @DeleteMapping("/{basketId}")
+    public ResponseEntity<ResponseDTO<?>> deleteBasket(
+        @PathVariable long basketId,
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+
+        ResponseDTO<?> response = basketService.deleteBasket(user, basketId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }

@@ -11,4 +11,6 @@ public interface BasketService {
         long roomsId);
 
     ResponseDTO<?> getBasket(User user);
+
+    ResponseDTO<?> deleteBasket(User user, long basketId);
 }
