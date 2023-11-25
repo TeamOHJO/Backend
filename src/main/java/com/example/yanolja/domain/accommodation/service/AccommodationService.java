@@ -8,9 +8,10 @@ import com.example.yanolja.domain.accommodation.repository.AccommodationImageRep
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -23,14 +24,13 @@ public class AccommodationService {
 
 
 
-    @Transactional  //모든 숙소 목록 조회
-    public List<AccommodationFindResponse> getAllAccommodation(){
-        List<Accommodation> foundAccommodationList = accommodationRepository.findAll();
-        return listToResponse(foundAccommodationList);
+    @Transactional
+    public Page<AccommodationFindResponse> getAllAccommodation(Pageable pageable){
+        Page<Accommodation> accommodations = accommodationRepository.findAll(pageable);
+        return accommodations.map(this::convertToAccommodationFindResponse);
     }
 
 
-    @Transactional  //특정 ID 숙소 조회
     public AccommodationFindResponse getAccommodationById(Long accommodationId){
         Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow();
@@ -39,27 +39,24 @@ public class AccommodationService {
         return AccommodationFindResponse.fromEntity(foundAccommodation, imageList);
     }
 
-
-    @Transactional  //카테고리별 숙소 조회
-    public List<AccommodationFindResponse> getAccommodationsByCategory(String categoryStr) {
+    @Transactional
+    public Page<AccommodationFindResponse> getAccommodationsByCategory(String categoryStr, Pageable pageable) {
         AccommodationCategory category = AccommodationCategory.valueOf(categoryStr.toUpperCase());
-
-        List<Accommodation> accommodations = accommodationRepository.findByCategory(category);
-
-        return listToResponse(accommodations);
+        Page<Accommodation> accommodations = accommodationRepository.findByCategory(category, pageable);
+        return accommodations.map(this::convertToAccommodationFindResponse);
     }
 
-    @Transactional  //국내/국외별 숙소 조회
-    public List<AccommodationFindResponse> getAccommodationsByDomestic(boolean isDomestic) {
-        List<Accommodation> accommodations = accommodationRepository.findByIsDomestic(isDomestic);
-        return listToResponse(accommodations);
+    @Transactional
+    public Page<AccommodationFindResponse> getAccommodationsByDomestic(boolean isDomestic, Pageable pageable) {
+        Page<Accommodation> accommodations = accommodationRepository.findByIsDomestic(isDomestic, pageable);
+        return accommodations.map(this::convertToAccommodationFindResponse);
     }
 
-    @Transactional  //디폴트(한옥, 국내) 페이지 조회
-    public List<AccommodationFindResponse> getAccommodationsByCategoryAndDomestic(String categoryStr, boolean isDomestic) {
+    @Transactional
+    public Page<AccommodationFindResponse> getAccommodationsByCategoryAndDomestic(String categoryStr, boolean isDomestic, Pageable pageable) {
         AccommodationCategory category = AccommodationCategory.valueOf(categoryStr.toUpperCase());
-        List<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(category, isDomestic);
-        return listToResponse(accommodations);
+        Page<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(category, isDomestic, pageable);
+        return accommodations.map(this::convertToAccommodationFindResponse);
     }
 
     //숙소 별 이미지 리스트(String) 조회 모듈
@@ -73,33 +70,25 @@ public class AccommodationService {
     }
 
 
-    private List<AccommodationFindResponse> listToResponse(List<Accommodation> accommodationList){
-        List<AccommodationFindResponse> responseList = new ArrayList<>();
-        for(Accommodation found : accommodationList){
-            List<String> imageList = getImagesForAccommodation(found.getAccommodationId());
-            List<String> serviceList = Arrays.asList(found.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
+    // Accommodation 엔티티를 AccommodationFindResponse DTO로 변환
+    private AccommodationFindResponse convertToAccommodationFindResponse(Accommodation accommodation) {
+        List<String> imageList = getImagesForAccommodation(accommodation.getAccommodationId());
+        List<String> serviceList = List.of(accommodation.getServiceInfo().split(","));
 
-
-            AccommodationFindResponse accommodatonListFindResponse = AccommodationFindResponse.builder()
-                    .accommodationId(found.getAccommodationId())
-                    .accommodationId(found.getAccommodationId())
-                    .accommodationName(found.getAccommodationName())
-                    .location(found.getLocation())
-                    .tag(found.getTag())
-                    .isDomestic(found.isDomestic())
-                    .explanation(found.getExplanation())
-                    .cancelInfo(found.getCancelInfo())
-                    .useGuide(found.getUseGuide())
-                    .reservationNotice(found.getReservationNotice())
-                    .serviceInfoList(serviceList)
-                    .accommodationImageList(imageList)
-                    .build();
-
-            responseList.add(accommodatonListFindResponse);
-        }
-        return responseList;
+        return AccommodationFindResponse.builder()
+            .accommodationId(accommodation.getAccommodationId())
+            .category(accommodation.getCategory())
+            .accommodationName(accommodation.getAccommodationName())
+            .location(accommodation.getLocation())
+            .tag(accommodation.getTag())
+            .isDomestic(accommodation.isDomestic())
+            .explanation(accommodation.getExplanation())
+            .cancelInfo(accommodation.getCancelInfo())
+            .useGuide(accommodation.getUseGuide())
+            .reservationNotice(accommodation.getReservationNotice())
+            .serviceInfoList(serviceList)
+            .accommodationImageList(imageList)
+            .build();
     }
-
-
 
 }
