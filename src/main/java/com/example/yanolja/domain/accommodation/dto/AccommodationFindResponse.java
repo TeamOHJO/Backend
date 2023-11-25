@@ -2,37 +2,28 @@ package com.example.yanolja.domain.accommodation.dto;
 
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
+import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class AccommodationFindResponse {
 
     private Long accommodationId;
-
     private AccommodationCategory category;
-
     private String accommodationName;
-
     private String location;
-
     private String tag;
-
     private boolean isDomestic;
-
     private String explanation;
-
     private String cancelInfo;
-
     private String useGuide;
-
     private String reservationNotice;
-
     private String serviceInfo;
+    private List<String> serviceInfoList;
+    private List<String> accommodationImageList;
 
 
     private boolean isBookable; // 예약 가능 여부
@@ -43,7 +34,7 @@ public class AccommodationFindResponse {
     public AccommodationFindResponse(
             Long accommodationId, AccommodationCategory category, String accommodationName,
             String location, String tag, boolean isDomestic, String explanation, String cancelInfo,
-            String useGuide, String reservationNotice, String serviceInfo)
+            String useGuide, String reservationNotice, String serviceInfo, List<String> serviceInfoList, List<String> accommodationImageList)
     {
         this.accommodationId = accommodationId;
         this.category = category;
@@ -56,10 +47,12 @@ public class AccommodationFindResponse {
         this.useGuide = useGuide;
         this.reservationNotice = reservationNotice;
         this.serviceInfo = serviceInfo;
+        this.serviceInfoList = serviceInfoList;
+        this.accommodationImageList = accommodationImageList;
     }
 
 
-    public static AccommodationFindResponse fromEntity(Accommodation accommodation){
+    public static AccommodationFindResponse fromEntity(Accommodation accommodation, List<String> imageList){
 
 
         List<String> serviceList = Arrays.asList(accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
@@ -75,7 +68,8 @@ public class AccommodationFindResponse {
                 .cancelInfo(accommodation.getCancelInfo())
                 .useGuide(accommodation.getUseGuide())
                 .reservationNotice(accommodation.getReservationNotice())
-                .serviceInfo(accommodation.getServiceInfo())
+                .serviceInfoList(serviceList)
+                .accommodationImageList(imageList)
                 .build();
     }
 

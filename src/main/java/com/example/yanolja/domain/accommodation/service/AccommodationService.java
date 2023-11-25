@@ -3,17 +3,17 @@ package com.example.yanolja.domain.accommodation.service;
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.dto.RoomsFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
+import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
+import com.example.yanolja.domain.accommodation.exception.AccommodationNotFoundException;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomsRepository;
-import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +27,10 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationRoomsRepository accommodationRoomsRepository;
     private final ReservationRepository reservationRepository;
-    private AccommodationImageRepository accommodationImageRepository;
-    private AccommodationRoomImageRepository accommodationRoomImageRepository;
+    private final AccommodationImageRepository accommodationImageRepository;
+    private final AccommodationRoomImageRepository accommodationRoomImageRepository;
 
-
+/*
     @Transactional  //필터 조건에 맞춰 숙소 리스트 조회
     public List<AccommodationFindResponse> searchAccommodationsWithFilters(
         List<String> categories, Boolean isDomestic, LocalDate startDate, LocalDate endDate, Integer numberOfPerson) {
@@ -132,7 +132,7 @@ public class AccommodationService {
 
     @Transactional// 방이 주어진 날짜에 예약 가능한지 확인
     public boolean isRoomAvailableForDateRange(AccommodationRooms room, LocalDate startDate, LocalDate endDate) {
-        List<Reservations> reservations = reservationRepository.findByRoomId(room.getRoomId());
+        List<Reservations> reservations = reservationRepository.findByAccommodations_RoomId(room.getRoomId());
 
         for (Reservations reservation : reservations) {
             if (startDate != null && reservation.getEndDate().isBefore(startDate)) {
@@ -155,7 +155,7 @@ public class AccommodationService {
             }
         }
         return false;
-    }
+    }*/
 
 
     @Transactional  //모든 숙소 목록 조회
@@ -169,9 +169,35 @@ public class AccommodationService {
     public AccommodationFindResponse getAccommodationById(Long accommodationId){
         Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow(); //todo 각종 예외처리 미완성
-        return AccommodationFindResponse.fromEntity(foundAccommodation);
+
+        List<String> imageList = getImagesForAccommodation(accommodationId);
+        return AccommodationFindResponse.fromEntity(foundAccommodation, imageList);
     }
 
+    private List<String> getImagesForAccommodation(Long accommodationId) {
+        List<AccommodationImages> images = accommodationImageRepository.findByAccommodation_AccommodationId(accommodationId);
+        List<String> imageList = new ArrayList<>();
+        for (AccommodationImages image : images) {
+            imageList.add(image.getImage());
+        }
+        return imageList;
+    }
+    private List<String> getImagesForAccommodationRoom(Long RoomId) {
+        List<AccommodationRoomImages> images = accommodationRoomImageRepository.findByAccommodationRooms_RoomId(RoomId);
+        List<String> imageList = new ArrayList<>();
+        for (AccommodationRoomImages image : images) {
+            imageList.add(image.getImage());
+        }
+        return imageList;
+    }
+
+    @Transactional
+    public List<AccommodationFindResponse> getAccommodationsByCategory(String categoryStr) {
+        AccommodationCategory category = AccommodationCategory.valueOf(categoryStr.toUpperCase());
+
+        List<Accommodation> accommodations = accommodationRepository.findByCategory(category);
+        return listToResponse(accommodations);
+    }
 
     @Transactional  //특정 숙소의 모든 방정보 조회
     public List<RoomsFindResponse> getRoomsByAccommodationId(Long accommodationId){
@@ -187,20 +213,6 @@ public class AccommodationService {
         return roomFindResponses;
     }
 
-
-    @Transactional // 주어진 날짜에 예약가능한 숙소 목록 조회
-    public List<RoomsFindResponse> getAvailableAccommodationForDate(Accommodation accommodation, LocalDate startDate, LocalDate endDate) {
-        List<RoomsFindResponse> availableRooms = new ArrayList<>();
-
-        for (AccommodationRooms room : accommodation.getRoomlist()) {
-            if (isRoomAvailableForDateRange(room, startDate, endDate)) {
-                availableRooms.add(RoomsFindResponse.fromEntity(room));
-            }
-        }
-        return availableRooms;
-    }
-
-
     @Transactional
     public List<RoomsFindResponse> findAllRoomsInAccommodations(List<AccommodationFindResponse> accommodations) {
         List<RoomsFindResponse> allRooms = new ArrayList<>();
@@ -214,45 +226,6 @@ public class AccommodationService {
         }
         return allRooms;
     }
-
-
-    @Transactional  //숙소 ID로 이미지 조회
-    public List<String> getImagesByAccommodationId(Long accommodationId) {
-        List<AccommodationImages> images = accommodationImageRepository.findByAccommodationId(accommodationId);
-        List<String> imageUrls = new ArrayList<>();
-
-        for (AccommodationImages image : images) {
-            imageUrls.add(image.getImage());
-        }
-
-        return imageUrls;
-    }
-
-
-    @Transactional  //방 ID로 이미지 조회
-    public List<String> getImagesByRoomId(Long roomId) {
-        List<AccommodationRoomImages> images = accommodationRoomImageRepository.findByRoomId(roomId);
-        List<String> imageUrls = new ArrayList<>();
-
-        for (AccommodationRoomImages image : images) {
-            imageUrls.add(image.getImage());
-        }
-        return imageUrls;
-    }
-
-//todo 예약여부, 별점평균, 좋아요 포함  메서드 구현?
- /*   private boolean isBookable(Long accommodationId) {
-        // 예약 가능 여부 조회 로직
-    }
-
-    private float getAverageReviewScore(Long accommodationId) {
-        // 리뷰 평균 점수 조회 로직
-    }
-
-    private boolean getLikeStatus(Long accommodationId) {
-        // 좋아요 여부 조회 로직
-    }*/
-
 
     private List<AccommodationFindResponse> listToResponse(List<Accommodation> accommodationList){
         List<AccommodationFindResponse> responseList = new ArrayList<>();

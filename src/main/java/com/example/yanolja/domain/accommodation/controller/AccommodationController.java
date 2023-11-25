@@ -2,12 +2,10 @@ package com.example.yanolja.domain.accommodation.controller;
 
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.dto.RoomsFindResponse;
+import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.service.AccommodationService;
 import com.example.yanolja.global.util.ResponseDTO;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/accomodation")
+@RequestMapping("/accommodation")
 public class AccommodationController {
 
-    private AccommodationService accommodationService;
+    private final AccommodationService accommodationService;
 
     @GetMapping
     public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAllAccommodation(){
@@ -48,6 +46,21 @@ public class AccommodationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAccommodationsByCategory(
+        @PathVariable("category") String category) {
+        List<AccommodationFindResponse> accommodations = accommodationService.getAccommodationsByCategory(category);
+
+
+        ResponseDTO<List<AccommodationFindResponse>> response = ResponseDTO.<List<AccommodationFindResponse>>builder()
+            .code(HttpStatus.OK.value())
+            .message("Category based accommodation fetch successful")
+            .data(accommodations)
+            .build();
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @GetMapping("/{accommodation_Id}/{roomid}")
     public ResponseEntity<ResponseDTO<List<RoomsFindResponse>>> getRoomsByAccommodationId(
@@ -62,7 +75,7 @@ public class AccommodationController {
         return ResponseEntity.ok(response);
     }
 
-
+/*
     @GetMapping("/search")
     public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> searchAccommodations(
         @RequestParam(required = false) List<String> categories,
@@ -79,33 +92,9 @@ public class AccommodationController {
             .data(accommodations)
             .build();
         return ResponseEntity.ok(response);
-    }
+    }*/
 
 
-    @GetMapping("/{accommodationId}/images")
-    public ResponseEntity<ResponseDTO<List<String>>> getImagesByAccommodationId(@PathVariable Long accommodationId) {
-        List<String> images = accommodationService.getImagesByAccommodationId(accommodationId);
-
-        ResponseDTO<List<String>> response = ResponseDTO.<List<String>>builder()
-            .code(HttpStatus.OK.value())
-            .message("숙박 이미지 조회 성공")
-            .data(images)
-            .build();
-        return ResponseEntity.ok(response);
-    }
-
-
-    @GetMapping("/{roomId}/images")
-    public ResponseEntity<ResponseDTO<List<String>>> getImageByRoomId(@PathVariable Long roomId){
-        List<String> images = accommodationService.getImagesByRoomId(roomId);
-
-        ResponseDTO<List<String>> response = ResponseDTO.<List<String>>builder()
-            .code(HttpStatus.OK.value())
-            .message("방 이미지 조회 성공")
-            .data(images)
-            .build();
-        return ResponseEntity.ok(response);
-    }
 
 
 }

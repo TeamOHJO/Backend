@@ -9,6 +9,6 @@ import org.yaml.snakeyaml.events.Event.ID;
 @Repository
 public interface AccommodationImageRepository extends JpaRepository<AccommodationImages, ID> {
 
+  List<AccommodationImages> findByAccommodation_AccommodationId(Long accommodationId);
 
-  List<AccommodationImages> findByAccommodationId(Long accommodationId);
 }
