@@ -3,10 +3,12 @@ package com.example.yanolja.domain.basket.dto;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
+import com.example.yanolja.domain.basket.entity.Basket;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import java.time.LocalDate;
 
 public record GetBasketResponse(
+    Long basketId,
     Long roomId,
     String tag,
     AccommodationCategory category,
@@ -21,10 +23,11 @@ public record GetBasketResponse(
     boolean canReserve
 ) {
 
-    public static GetBasketResponse fromEntity(Accommodation accommodation,
+    public static GetBasketResponse fromEntity(Basket basket, Accommodation accommodation,
         Reservations reservations, AccommodationRooms rooms, String image,
         boolean canReserve) {
         return new GetBasketResponse(
+            basket.getBasketId(),
             rooms.getRoomId(),
             rooms.getTag(),
             accommodation.getCategory(),

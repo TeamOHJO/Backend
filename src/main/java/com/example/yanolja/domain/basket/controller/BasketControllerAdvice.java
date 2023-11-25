@@ -1,6 +1,7 @@
 package com.example.yanolja.domain.basket.controller;
 
 import com.example.yanolja.domain.basket.error.DuplicatedBasketException;
+import com.example.yanolja.domain.basket.error.InvalidBasketIdException;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,17 @@ public class BasketControllerAdvice {
     })
     public ResponseEntity<ResponseDTO<Object>> handleDuplicatedBasketException(
         DuplicatedBasketException exception
+    ) {
+        return ResponseEntity.status(exception.getErrorCode().getHttpStatus()).body(
+            ResponseDTO.res(exception.getErrorCode().getHttpStatus(),
+                exception.getMessage()));
+    }
+
+    @ExceptionHandler(value = {
+        InvalidBasketIdException.class
+    })
+    public ResponseEntity<ResponseDTO<Object>> handleInvalidBasketIdException(
+        InvalidBasketIdException exception
     ) {
         return ResponseEntity.status(exception.getErrorCode().getHttpStatus()).body(
             ResponseDTO.res(exception.getErrorCode().getHttpStatus(),

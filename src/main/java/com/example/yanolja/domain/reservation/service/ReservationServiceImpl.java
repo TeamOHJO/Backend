@@ -79,7 +79,7 @@ public class ReservationServiceImpl implements ReservationService {
         AccommodationRoomImages accommodationRoomImages =
             accommodationRoomImagesRepository.findFirstByAccommodationRoomsRoomId(roomId);
 
-        return ResponseDTO.res(HttpStatus.CREATED, "예약 상세페이지 조회 성공",
+        return ResponseDTO.res(HttpStatus.OK, "예약 상세페이지 조회 성공",
             GetReservationDetailsResponse.fromEntity(rooms.getAccommodation(),
                 rooms, accommodationRoomImages.getImage()));
     }
@@ -97,7 +97,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.delete(LocalDateTime.now());
         reservationRepository.save(reservation);
 
-        return ResponseDTO.res(HttpStatus.OK, "예약 취소 완료");
+        return ResponseDTO.res(HttpStatus.NO_CONTENT, "예약 취소 완료");
     }
 }
 
