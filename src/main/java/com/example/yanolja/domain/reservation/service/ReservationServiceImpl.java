@@ -5,6 +5,7 @@ import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
+import com.example.yanolja.domain.basket.repository.BasketRepository;
 import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.dto.CreateReservationResponse;
 import com.example.yanolja.domain.reservation.dto.GetReservationDetailsResponse;
@@ -34,6 +35,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReservationRepository reservationRepository;
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
+    private final BasketRepository basketRepository;
 
     @Override
     public ResponseDTO<?> createReservation(CreateReservationRequest createReservationRequest,
@@ -47,6 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
         });
 
+        //예약 충돌체크
         Optional<Reservations> conflictingReservations =
             reservationRepository.findConflictingReservations(
                 roomId,
@@ -56,13 +59,36 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationConflictException(ErrorCode.RESERVATION_CONFLICT);
         }
 
-        Reservations reservations =
-            reservationRepository.save(
-                createReservationRequest.toEntity(user, rooms, true));
+        //장바구니에 있는 상품을 예약하는것인지, 바로 예약을 하는건지 체크
+        Optional<Reservations> reservationsInBasket =
+            reservationRepository.findByUserIdAndRoomRoomIdAndStartDateAndEndDateAndPaymentCompleted(
+                user.getUserId(), roomId, createReservationRequest.startDate(),
+                createReservationRequest.endDate(), false
+            );
 
-        return ResponseDTO.res(HttpStatus.CREATED, "예약 성공",
-            CreateReservationResponse.fromEntity(user, rooms, reservations));
+        //장바구니에 있던 상품이라면 reseravtion테이블에 paymentCompleted만 변경해주면 된다.
+        if (reservationsInBasket.isPresent()) {
+            Reservations reservationInBasket = reservationsInBasket.get();
+            reservationInBasket.createReservationInBasket();
+            reservationRepository.save(reservationInBasket);
 
+            //결제가 완료된 상품이기에 장바구니에서 삭제
+            basketRepository.delete(
+                basketRepository.findByReservationReservationId(
+                    reservationInBasket.getReservationId())
+            );
+
+            return ResponseDTO.res(HttpStatus.CREATED, "예약 성공",
+                CreateReservationResponse.fromEntity(user, rooms, reservationInBasket));
+
+        } else {
+            Reservations reservations =
+                reservationRepository.save(
+                    createReservationRequest.toEntity(user, rooms, true));
+
+            return ResponseDTO.res(HttpStatus.CREATED, "예약 성공",
+                CreateReservationResponse.fromEntity(user, rooms, reservations));
+        }
     }
 
     @Override
