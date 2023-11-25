@@ -1,0 +1,2 @@
+GET http://localhost:8080/reservation/details/rooms/1
+Content-Type: application/json
