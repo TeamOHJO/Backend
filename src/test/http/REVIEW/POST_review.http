@@ -1,11 +1,12 @@
 ### 리뷰 생성
-POST http://localhost:8080/review/1
+POST http://localhost:8080/review/3
 Content-Type: application/json
 
 {
   "userId": 1,
   "reservationId": 1,
-  "reviewContent": "이것은 샘플 리뷰입니다.",
+  "accommodationId": 3,
+  "reviewContent": "판교역 바로 옆에 위치해 교통이 편리했습니다.",
   "image": "image_url",
   "star": 5
 }

@@ -14,6 +14,9 @@ public interface ReviewService {
 
     List<RoomReviewResponse> getReviewsByRoomId(Long roomId);
 
+    RoomReviewResponse getReviewById(Long reviewId);
+
     RoomReviewResponse updateReview(Long reviewId, ReviewUpdateRequest request);
+
     void deleteReview(Long reviewId);
 }

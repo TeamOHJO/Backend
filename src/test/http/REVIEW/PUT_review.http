@@ -1,5 +1,5 @@
 ### 리뷰 수정
-PUT http://localhost:8080/review/10
+PUT http://localhost:8080/review/20
 Content-Type: application/json
 
 {

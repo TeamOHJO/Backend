@@ -51,6 +51,13 @@ public class ReviewController {
         return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "조회 성공", reviews));
     }
 
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ResponseDTO<RoomReviewResponse>> getReviewById(
+        @PathVariable Long reviewId) {
+        RoomReviewResponse reviewResponse = reviewService.getReviewById(reviewId);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "상세 조회 성공", reviewResponse));
+    }
+
     @PutMapping("/{reviewId}")
     public ResponseEntity<ResponseDTO<RoomReviewResponse>> updateReview(@PathVariable Long reviewId,
         @Valid @RequestBody

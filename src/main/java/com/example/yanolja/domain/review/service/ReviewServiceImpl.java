@@ -104,6 +104,23 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public RoomReviewResponse getReviewById(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+
+        return new RoomReviewResponse(
+            review.getReviewId(),
+            review.getRoom().getRoomId(),
+            review.getUser().getUsername(),
+            review.getRoom().getName(),
+            review.getRoom().getAccommodation().getCategory(),
+            review.getReviewContent(),
+            review.getImage(),
+            review.getStar(),
+            review.getUpdatedAt());
+    }
+
+    @Override
     @Transactional
     public RoomReviewResponse updateReview(Long reviewId, ReviewUpdateRequest request) {
         Review review = reviewRepository.findById(reviewId)
