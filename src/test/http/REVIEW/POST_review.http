@@ -1,5 +1,5 @@
 ### 리뷰 생성
-POST http://localhost:8080/review/10
+POST http://localhost:8080/review/1
 Content-Type: application/json
 
 {
