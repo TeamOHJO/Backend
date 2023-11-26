@@ -1,23 +1,7 @@
-GET http://localhost:8080/user/test
+### 로그인상태에서의 메인페이지 조회
+GET https://localhost:8080/accommodation?category=HOTEL&isDomestic=true&page=0&startDate=2023-11-02&endDate=2021-11-08&numberOfPeople=2
+Authorization: eyJraWQiOiJrZXkyIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMDA3MTQyLCJleHAiOjE3MDExNTExNDJ9.MKbK_4mfL8z203ly4k6ylQO6JeNaUQnj3YZSrR048F_nosGUJqk0nsP_hxZGtO5fczMXxGqMaHgtOpe5A2HFRQ
 
-###
+### 로그인 없이 메인페이지 조회
+GET https://localhost:8080/accommodation?category=HOTEL&isDomestic=true&page=0&startDate=2023-11-02&endDate=2021-11-08&numberOfPeople=2
 
-GET http://localhost:8080/accommodation
-###
-
-GET http://localhost:8080/accommodation/default
-###
-
-GET http://localhost:8080/accommodation/1
-###
-
-GET http://localhost:8080/accommodation/2
-
-###
-GET http://localhost:8080/accommodation/2/1
-
-###
-GET http://localhost:8080/accommodation/category/MOTEL/domestic?isDomestic=true
-
-###
-GET http://localhost:8080/accommodation/domestic?isDomestic=true
