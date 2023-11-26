@@ -22,18 +22,15 @@ public class AccommodationFindResponse {
     private String reservationNotice;
     private List<String> serviceInfoList;
     private List<String> accommodationImageList;
-
-
-    private boolean isBookable; // 예약 가능 여부
     private double averageReviewScore; // 리뷰 평균 점수
     private boolean isLiked; // 좋아요 여부
 
     @Builder
     public AccommodationFindResponse(
-            Long accommodationId, AccommodationCategory category, String accommodationName,
-            String location, String tag, boolean isDomestic, String explanation, String cancelInfo,
-            String useGuide, String reservationNotice, List<String> serviceInfoList, List<String> accommodationImageList)
-    {
+        Long accommodationId, AccommodationCategory category, String accommodationName,
+        String location, String tag, boolean isDomestic, String explanation, String cancelInfo,
+        String useGuide, String reservationNotice, List<String> serviceInfoList,
+        List<String> accommodationImageList, boolean isLike) {
         this.accommodationId = accommodationId;
         this.category = category;
         this.accommodationName = accommodationName;
@@ -46,29 +43,29 @@ public class AccommodationFindResponse {
         this.reservationNotice = reservationNotice;
         this.serviceInfoList = serviceInfoList;
         this.accommodationImageList = accommodationImageList;
+        this.averageReviewScore = 4;
+        this.isLiked = isLike;
     }
 
+    public static AccommodationFindResponse fromEntity(Accommodation accommodation,
+        List<String> imageList) {
 
-    public static AccommodationFindResponse fromEntity(Accommodation accommodation, List<String> imageList){
-
-
-        List<String> serviceList = Arrays.asList(accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
+        List<String> serviceList = Arrays.asList(
+            accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
 
         return AccommodationFindResponse.builder()
-                .accommodationId(accommodation.getAccommodationId())
-               .category(accommodation.getCategory())
-                .accommodationName(accommodation.getAccommodationName())
-                .location(accommodation.getLocation())
-                .tag(accommodation.getTag())
-                .isDomestic(accommodation.isDomestic())
-                .explanation(accommodation.getExplanation())
-                .cancelInfo(accommodation.getCancelInfo())
-                .useGuide(accommodation.getUseGuide())
-                .reservationNotice(accommodation.getReservationNotice())
-                .serviceInfoList(serviceList)
-                .accommodationImageList(imageList)
-                .build();
+            .accommodationId(accommodation.getAccommodationId())
+            .category(accommodation.getCategory())
+            .accommodationName(accommodation.getAccommodationName())
+            .location(accommodation.getLocation())
+            .tag(accommodation.getTag())
+            .isDomestic(accommodation.isDomestic())
+            .explanation(accommodation.getExplanation())
+            .cancelInfo(accommodation.getCancelInfo())
+            .useGuide(accommodation.getUseGuide())
+            .reservationNotice(accommodation.getReservationNotice())
+            .serviceInfoList(serviceList)
+            .accommodationImageList(imageList)
+            .build();
     }
-
-
 }

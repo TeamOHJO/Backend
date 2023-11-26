@@ -68,6 +68,7 @@ public class SpringSecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("/user/signup/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/user/email/confirmation/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/user/verify/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/accommodation/**")).permitAll()
 
             .anyRequest().authenticated());
 
