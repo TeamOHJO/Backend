@@ -18,6 +18,10 @@ public enum ErrorCode {
     INVALID_CANCEL_RESERVATION_REQUEST(HttpStatus.BAD_REQUEST, "예약이 존재하지 않거나 이미 취소되었습니다."),
     //Basket
     DUPLICATED_BASKET_CONTENT(HttpStatus.BAD_REQUEST, "이미 장바구니에 같은 상품이 있습니다."),
+
+    //Review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
+
     INVALID_BASKET_ID(HttpStatus.BAD_REQUEST, "존재하지 않는 장바구니입니다."),
 
 
