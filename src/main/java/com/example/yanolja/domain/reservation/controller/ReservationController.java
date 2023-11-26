@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,15 +24,34 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/{roomsId}")
+    @PostMapping("/rooms/{roomId}")
     public ResponseEntity<ResponseDTO<?>> createReservation(
-        @PathVariable long roomsId,
+        @PathVariable long roomId,
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @Valid @RequestBody CreateReservationRequest createReservationRequest) {
         User user = principalDetails.getUser();
 
         ResponseDTO<?> response = reservationService.createReservation(
-            createReservationRequest, user, roomsId);
+            createReservationRequest, user, roomId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/details/rooms/{roomId}")
+    public ResponseEntity<ResponseDTO<?>> getReservationDetails(
+        @PathVariable long roomId) {
+
+        ResponseDTO<?> response = reservationService.getReservationDetails(roomId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<ResponseDTO<?>> cancelReservation(
+        @PathVariable long reservationId,
+        @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+
+        User user = principalDetails.getUser();
+        ResponseDTO<?> response = reservationService.cancelReservation(user, reservationId);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 }

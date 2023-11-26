@@ -9,7 +9,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,11 +45,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     ) throws IOException, ServletException {
         String accessToken = null;
         try {
-            // cookie 에서 JWT token을 가져옵니다.
+           /* // cookie 에서 JWT token을 가져옵니다.
             accessToken = Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals(JwtProperties.COOKIE_NAME)).findFirst()
                 .map(Cookie::getValue)
+                .orElse(null);*/
+
+            //header에서 가져옴
+            List<String> headerValues = Collections.list(request.getHeaders("Authorization"));
+            accessToken = headerValues.stream()
+                .findFirst()
+                .map(header -> header.replace("Bearer ", ""))
                 .orElse(null);
+
         } catch (Exception ignored) {
             //
         }

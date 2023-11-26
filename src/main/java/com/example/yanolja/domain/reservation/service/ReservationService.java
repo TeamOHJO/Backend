@@ -8,5 +8,9 @@ import com.example.yanolja.global.util.ResponseDTO;
 public interface ReservationService {
 
     ResponseDTO<?> createReservation(CreateReservationRequest createReservationRequest,
-        User user, long roomsId);
+        User user, long roomId);
+
+    ResponseDTO<?> getReservationDetails(long roomId);
+
+    ResponseDTO<?> cancelReservation(User user, long reservationId);
 }

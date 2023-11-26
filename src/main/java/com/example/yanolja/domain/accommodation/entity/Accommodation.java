@@ -9,6 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,30 +30,34 @@ public class Accommodation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AccommodationCategory category;
 
-    @Column(name = "accommodationName", nullable = false)
+    @Column(name = "accommodationName", nullable = false, length = 50)
     private String accommodationName;
 
-    @Column(name = "location", nullable = false)
+    @Column(name = "location", nullable = false, length = 300)
     private String location;
 
-    @Column(name = "tag", nullable = false)
+    @Column(name = "tag", nullable = false, length = 30)
     private String tag;
 
     @Column(name = "isDomestic", nullable = false)
     private boolean isDomestic;
 
-    @Column(name = "explanation", nullable = false)
+    @Column(name = "explanation", nullable = false, length = 500)
     private String explanation;
 
-    @Column(name = "cancelInfo", nullable = false)
+    @Column(name = "cancelInfo", nullable = false , length = 500)
     private String cancelInfo;
 
-    @Column(name = "useGuide", nullable = false)
+    @Column(name = "useGuide", nullable = false, length = 500)
     private String useGuide;
 
-    @Column(name = "reservationNotice", nullable = false)
+    @Column(name = "reservationNotice", nullable = false, length = 500)
     private String reservationNotice;
 
-    @Column(name = "serviceInfo")
+    @Column(name = "serviceInfo", nullable = false, length = 100)
     private String serviceInfo;
+
+    @OneToMany(mappedBy = "accommodation")
+    private List<AccommodationRooms> roomlist = new ArrayList<>();
+
 }

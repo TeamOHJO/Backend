@@ -88,17 +88,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = ((PrincipalDetails) authResult.getPrincipal()).getUser();
         String token = jwtProvider.createToken(user);
         // 쿠키 생성
-        Cookie cookie = new Cookie(JwtProperties.COOKIE_NAME, token);
-        cookie.setMaxAge(JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME / 1000 * 2); // setMaxAge는 초단위
+      /*  Cookie cookie = new Cookie(JwtProperties.COOKIE_NAME, token);
+        cookie.setMaxAge(JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME / 1000 * 2);// setMaxAge는 초단위
+        cookie.setSecure(true);
         cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addCookie(cookie);*/
         //response.sendRedirect("/");  // 발급후 redirect로 이동 -> 클라이언트에게 http 리다이렉션 요청 코드
 
         // 로그인 성공 시 JSON 응답을 생성
         ResponseDTO<Object> loginResponse = ResponseDTO.res(
             HttpStatus.valueOf(HttpServletResponse.SC_OK),
             "Login successful",
-            new LoginResponse(user.getEmail(), user.getUsername()));
+            new LoginResponse(user.getEmail(), user.getUsername(), token));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonResponse = objectMapper.writeValueAsString(loginResponse);

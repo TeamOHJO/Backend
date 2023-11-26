@@ -7,14 +7,17 @@ public record LoginResponse(
     @NotNull
     String email,
     @NotNull
-    String name
+    String name,
+    @NotNull
+    String token
 
 ) {
 
-    public static LoginResponse fromEntity(User user) {
+    public static LoginResponse fromEntity(User user,String token) {
         return new LoginResponse(
             user.getEmail(),
-            user.getUsername()
+            user.getUsername(),
+            token
         );
     }
 }

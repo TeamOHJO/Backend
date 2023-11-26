@@ -10,4 +10,7 @@ COPY . .
 # .env 파일을 WORKDIR로 복사
 COPY .env .env
 
+# keystore.p12 파일을 WORKDIR로 복사
+COPY src/main/resources/keystore.p12 keystore.p12
+
 ENTRYPOINT ["java", "-jar", "/app.jar"]

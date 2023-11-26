@@ -40,3 +40,4 @@ out/
 .env
 /logs/spring-boot-logger.log
 /logs/archived/**
+/src/main/resources/keystore.p12

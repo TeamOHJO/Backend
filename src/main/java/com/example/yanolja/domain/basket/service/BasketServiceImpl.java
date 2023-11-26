@@ -8,7 +8,9 @@ import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepo
 import com.example.yanolja.domain.basket.dto.CreateBasketRequest;
 import com.example.yanolja.domain.basket.dto.CreateBasketResponse;
 import com.example.yanolja.domain.basket.dto.GetBasketResponse;
+import com.example.yanolja.domain.basket.entity.Basket;
 import com.example.yanolja.domain.basket.error.DuplicatedBasketException;
+import com.example.yanolja.domain.basket.error.InvalidBasketIdException;
 import com.example.yanolja.domain.basket.repository.BasketRepository;
 import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.entity.Reservations;
@@ -96,19 +98,44 @@ public class BasketServiceImpl implements BasketService {
                 imageList.add(accommodationRoomImagesContent.getImage());
             }
 
-            boolean canReserve = false;
+            boolean canReserve = true;
+            // 예약이 가능한지 체크
+            Optional<Reservations> conflictingReservations =
+                reservationRepository.findConflictingReservations(
+                    reservationContent.getRoom().getRoomId(),
+                    reservationContent.getStartDate(), reservationContent.getEndDate()
+                );
 
-            //TODO :: 예약 중복조회해서 canReserve 값 변경 할 수 있도록 해야함
-            //TODO :: 예약 중복조회해서 canReserve 값 변경 할 수 있도록 해야함
-            //TODO :: 예약 중복조회해서 canReserve 값 변경 할 수 있도록 해야함
-            //TODO :: 예약 중복조회해서 canReserve 값 변경 할 수 있도록 해야함
+            if (conflictingReservations.isPresent()) {
+                canReserve = false;
+            }
 
-            getBasketResponses.add(GetBasketResponse.fromEntity(reservationContent,
-                reservationContent.getRoom(), imageList, canReserve));
+            getBasketResponses.add(GetBasketResponse.fromEntity(
+                basketRepository.findByReservationReservationId(
+                    reservationContent.getReservationId()),
+                reservationContent.getRoom().getAccommodation(),
+                reservationContent,
+                reservationContent.getRoom(), imageList.get(0), canReserve));
         }
 
         return ResponseDTO.res(HttpStatus.CREATED, "장바구니 조회 성공",
             getBasketResponses);
+    }
+
+    @Override
+    public ResponseDTO<?> deleteBasket(User user, long basketId) {
+
+        Basket basket = basketRepository.findById(basketId).orElseThrow(() -> {
+            throw new InvalidBasketIdException(ErrorCode.INVALID_BASKET_ID);
+        });
+
+        reservationRepository.delete(basket.getReservation());
+        basketRepository.delete(
+            basketRepository.findByReservationReservationId(
+                basket.getReservation().getReservationId())
+        );
+
+        return ResponseDTO.res(HttpStatus.NO_CONTENT, "장바구니 삭제 성공");
     }
 }
 
