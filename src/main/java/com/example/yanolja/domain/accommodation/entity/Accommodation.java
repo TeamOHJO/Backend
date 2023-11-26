@@ -30,31 +30,31 @@ public class Accommodation extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private AccommodationCategory category;
 
-    @Column(name = "accommodationName", nullable = false)
+    @Column(name = "accommodationName", nullable = false, length = 50)
     private String accommodationName;
 
-    @Column(name = "location", nullable = false)
+    @Column(name = "location", nullable = false, length = 300)
     private String location;
 
-    @Column(name = "tag", nullable = false)
+    @Column(name = "tag", nullable = false, length = 30)
     private String tag;
 
-    @Column(name = "isDomestic")
+    @Column(name = "isDomestic", nullable = false)
     private boolean isDomestic;
 
-    @Column(name = "explanation", nullable = false)
+    @Column(name = "explanation", nullable = false, length = 500)
     private String explanation;
 
-    @Column(name = "cancelInfo", nullable = false)
+    @Column(name = "cancelInfo", nullable = false , length = 500)
     private String cancelInfo;
 
-    @Column(name = "useGuide", nullable = false)
+    @Column(name = "useGuide", nullable = false, length = 500)
     private String useGuide;
 
-    @Column(name = "reservationNotice", nullable = false)
+    @Column(name = "reservationNotice", nullable = false, length = 500)
     private String reservationNotice;
 
-    @Column(name = "serviceInfo", nullable = false)
+    @Column(name = "serviceInfo", nullable = false, length = 100)
     private String serviceInfo;
 
     @OneToMany(mappedBy = "accommodation")
