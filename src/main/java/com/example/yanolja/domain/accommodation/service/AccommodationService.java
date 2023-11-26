@@ -4,13 +4,16 @@ import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
+import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodationLikes.entity.AccommodationLikes;
 import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
+import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,7 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationImageRepository accommodationImageRepository;
     private final AccommodationLikesRepository accommodationLikesRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public Page<AccommodationFindResponse> getAllAccommodation(Pageable pageable) {
@@ -38,7 +42,7 @@ public class AccommodationService {
             .orElseThrow();
 
         List<String> imageList = getImagesForAccommodation(accommodationId);
-        return AccommodationFindResponse.fromEntity(foundAccommodation, imageList);
+        return AccommodationFindResponse.fromEntity(foundAccommodation, imageList, false);
     }
 
     @Transactional
@@ -59,25 +63,70 @@ public class AccommodationService {
     }
 
     @Transactional
-    public Page<AccommodationFindResponse> getAccommodationsByCategoryAndDomestic(
+    public List<AccommodationFindResponse> getAccommodationsInMainPage(
         PrincipalDetails principalDetails, String categoryStr,
-        boolean isDomestic, Pageable pageable) {
+        boolean isDomestic, Pageable pageable, LocalDate startDate, LocalDate endDate,
+        int numberOfPeople) {
         AccommodationCategory category = AccommodationCategory.valueOf(categoryStr.toUpperCase());
 
-        if (principalDetails == null) {
-            Page<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(
-                category, isDomestic, pageable);
-            return accommodations.map(this::convertToAccommodationFindResponse);
+        Page<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(
+            category, isDomestic, pageable);
+        List<Accommodation> accommodationList = new ArrayList<>();
 
+        boolean capacityAvailable = false;
+        for (Accommodation accommodationContents : accommodations) {
+            List<AccommodationRooms> roomlist = accommodationContents.getRoomlist();
+            int fullRoomCount = 0;
+
+            for (AccommodationRooms accommodationRoomContents : roomlist) {
+                if (accommodationRoomContents.getMaxCapacity() >= numberOfPeople &&
+                    accommodationRoomContents.getMinCapacity() <= numberOfPeople) {
+                    capacityAvailable = true;
+                }
+                //예약 충돌 검사
+                if (reservationRepository.findConflictingReservations(
+                    accommodationRoomContents.getRoomId(), startDate, endDate).isPresent()) {
+                    fullRoomCount++;
+                }
+            }
+            if (fullRoomCount < roomlist.size() && capacityAvailable) {
+                accommodationList.add(accommodationContents);
+            }
+        }
+
+        List<AccommodationFindResponse> accommodationFindResponses = new ArrayList<>();
+        if (principalDetails == null) {
+            for (Accommodation accommodationContent : accommodationList) {
+                accommodationFindResponses.add(
+                    AccommodationFindResponse.fromEntity(
+                        accommodationContent,
+                        getImagesForAccommodation(accommodationContent.getAccommodationId())
+                        , false
+                    )
+                );
+            }
         } else {
             User user = principalDetails.getUser();
-
-            Page<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(
-                category, isDomestic, pageable);
-            return accommodations.map(
-                accommodation -> convertToAccommodationFindResponse(user, accommodation));
-
+            for (Accommodation accommodationContent : accommodationList) {
+                boolean isLike = false;
+                Optional<AccommodationLikes> accommodationLikesOptional =
+                    accommodationLikesRepository.findByUser_UserIdAndAccommodation_AccommodationId(
+                        user.getUserId(), accommodationContent.getAccommodationId()
+                    );
+                if (accommodationLikesOptional.isPresent() &&
+                    accommodationLikesOptional.get().getIsLike()) {
+                    isLike = true;
+                }
+                accommodationFindResponses.add(
+                    AccommodationFindResponse.fromEntity(
+                        accommodationContent,
+                        getImagesForAccommodation(accommodationContent.getAccommodationId()),
+                        isLike
+                    )
+                );
+            }
         }
+        return accommodationFindResponses;
     }
 
     //숙소 별 이미지 리스트(String) 조회 모듈
@@ -111,40 +160,6 @@ public class AccommodationService {
             .serviceInfoList(serviceList)
             .accommodationImageList(imageList)
             .isLike(false)
-            .build();
-    }
-
-    private AccommodationFindResponse convertToAccommodationFindResponse(
-        User user,
-        Accommodation accommodation) {
-        List<String> imageList = getImagesForAccommodation(accommodation.getAccommodationId());
-        List<String> serviceList = List.of(accommodation.getServiceInfo().split(","));
-        boolean isLike = false;
-
-        Optional<AccommodationLikes> accommodationLikesOptional =
-            accommodationLikesRepository.findByUser_UserIdAndAccommodation_AccommodationId(
-                user.getUserId(), accommodation.getAccommodationId()
-            );
-
-        if (accommodationLikesOptional.isPresent() &&
-            accommodationLikesOptional.get().getIsLike()) {
-            isLike = true;
-        }
-
-        return AccommodationFindResponse.builder()
-            .accommodationId(accommodation.getAccommodationId())
-            .category(accommodation.getCategory())
-            .accommodationName(accommodation.getAccommodationName())
-            .location(accommodation.getLocation())
-            .tag(accommodation.getTag())
-            .isDomestic(accommodation.isDomestic())
-            .explanation(accommodation.getExplanation())
-            .cancelInfo(accommodation.getCancelInfo())
-            .useGuide(accommodation.getUseGuide())
-            .reservationNotice(accommodation.getReservationNotice())
-            .serviceInfoList(serviceList)
-            .accommodationImageList(imageList)
-            .isLike(isLike)
             .build();
     }
 }

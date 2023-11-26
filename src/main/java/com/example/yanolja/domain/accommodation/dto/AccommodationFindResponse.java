@@ -48,7 +48,7 @@ public class AccommodationFindResponse {
     }
 
     public static AccommodationFindResponse fromEntity(Accommodation accommodation,
-        List<String> imageList) {
+        List<String> imageList,boolean isLike) {
 
         List<String> serviceList = Arrays.asList(
             accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
@@ -66,6 +66,7 @@ public class AccommodationFindResponse {
             .reservationNotice(accommodation.getReservationNotice())
             .serviceInfoList(serviceList)
             .accommodationImageList(imageList)
+            .isLike(isLike)
             .build();
     }
 }
