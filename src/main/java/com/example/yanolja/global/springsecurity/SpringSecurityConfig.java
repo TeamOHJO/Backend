@@ -34,8 +34,18 @@ public class SpringSecurityConfig {
         HandlerMappingIntrospector introspector) throws Exception {
 
         // CORS 설정 추가
-        http.cors(cors -> cors.configurationSource(
-            request -> new CorsConfiguration().applyPermitDefaultValues()));
+        http.cors(cors -> cors
+            .configurationSource(request -> {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.applyPermitDefaultValues();
+                configuration.addAllowedOriginPattern("https://dashing-tiramisu-cbdade.netlify.app");
+                configuration.addAllowedOriginPattern("http://localhost:5173");
+
+                // 다른 도메인도 필요에 따라 추가
+                configuration.setAllowCredentials(true); // 쿠키를 포함한 크로스 도메인 요청을 허용
+                return configuration;
+            }));
+
         // basic authentication
         http.httpBasic(AbstractHttpConfigurer::disable); // basic authentication filter 비활성화
         // csrf
