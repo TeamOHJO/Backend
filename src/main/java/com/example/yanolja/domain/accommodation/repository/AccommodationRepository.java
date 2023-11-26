@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccommodationRepository extends JpaRepository<Accommodation, Long>{
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
 
 
     Page<Accommodation> findByCategory(AccommodationCategory category, Pageable pageable);
-    Page<Accommodation> findByIsDomestic(boolean isDomestic,  Pageable pageable);
-    Page<Accommodation> findByCategoryAndIsDomestic(AccommodationCategory category, boolean isDomestic,  Pageable pageable);
+
+    Page<Accommodation> findByIsDomestic(boolean isDomestic, Pageable pageable);
+
+    Page<Accommodation> findByCategoryAndIsDomestic(AccommodationCategory category,
+        boolean isDomestic, Pageable pageable);
 }
