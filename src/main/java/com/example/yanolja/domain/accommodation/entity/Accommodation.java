@@ -36,25 +36,25 @@ public class Accommodation extends BaseTimeEntity {
     @Column(name = "location", nullable = false, length = 300)
     private String location;
 
-    @Column(name = "tag", nullable = false, length = 30)
+    @Column(name = "tag", length = 30)
     private String tag;
 
     @Column(name = "isDomestic", nullable = false)
     private boolean isDomestic;
 
-    @Column(name = "explanation", nullable = false, length = 500)
+    @Column(name = "explanation", nullable = false, length = 1000)
     private String explanation;
 
-    @Column(name = "cancelInfo", nullable = false , length = 500)
+    @Column(name = "cancelInfo", nullable = false , length = 1000)
     private String cancelInfo;
 
-    @Column(name = "useGuide", nullable = false, length = 500)
+    @Column(name = "useGuide", nullable = false, length = 1000)
     private String useGuide;
 
-    @Column(name = "reservationNotice", nullable = false, length = 500)
+    @Column(name = "reservationNotice", nullable = false, length = 1000)
     private String reservationNotice;
 
-    @Column(name = "serviceInfo", nullable = false, length = 100)
+    @Column(name = "serviceInfo", length = 100)
     private String serviceInfo;
 
     @OneToMany(mappedBy = "accommodation")
