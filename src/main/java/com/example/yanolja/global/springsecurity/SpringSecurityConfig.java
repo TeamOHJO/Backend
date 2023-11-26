@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
@@ -31,6 +32,10 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
         HandlerMappingIntrospector introspector) throws Exception {
+
+        // CORS 설정 추가
+        http.cors(cors -> cors.configurationSource(
+            request -> new CorsConfiguration().applyPermitDefaultValues()));
         // basic authentication
         http.httpBasic(AbstractHttpConfigurer::disable); // basic authentication filter 비활성화
         // csrf
