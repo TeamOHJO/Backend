@@ -9,6 +9,7 @@ import com.example.yanolja.domain.review.dto.CreateReviewResponse;
 import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
 import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.entity.ReviewImages;
+import com.example.yanolja.domain.review.error.PermissionDeniedException;
 import com.example.yanolja.domain.review.error.ReviewNotFoundException;
 import com.example.yanolja.domain.review.repository.ReviewImageRepository;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
@@ -79,10 +80,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(User user, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
             .orElseThrow(() -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND));
 
+        //권한이 없는 경우
+        reviewRepository.findByReviewIdAndUserId(reviewId, user.getUserId())
+            .orElseThrow(() -> new PermissionDeniedException(ErrorCode.PERMISSION_DENIED));
+
+        reviewImageRepository.deleteAll(
+            reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
         reviewRepository.delete(review);
     }
 }
