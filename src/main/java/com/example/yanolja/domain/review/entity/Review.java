@@ -53,12 +53,14 @@ public class Review extends BaseTimeEntity {
     @Column(name = "star", nullable = false)
     private int star;
 
+
     private boolean active;
 
 
     @ManyToOne
     @JoinColumn(name = "accommodation_accommodation_id")
     private Accommodation accommodation;
+
 
 }
 
