@@ -4,9 +4,11 @@ import com.example.yanolja.global.jwt.JwtAuthenticationFilter;
 import com.example.yanolja.global.jwt.JwtAuthorizationFilter;
 import com.example.yanolja.global.jwt.JwtProperties;
 import com.example.yanolja.global.util.CustomResponseUtil;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -40,6 +42,7 @@ public class SpringSecurityConfig {
                 configuration.applyPermitDefaultValues();
                 configuration.addAllowedOriginPattern("https://dashing-tiramisu-cbdade.netlify.app");
                 configuration.addAllowedOriginPattern("http://localhost:5173");
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"));
 
                 // 다른 도메인도 필요에 따라 추가
                 configuration.setAllowCredentials(true); // 쿠키를 포함한 크로스 도메인 요청을 허용
@@ -70,6 +73,7 @@ public class SpringSecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("/user/verify/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/accommodation/**")).permitAll()
 
+            .requestMatchers(HttpMethod.OPTIONS, "/basket/**").permitAll() // OPTIONS 메서드에 대한 권한 허용
             .anyRequest().authenticated());
 
         http.exceptionHandling(exceptionHandling -> {
