@@ -23,10 +23,10 @@ public class AccommodationDetailController {
 
     private final AccommodationDetailsService accommodationDetailService;
 
-    @GetMapping("/{accommodationId}/Capacity/{maxCapacity}")
+    @GetMapping("/{accommodationId}")
     public ResponseEntity<ResponseDTO<AccommodationDetailResponse>> getAccommodationDetail(
         @PathVariable Long accommodationId,
-        @PathVariable int maxCapacity,
+        @RequestParam int maxCapacity,
         @RequestParam LocalDate startDate,
         @RequestParam LocalDate endDate,
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
