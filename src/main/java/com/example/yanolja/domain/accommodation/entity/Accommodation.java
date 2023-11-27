@@ -1,6 +1,7 @@
 
 package com.example.yanolja.domain.accommodation.entity;
 
+import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,7 +46,7 @@ public class Accommodation extends BaseTimeEntity {
     @Column(name = "explanation", nullable = false, length = 1000)
     private String explanation;
 
-    @Column(name = "cancelInfo", nullable = false , length = 1000)
+    @Column(name = "cancelInfo", nullable = false, length = 1000)
     private String cancelInfo;
 
     @Column(name = "useGuide", nullable = false, length = 1000)
@@ -58,6 +59,11 @@ public class Accommodation extends BaseTimeEntity {
     private String serviceInfo;
 
     @OneToMany(mappedBy = "accommodation")
+    private List<Review> reviews;
+
+
+    @OneToMany(mappedBy = "accommodation")
     private List<AccommodationRooms> roomlist = new ArrayList<>();
+
 
 }
