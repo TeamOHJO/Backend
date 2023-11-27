@@ -46,8 +46,11 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ResponseDTO<Object>> deleteReview(@PathVariable Long reviewId) {
-        reviewService.deleteReview(reviewId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰가 성공적으로 삭제되었습니다.", null));
+    public ResponseEntity<ResponseDTO<Object>> deleteReview(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @PathVariable Long reviewId) {
+
+        reviewService.deleteReview(principalDetails.getUser(), reviewId);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰가 성공적으로 삭제되었습니다."));
     }
 }
