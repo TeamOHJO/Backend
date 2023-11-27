@@ -20,7 +20,9 @@ public class RoomDetail {
     private int maxCapacity;
     private String tag;
     private String explanation;
+    private boolean isSoldOut;
     private List<String> serviceInfo;
     private List<String> roomImages;
+
 
 }

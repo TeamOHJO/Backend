@@ -55,8 +55,26 @@ public class AccommodationDetailsService {
 
         List<RoomDetail> roomDetails = accommodation.getRoomlist().stream()
             .filter(room -> room.getMaxCapacity() >= maxCapacity)
-            .filter(room -> !reservationRepository.findConflictingReservations(room.getRoomId(), startDate, endDate).isPresent())
-            .map(room -> getRoomDetail(room.getRoomId()))
+            .map(room -> {
+                boolean isSoldOut = reservationRepository.findConflictingReservations(room.getRoomId(), startDate, endDate).isPresent();
+                RoomDetail roomDetail = getRoomDetail(room.getRoomId());
+
+                return RoomDetail.builder()
+                    .roomId(roomDetail.getRoomId())
+                    .name(roomDetail.getName())
+                    .price(roomDetail.getPrice())
+                    .averageRating(roomDetail.getAverageRating())
+                    .discountPercentage(roomDetail.getDiscountPercentage())
+                    .checkinExplanation(roomDetail.getCheckinExplanation())
+                    .minCapacity(roomDetail.getMinCapacity())
+                    .maxCapacity(roomDetail.getMaxCapacity())
+                    .tag(roomDetail.getTag())
+                    .explanation(roomDetail.getExplanation())
+                    .isSoldOut(isSoldOut)
+                    .serviceInfo(roomDetail.getServiceInfo())
+                    .roomImages(roomDetail.getRoomImages())
+                    .build();
+            })
             .collect(Collectors.toList());
 
         boolean isLiked = false;
@@ -85,7 +103,6 @@ public class AccommodationDetailsService {
             .isLiked(isLiked)
             .build();
     }
-
 
     public RoomDetail getRoomDetail(Long roomId) {
         AccommodationRooms room = accommodationRoomRepository.findById(roomId)
