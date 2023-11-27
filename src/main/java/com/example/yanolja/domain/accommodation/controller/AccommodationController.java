@@ -26,22 +26,6 @@ public class AccommodationController {
 
     private final AccommodationService accommodationService;
 
-  /*  @GetMapping
-    public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAllAccommodation(
-        @PageableDefault(size = 16) Pageable pageable) {
-        Page<AccommodationFindResponse> accommodations = accommodationService.getAllAccommodation(
-            pageable);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "전체 숙소 목록 조회 성공", accommodations));
-    }*/
-
-    @GetMapping("/{accommodationId}")
-    public ResponseEntity<ResponseDTO<AccommodationFindResponse>> getAccommodationById(
-        @PathVariable Long accommodationId) {
-        AccommodationFindResponse accommodation = accommodationService.getAccommodationById(
-            accommodationId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "ID로 숙소 조회 성공", accommodation));
-    }
-
     @GetMapping("/category/{category}")
     public ResponseEntity<ResponseDTO<Page<AccommodationFindResponse>>> getAccommodationsByCategory(
         @PathVariable String category, @PageableDefault(size = 16) Pageable pageable) {
