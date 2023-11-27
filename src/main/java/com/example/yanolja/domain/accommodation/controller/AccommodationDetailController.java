@@ -23,7 +23,7 @@ public class AccommodationDetailController {
 
     private final AccommodationDetailsService accommodationDetailService;
 
-    @GetMapping("/{accommodationId}/{maxCapacity}")
+    @GetMapping("/{accommodationId}/Capacity/{maxCapacity}")
     public ResponseEntity<ResponseDTO<AccommodationDetailResponse>> getAccommodationDetail(
         @PathVariable Long accommodationId,
         @PathVariable int maxCapacity,
