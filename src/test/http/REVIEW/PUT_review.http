@@ -1,9 +1,12 @@
 ### 리뷰 수정
-PUT http://localhost:8080/review/20
+PUT https://localhost:8080/review/7
 Content-Type: application/json
+Authorization: eyJraWQiOiJrZXkxIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMDg0OTUzLCJleHAiOjE3MDEyMjg5NTN9.CMor3dKGOYg7HrHDfPRhdTEIeQsVjSI3DsgSnBMHGolQjcUNAtM8kPKqVAip6i8qcd_b7CFHIqKkxdHdc6nlfg
 
 {
-  "reviewContent": "수정된 리뷰내용 Test4",
-  "image": "updated_image_url",
-  "star": 4
+"reviewContent": "수정한 리뷰 체크.",
+"images": [
+"https://image.goodchoice.kr/resize_1000X500x0/adimg_new/4638/503026/009af45d9723647a9ad8eb35309bc267.jpg",
+"https://a.cdn-hotels.com/gdcs/production110/d1295/985557b1-8062-4894-9a32-0d2bc8ae0e7b.jpg"],
+"star": 5
 }
