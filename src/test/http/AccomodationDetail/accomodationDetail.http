@@ -1,0 +1,2 @@
+### 숙박 상세 정보 요청
+GET http://localhost:8080/accommodation/detail/{accommodationId}/{maxCapacity}

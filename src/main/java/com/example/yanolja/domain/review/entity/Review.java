@@ -1,5 +1,6 @@
 package com.example.yanolja.domain.review.entity;
 
+import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.user.entity.User;
@@ -51,5 +52,15 @@ public class Review extends BaseTimeEntity {
 
     @Column(name = "star", nullable = false)
     private int star;
+
+
+    private boolean active;
+
+
+    @ManyToOne
+    @JoinColumn(name = "accommodation_accommodation_id")
+    private Accommodation accommodation;
+
+
 }
 

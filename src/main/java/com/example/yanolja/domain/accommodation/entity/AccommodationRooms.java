@@ -53,4 +53,6 @@ public class AccommodationRooms extends BaseTimeEntity {
 
     @Column(name = "serviceInfo")
     private String serviceInfo;
+
+
 }
