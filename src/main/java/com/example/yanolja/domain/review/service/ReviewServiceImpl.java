@@ -67,9 +67,12 @@ public class ReviewServiceImpl implements ReviewService {
                 review.getRoom().getRoomId(),
                 review.getUser().getUsername(),
                 review.getRoom().getAccommodation().getAccommodationName(),
+                review.getRoom().getName(),
                 review.getRoom().getAccommodation().getCategory(),
                 review.getReviewContent(),
                 review.getStar(),
+                review.getReviewImages().stream().map(ReviewImages::getImage).collect(
+                    Collectors.toList()),
                 review.getUpdatedAt()))
             .collect(Collectors.toList());
     }
