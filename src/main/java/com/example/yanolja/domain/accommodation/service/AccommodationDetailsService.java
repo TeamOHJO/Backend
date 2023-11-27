@@ -7,14 +7,18 @@ import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
+import com.example.yanolja.domain.accommodationLikes.entity.AccommodationLikes;
 import com.example.yanolja.domain.accommodation.exception.AccommodationNotFoundException;
 import com.example.yanolja.domain.accommodation.exception.RoomNotFoundException;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
+import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
+import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.review.entity.Review;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,15 +35,15 @@ public class AccommodationDetailsService {
     private final ReviewRepository reviewRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
+    private final ReservationRepository reservationRepository;
+    private final AccommodationLikesRepository accommodationLikesRepository;
 
 
-    public AccommodationDetailResponse getAccommodationDetail(Long accommodationId, Long userId,
-        int maxCapacity) {
+    public AccommodationDetailResponse getAccommodationDetail(Long accommodationId, Long userId, int maxCapacity, LocalDate startDate, LocalDate endDate) {
         Accommodation accommodation = accommodationRepository.findById(accommodationId)
             .orElseThrow(AccommodationNotFoundException::new);
 
-        List<AccommodationImages> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(
-            accommodationId);
+        List<AccommodationImages> accommodationImages = accommodationImageRepository.findByAccommodation_AccommodationId(accommodationId);
 
         double averageRating = reviewRepository.findByAccommodationId(accommodationId).stream()
             .mapToInt(Review::getStar)
@@ -51,8 +55,16 @@ public class AccommodationDetailsService {
 
         List<RoomDetail> roomDetails = accommodation.getRoomlist().stream()
             .filter(room -> room.getMaxCapacity() >= maxCapacity)
+            .filter(room -> !reservationRepository.findConflictingReservations(room.getRoomId(), startDate, endDate).isPresent())
             .map(room -> getRoomDetail(room.getRoomId()))
             .collect(Collectors.toList());
+
+        boolean isLiked = false;
+        if (userId != null) {
+            isLiked = accommodationLikesRepository.findByUser_UserIdAndAccommodation_AccommodationId(userId, accommodationId)
+                .map(AccommodationLikes::getIsLike)
+                .orElse(false);
+        }
 
         return AccommodationDetailResponse.builder()
             .accommodationId(accommodation.getAccommodationId())
@@ -68,11 +80,12 @@ public class AccommodationDetailsService {
             .reservationNotice(accommodation.getReservationNotice())
             .serviceInfo(serviceInfoList)
             .averageRating(averageRating)
-            .accommodationImages(accommodationImages.stream().map(AccommodationImages::getImage)
-                .collect(Collectors.toList()))
+            .accommodationImages(accommodationImages.stream().map(AccommodationImages::getImage).collect(Collectors.toList()))
             .roomDetails(roomDetails)
+            .isLiked(isLiked)
             .build();
     }
+
 
     public RoomDetail getRoomDetail(Long roomId) {
         AccommodationRooms room = accommodationRoomRepository.findById(roomId)

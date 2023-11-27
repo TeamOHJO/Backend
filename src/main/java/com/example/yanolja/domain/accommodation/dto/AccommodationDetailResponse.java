@@ -21,6 +21,7 @@ public class AccommodationDetailResponse {
     private String cancelInfo;
     private String useGuide;
     private String reservationNotice;
+    private boolean isLiked;
     private List<String> accommodationImages;
     private List<String> serviceInfo;
     private List<RoomDetail> roomDetails;
