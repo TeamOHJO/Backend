@@ -7,9 +7,12 @@ import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
+import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.accommodationLikes.entity.AccommodationLikes;
 import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
+import com.example.yanolja.domain.review.entity.Review;
+import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import jakarta.transaction.Transactional;
@@ -30,19 +33,13 @@ public class AccommodationService {
     private final AccommodationImageRepository accommodationImageRepository;
     private final AccommodationLikesRepository accommodationLikesRepository;
     private final ReservationRepository reservationRepository;
+    private final AccommodationRoomRepository accommodationRoomRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public Page<AccommodationFindResponse> getAllAccommodation(Pageable pageable) {
         Page<Accommodation> accommodations = accommodationRepository.findAll(pageable);
         return accommodations.map(this::convertToAccommodationFindResponse);
-    }
-
-    public AccommodationFindResponse getAccommodationById(Long accommodationId) {
-        Accommodation foundAccommodation = accommodationRepository.findById(accommodationId)
-            .orElseThrow();
-
-        List<String> imageList = getImagesForAccommodation(accommodationId);
-        return AccommodationFindResponse.fromEntity(foundAccommodation, imageList, false);
     }
 
     @Transactional
@@ -94,14 +91,25 @@ public class AccommodationService {
             }
         }
 
+        double averageRating = 0;
         List<AccommodationFindResponse> accommodationFindResponses = new ArrayList<>();
         if (principalDetails == null) {
             for (Accommodation accommodationContent : accommodationList) {
+                averageRating = reviewRepository.findByAccommodationId(
+                        accommodationContent.getAccommodationId()).stream()
+                    .mapToInt(Review::getStar)
+                    .average()
+                    .orElse(0.0);
+                averageRating = Math.round(averageRating * 10) / 10.0;
+
                 accommodationFindResponses.add(
                     AccommodationFindResponse.fromEntity(
                         accommodationContent,
-                        getImagesForAccommodation(accommodationContent.getAccommodationId())
-                        , false
+                        getImagesForAccommodation(accommodationContent.getAccommodationId()),
+                        false,
+                        accommodationRoomRepository.selectMinPrice(
+                            accommodationContent.getAccommodationId()),
+                        averageRating
                     )
                 );
             }
@@ -117,11 +125,22 @@ public class AccommodationService {
                     accommodationLikesOptional.get().getIsLike()) {
                     isLike = true;
                 }
+
+                averageRating = reviewRepository.findByAccommodationId(
+                        accommodationContent.getAccommodationId()).stream()
+                    .mapToInt(Review::getStar)
+                    .average()
+                    .orElse(0.0);
+                averageRating = Math.round(averageRating * 10) / 10.0;
+
                 accommodationFindResponses.add(
                     AccommodationFindResponse.fromEntity(
                         accommodationContent,
                         getImagesForAccommodation(accommodationContent.getAccommodationId()),
-                        isLike
+                        isLike,
+                        accommodationRoomRepository.selectMinPrice(
+                            accommodationContent.getAccommodationId()),
+                        averageRating
                     )
                 );
             }
