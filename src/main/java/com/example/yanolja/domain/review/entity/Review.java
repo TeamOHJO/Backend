@@ -51,9 +51,5 @@ public class Review extends BaseTimeEntity {
 
     @Column(name = "star", nullable = false)
     private int star;
-
-    private boolean active;
-
-
 }
 
