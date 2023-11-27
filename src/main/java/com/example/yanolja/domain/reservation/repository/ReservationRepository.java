@@ -27,4 +27,9 @@ public interface ReservationRepository
 
     @Query("SELECT r FROM Reservations r WHERE r.reservationId = :id AND (r.deletedAt IS NULL)")
     Optional<Reservations> findByIdAndDeletedAt(@Param("id") Long id);
+
+    @Query("SELECT r FROM Reservations r WHERE r.reservationId = :id AND (r.deletedAt IS NULL)" +
+        "AND r.paymentCompleted = true AND r.user.userId = :userId")
+    Optional<Reservations> checkReviewPermission(@Param("id") Long id,
+        @Param("userId") Long userId);
 }

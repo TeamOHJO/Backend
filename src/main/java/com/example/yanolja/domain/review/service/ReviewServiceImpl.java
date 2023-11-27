@@ -40,6 +40,9 @@ public class ReviewServiceImpl implements ReviewService {
         Reservations reservations = reservationRepository.findById(reservationId)
             .orElseThrow(() -> new InvalidReservationException(ErrorCode.INVALID_RESERVATION_ID));
 
+        reservationRepository.checkReviewPermission(reservationId, user.getUserId())
+            .orElseThrow(() -> new PermissionDeniedException(ErrorCode.PERMISSION_DENIED));
+
         Review review =
             reviewCreateRequest.toEntity(reservations.getRoom(),
                 user, reservations, reservations.getRoom().getAccommodation());
