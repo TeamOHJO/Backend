@@ -37,7 +37,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public ResponseDTO<?> createReview(User user, Long reservationId,
         ReviewCreateRequest reviewCreateRequest) {
-
         Reservations reservations = reservationRepository.findById(reservationId)
             .orElseThrow(() -> new InvalidReservationException(ErrorCode.INVALID_RESERVATION_ID));
 
@@ -48,13 +47,12 @@ public class ReviewServiceImpl implements ReviewService {
         Review savedReview = reviewRepository.save(review);
 
         //image 리스트를 저장
-        for (String i : reviewCreateRequest.images()) {
-            ReviewImages reviewImages = ReviewImages.builder()
-                .review(review)
-                .image(i)
-                .build();
-            reviewImageRepository.save(reviewImages);
-        }
+        reviewCreateRequest.images().stream()
+            .map(images -> ReviewImages.builder()
+                .review(savedReview)
+                .image(images)
+                .build())
+            .forEach(reviewImageRepository::save);
 
         return ResponseDTO.res(HttpStatus.CREATED, "리뷰 작성 성공",
             CreateReviewResponse.fromEntity(savedReview, reviewCreateRequest.images()));
@@ -91,5 +89,31 @@ public class ReviewServiceImpl implements ReviewService {
         reviewImageRepository.deleteAll(
             reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
         reviewRepository.delete(review);
+    }
+
+    @Override
+    public ResponseDTO<?> editReview(User user, Long reviewId, ReviewCreateRequest request) {
+
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewNotFoundException(ErrorCode.REVIEW_NOT_FOUND));
+        //권한이 없는 경우
+        reviewRepository.findByReviewIdAndUserId(reviewId, user.getUserId())
+            .orElseThrow(() -> new PermissionDeniedException(ErrorCode.PERMISSION_DENIED));
+
+        review.editReview(request.reviewContent(), request.star());
+        Review savedReview = reviewRepository.save(review);
+
+        reviewImageRepository.deleteAll(
+            reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
+
+        request.images().stream()
+            .map(images -> ReviewImages.builder()
+                .review(savedReview)
+                .image(images)
+                .build())
+            .forEach(reviewImageRepository::save);
+
+        return ResponseDTO.res(HttpStatus.OK, "리뷰 수정 성공",
+            CreateReviewResponse.fromEntity(savedReview, request.images()));
     }
 }

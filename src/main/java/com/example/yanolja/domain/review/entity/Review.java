@@ -67,5 +67,10 @@ public class Review extends BaseTimeEntity {
         this.star = star;
         this.accommodation = accommodation;
     }
+
+    public void editReview(String reviewContent,int star){
+        this.reviewContent = reviewContent;
+        this.star = star;
+    }
 }
 
