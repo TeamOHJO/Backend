@@ -21,6 +21,7 @@ public class RoomDetail {
     private String tag;
     private String explanation;
     private boolean isSoldOut;
+    private boolean meetsCapacity;
     private List<String> serviceInfo;
     private List<String> roomImages;
 

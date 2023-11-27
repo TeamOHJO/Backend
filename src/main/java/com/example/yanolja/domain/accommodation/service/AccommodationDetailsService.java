@@ -54,9 +54,9 @@ public class AccommodationDetailsService {
         List<String> serviceInfoList = Arrays.asList(accommodation.getServiceInfo().split(","));
 
         List<RoomDetail> roomDetails = accommodation.getRoomlist().stream()
-            .filter(room -> room.getMaxCapacity() >= maxCapacity)
             .map(room -> {
                 boolean isSoldOut = reservationRepository.findConflictingReservations(room.getRoomId(), startDate, endDate).isPresent();
+                boolean meetsCapacity = room.getMaxCapacity() >= maxCapacity;
                 RoomDetail roomDetail = getRoomDetail(room.getRoomId());
 
                 return RoomDetail.builder()
@@ -71,6 +71,7 @@ public class AccommodationDetailsService {
                     .tag(roomDetail.getTag())
                     .explanation(roomDetail.getExplanation())
                     .isSoldOut(isSoldOut)
+                    .meetsCapacity(meetsCapacity) // 최대 수용 인원을 만족하는지 여부 설정
                     .serviceInfo(roomDetail.getServiceInfo())
                     .roomImages(roomDetail.getRoomImages())
                     .build();
