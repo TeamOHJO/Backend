@@ -13,4 +13,6 @@ public interface ReviewService {
     List<AccommodationReviewResponse> getReviewsByAccommodationId(Long accommodationId);
 
     void deleteReview(User user, Long reviewId);
+
+    ResponseDTO<?> editReview(User user, Long reviewId, ReviewCreateRequest request);
 }
