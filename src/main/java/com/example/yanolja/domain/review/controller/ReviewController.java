@@ -2,6 +2,7 @@ package com.example.yanolja.domain.review.controller;
 
 import com.example.yanolja.domain.review.dto.AccommodationReviewResponse;
 import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
+import com.example.yanolja.domain.review.dto.UserReviewDTO;
 import com.example.yanolja.domain.review.service.ReviewService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
@@ -64,5 +65,13 @@ public class ReviewController {
         ResponseDTO<?> response = reviewService.editReview(
             principalDetails.getUser(), reviewId, request);
         return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/user/list")
+    public ResponseEntity<ResponseDTO<List<UserReviewDTO>>> getUserReviews(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        ResponseDTO<List<UserReviewDTO>> response = reviewService.getUserReviews(principalDetails.getUser());
+        return ResponseEntity.ok(response);
     }
 }
