@@ -9,14 +9,14 @@ import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLik
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.domain.wishlist.dto.WishlistDTO;
-import com.example.yanolja.domain.user.exception.UserNotFoundException;
-import com.example.yanolja.global.exception.ErrorCode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class WishlistServiceImpl implements WishlistService {
 
     private final AccommodationLikesRepository accommodationLikesRepository;
@@ -24,21 +24,8 @@ public class WishlistServiceImpl implements WishlistService {
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final UserRepository userRepository;
 
-    public WishlistServiceImpl(AccommodationLikesRepository accommodationLikesRepository,
-        AccommodationImageRepository accommodationImageRepository,
-        AccommodationRoomRepository accommodationRoomRepository,
-        UserRepository userRepository) {
-        this.accommodationLikesRepository = accommodationLikesRepository;
-        this.accommodationImageRepository = accommodationImageRepository;
-        this.accommodationRoomRepository = accommodationRoomRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
-    public List<WishlistDTO> getUserWishlist(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
-
+    public List<WishlistDTO> getUserWishlist(User user) {
         // 사용자가 좋아요 표시한 숙박업체 목록 조회
         List<AccommodationLikes> likes = accommodationLikesRepository.findByUserAndIsLike(user,
             true);
