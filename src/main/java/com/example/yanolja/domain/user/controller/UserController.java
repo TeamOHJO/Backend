@@ -35,7 +35,7 @@ public class UserController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public ResponseEntity<ResponseDTO<?>> deleteUser(
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
         ResponseDTO<?> response = userService.deleteUser(principalDetails.getUser().getId());
@@ -52,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<ResponseDTO<?>> updateUserInfo(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestBody UpdateUserRequest updateUserRequest) {
@@ -61,7 +61,7 @@ public class UserController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @PutMapping("/repassword")
+    @PutMapping("/password")
     public ResponseEntity<ResponseDTO<?>> changePassword(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestBody ChangePasswordRequest changePasswordRequest) {
