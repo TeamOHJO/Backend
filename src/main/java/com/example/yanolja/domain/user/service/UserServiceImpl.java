@@ -106,11 +106,28 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
 
-        updateUserRequest.toEntity(user);
-        userRepository.save(user);
+        if (!isValidPhonenumber(updateUserRequest.getPhonenumber())) {
+            throw new InvalidPhonenumberError(INVALID_PHONENUMBER);
+        }
+
+        boolean isUpdated = false;
+        if (!user.getUsername().equals(updateUserRequest.getUsername())) {
+            user.setUsername(updateUserRequest.getUsername());
+            isUpdated = true;
+        }
+
+        if (!user.getPhonenumber().equals(updateUserRequest.getPhonenumber())) {
+            user.setPhonenumber(updateUserRequest.getPhonenumber());
+            isUpdated = true;
+        }
+
+        if (isUpdated) {
+            userRepository.save(user);
+        }
 
         return ResponseDTO.res(HttpStatus.OK, "사용자 정보 업데이트 성공");
     }
+
 
     @Override
     public ResponseDTO<?> changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
