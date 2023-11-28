@@ -20,13 +20,16 @@ public record GetBasketResponse(
     String checkInOutExplanation,
     double star,
     int price,
+    int discountPercentage,
     String image,
-    boolean canReserve
+    boolean canReserve,
+    int numberOfPerson,
+    String location
 ) {
 
     public static GetBasketResponse fromEntity(Basket basket, Accommodation accommodation,
         Reservations reservations, AccommodationRooms rooms, String image,
-        boolean canReserve,double averageStar) {
+        boolean canReserve, double averageStar) {
         return new GetBasketResponse(
             basket.getBasketId(),
             accommodation.getAccommodationName(),
@@ -38,10 +41,13 @@ public record GetBasketResponse(
             reservations.getStartDate(),
             reservations.getEndDate(),
             rooms.getCheckinExplanation(),
-            averageStar, //TODO ::: 리뷰별점 반영하여 점수 수정
+            averageStar,
             rooms.getPrice(),
+            rooms.getDiscountPercentage(),
             image,
-            canReserve
+            canReserve,
+            reservations.getNumberOfPerson(),
+            accommodation.getLocation()
         );
     }
 }
