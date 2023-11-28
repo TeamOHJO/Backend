@@ -7,6 +7,7 @@ import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.review.dto.AccommodationReviewResponse;
 import com.example.yanolja.domain.review.dto.CreateReviewResponse;
 import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
+import com.example.yanolja.domain.review.dto.UserReviewDTO;
 import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.entity.ReviewImages;
 import com.example.yanolja.domain.review.error.PermissionDeniedException;
@@ -16,6 +17,7 @@ import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -119,4 +121,19 @@ public class ReviewServiceImpl implements ReviewService {
         return ResponseDTO.res(HttpStatus.OK, "리뷰 수정 성공",
             CreateReviewResponse.fromEntity(savedReview, request.images()));
     }
+
+    @Override
+    public ResponseDTO<List<UserReviewDTO>> getUserReviews(User user) {
+        List<Review> reviews = reviewRepository.findByUserId(user.getId());
+
+        if (reviews.isEmpty()) {
+            return ResponseDTO.res(HttpStatus.OK, "작성한 리뷰가 없습니다.", new ArrayList<>());
+        }
+        List<UserReviewDTO> reviewDTOs = reviews.stream()
+            .map(review -> new UserReviewDTO(review))
+            .collect(Collectors.toList());
+        return ResponseDTO.res(HttpStatus.OK, "리뷰 조회 성공", reviewDTOs);
+    }
+
+
 }
