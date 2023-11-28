@@ -1,0 +1,8 @@
+### 토글 좋아요
+POST http://localhost:8080/toggle-like/{userId}/{roomId}
+Content-Type: application/json
+
+{
+    "userId": "1",
+    "roomId": "1"
+}

@@ -1,6 +1,7 @@
 package com.example.yanolja.domain.accommodationLikes.entity;
 
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
+import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +35,14 @@ public class AccommodationLikes {
     @ManyToOne
     @JoinColumn(name = "accommodationId", referencedColumnName = "accommodationId")
     private Accommodation accommodation;
+
+    @ManyToOne
+    @JoinColumn(name = "roomId", referencedColumnName = "roomId")
+    private AccommodationRooms accommodationRoom;
+
+    public void setAccommodationRoom(AccommodationRooms accommodationRoom) {
+        this.accommodationRoom = accommodationRoom;
+    }
 
     @Column(name = "isLike")
     private boolean isLike;

@@ -1,0 +1,3 @@
+### 위시리스트 조회
+GET http://localhost:8080/wishlist/{userId}
+Accept: application/json
