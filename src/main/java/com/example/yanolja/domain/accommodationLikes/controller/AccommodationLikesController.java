@@ -1,12 +1,10 @@
 package com.example.yanolja.domain.accommodationLikes.controller;
 
-import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodationLikes.dto.AccommodationLikesResponse;
 import com.example.yanolja.domain.accommodationLikes.service.AccommodationLikesService;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
