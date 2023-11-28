@@ -154,6 +154,28 @@ public class ReservationServiceImpl implements ReservationService {
 
                 )).collect(Collectors.toList()));
     }
+
+    @Override
+    public ResponseDTO<?> getUsersCanceledReservation(User user) {
+        List<Reservations> reservationsList =
+            reservationRepository.findUsersCanceledReservation(user.getUserId());
+
+        return ResponseDTO.res(HttpStatus.OK, "예약 취소 내역 조회 완료",
+            reservationsList.stream().map(i ->
+                GetUsersReservationResponse.fromEntity(
+                    i.getRoom().getAccommodation(),
+                    i.getRoom(),
+                    i.getRoom().getAccommodation().getImagelist().get(0).getImage(),
+                    i,
+                    Math.round(
+                        reviewRepository.findByAccommodationId(
+                                i.getRoom().getAccommodation().getAccommodationId()).stream()
+                            .mapToInt(Review::getStar)
+                            .average()
+                            .orElse(0.0) * 10 / 10.0)
+
+                )).collect(Collectors.toList()));
+    }
 }
 
 
