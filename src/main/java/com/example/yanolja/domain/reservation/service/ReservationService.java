@@ -15,4 +15,6 @@ public interface ReservationService {
     ResponseDTO<?> cancelReservation(User user, long reservationId);
 
     ResponseDTO<?> getUsersReservation(User user);
+
+    ResponseDTO<?> getUsersCanceledReservation(User user);
 }

@@ -64,4 +64,13 @@ public class ReservationController {
         ResponseDTO<?> response = reservationService.getUsersReservation(user);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+
+    @GetMapping("/canceled")
+    public ResponseEntity<ResponseDTO<?>> getUsersCanceledReservation(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+
+        ResponseDTO<?> response = reservationService.getUsersCanceledReservation(user);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }
