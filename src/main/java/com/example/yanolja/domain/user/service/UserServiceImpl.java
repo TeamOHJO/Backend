@@ -138,6 +138,10 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException(INVALID_PASSWORD);
         }
 
+        if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {
+            return ResponseDTO.res(HttpStatus.BAD_REQUEST, "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
+        }
+
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
 
