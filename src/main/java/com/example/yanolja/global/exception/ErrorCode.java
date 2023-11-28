@@ -11,6 +11,7 @@ public enum ErrorCode {
     USER_ALREADY_REGISTERED(HttpStatus.BAD_REQUEST, "이미 가입된 회원입니다."),
     INVALID_PHONENUMBER(HttpStatus.LENGTH_REQUIRED, "유효하지 않은 휴대폰 번호 형식"),
     INVALID_EMAIL(HttpStatus.PRECONDITION_FAILED, "유효하지 않은 이메일 형식"),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
 
     //Reservation
     RESERVATION_CONFLICT(HttpStatus.BAD_REQUEST, "예약하려는 시간대에 예약이 존재합니다."),
