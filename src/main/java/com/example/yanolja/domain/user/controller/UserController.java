@@ -1,5 +1,6 @@
 package com.example.yanolja.domain.user.controller;
 
+import com.example.yanolja.domain.user.dto.ChangePasswordRequest;
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
 import com.example.yanolja.domain.user.dto.CreateUserResponse;
 import com.example.yanolja.domain.user.dto.UpdateUserRequest;
@@ -57,6 +58,15 @@ public class UserController {
         @RequestBody UpdateUserRequest updateUserRequest) {
 
         ResponseDTO<?> response = userService.updateUser(principalDetails.getUser().getId(), updateUserRequest);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PutMapping("/repassword")
+    public ResponseEntity<ResponseDTO<?>> changePassword(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @RequestBody ChangePasswordRequest changePasswordRequest) {
+
+        ResponseDTO<?> response = userService.changePassword(principalDetails.getUser().getId(), changePasswordRequest);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
