@@ -61,9 +61,9 @@ public class Accommodation extends BaseTimeEntity {
     @OneToMany(mappedBy = "accommodation")
     private List<Review> reviews;
 
-
     @OneToMany(mappedBy = "accommodation")
     private List<AccommodationRooms> roomlist = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "accommodation")
+    private List<AccommodationImages> imagelist = new ArrayList<>();
 }

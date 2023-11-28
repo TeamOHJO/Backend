@@ -9,17 +9,22 @@ import com.example.yanolja.domain.basket.repository.BasketRepository;
 import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.dto.CreateReservationResponse;
 import com.example.yanolja.domain.reservation.dto.GetReservationDetailsResponse;
+import com.example.yanolja.domain.reservation.dto.GetUsersReservationResponse;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
 import com.example.yanolja.domain.reservation.exception.InvalidCancelReservationRequestException;
 import com.example.yanolja.domain.reservation.exception.ReservationConflictException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
+import com.example.yanolja.domain.review.entity.Review;
+import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
     private final BasketRepository basketRepository;
+    private final ReviewRepository reviewRepository;
 
     @Override
     public ResponseDTO<?> createReservation(CreateReservationRequest createReservationRequest,
@@ -124,6 +130,29 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reservation);
 
         return ResponseDTO.res(HttpStatus.NO_CONTENT, "예약 취소 완료");
+    }
+
+    @Override
+    public ResponseDTO<?> getUsersReservation(User user) {
+
+        List<Reservations> reservationsList =
+            reservationRepository.findUsersReservation(user.getUserId());
+
+        return ResponseDTO.res(HttpStatus.OK, "예약 내역 조회 완료",
+            reservationsList.stream().map(i ->
+                GetUsersReservationResponse.fromEntity(
+                    i.getRoom().getAccommodation(),
+                    i.getRoom(),
+                    i.getRoom().getAccommodation().getImagelist().get(0).getImage(),
+                    i,
+                    Math.round(
+                        reviewRepository.findByAccommodationId(
+                                i.getRoom().getAccommodation().getAccommodationId()).stream()
+                            .mapToInt(Review::getStar)
+                            .average()
+                            .orElse(0.0) * 10 / 10.0)
+
+                )).collect(Collectors.toList()));
     }
 }
 
