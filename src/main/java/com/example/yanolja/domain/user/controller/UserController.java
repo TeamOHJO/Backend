@@ -2,6 +2,7 @@ package com.example.yanolja.domain.user.controller;
 
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
 import com.example.yanolja.domain.user.dto.CreateUserResponse;
+import com.example.yanolja.domain.user.dto.UpdateUserRequest;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.service.UserService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +49,15 @@ public class UserController {
         ResponseDTO<CreateUserResponse> response = ResponseDTO.res(
             HttpStatus.OK, "사용자 정보 조회 성공", userInfo);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDTO<?>> updateUserInfo(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @RequestBody UpdateUserRequest updateUserRequest) {
+
+        ResponseDTO<?> response = userService.updateUser(principalDetails.getUser().getId(), updateUserRequest);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     // Authenticated user 샘플테스트 코드입니다

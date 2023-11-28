@@ -6,6 +6,7 @@ import static com.example.yanolja.global.exception.ErrorCode.USER_ALREADY_REGIST
 
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
 import com.example.yanolja.domain.user.dto.CreateUserResponse;
+import com.example.yanolja.domain.user.dto.UpdateUserRequest;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.exception.EmailDuplicateError;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
@@ -91,6 +92,17 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return ResponseDTO.res(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + e.getMessage());
         }
+    }
+
+    @Override
+    public ResponseDTO<?> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다.")); // 적절한 예외 처리 필요
+
+        updateUserRequest.toEntity(user);
+        userRepository.save(user);
+
+        return ResponseDTO.res(HttpStatus.OK, "사용자 정보 업데이트 성공");
     }
 
 
