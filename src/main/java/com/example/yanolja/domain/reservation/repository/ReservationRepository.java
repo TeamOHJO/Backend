@@ -32,4 +32,8 @@ public interface ReservationRepository
         "AND r.paymentCompleted = true AND r.user.userId = :userId")
     Optional<Reservations> checkReviewPermission(@Param("id") Long id,
         @Param("userId") Long userId);
+
+    @Query("SELECT r FROM Reservations r WHERE r.user.userId = :id AND (r.deletedAt IS NULL)"
+        + "AND r.paymentCompleted = true")
+    List<Reservations> findUsersReservation(@Param("id") Long id);
 }
