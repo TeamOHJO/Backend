@@ -29,10 +29,10 @@ public class WishlistController {
         return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, wishlist));
     }
 
-    @PostMapping("/toggle-like/{userId}/{roomId}")
-    public ResponseEntity<ResponseDTO<String>> toggleLike(@PathVariable Long userId, @PathVariable Long roomId) {
+    @PostMapping("/toggle-like/{userId}/{accommodationId}")
+    public ResponseEntity<ResponseDTO<String>> toggleLike(@PathVariable Long userId, @PathVariable Long accommodationId) {
         try {
-            wishlistService.toggleLikeStatus(userId, roomId);
+            wishlistService.toggleLikeStatus(userId, accommodationId);
             ResponseDTO<String> response = ResponseDTO.<String>builder()
                 .code(HttpStatus.OK.value())
                 .message("좋아요 상태 조작에 성공하였습니다.")

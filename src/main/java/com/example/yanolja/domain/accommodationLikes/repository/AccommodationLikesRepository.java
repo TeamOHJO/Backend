@@ -17,7 +17,8 @@ public interface AccommodationLikesRepository extends JpaRepository<Accommodatio
         Long accommodationId);
 
     @Query("SELECT a FROM AccommodationLikes a WHERE a.user = :user AND a.isLike = :isLike")
-    List<AccommodationLikes> findByUserAndIsLike(@Param("user") User user, @Param("isLike") boolean isLike);
+    List<AccommodationLikes> findByUserAndIsLike(@Param("user") User user,
+        @Param("isLike") boolean isLike);
 
     // 성능 최적화 시 변경 가능성 (여러개의 isLike 상태 처리)
 //    @Transactional
@@ -25,6 +26,5 @@ public interface AccommodationLikesRepository extends JpaRepository<Accommodatio
 //    @Query("UPDATE AccommodationLikes a SET a.isLike = :isLike WHERE a.user = :user AND a.accommodationRoom = :room")
 //    void updateLikeStatus(@Param("user") User user, @Param("room") AccommodationRooms room, @Param("isLike") boolean isLike);
 
-    Optional<AccommodationLikes> findByUser_UserIdAndAccommodationRoom_RoomId(Long userId, Long roomId);
 
 }

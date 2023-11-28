@@ -1,3 +1,4 @@
-### 위시리스트 조회
-GET http://localhost:8080/wishlist/{userId}
+### 위시리스트 조회 /wishlist/{userId}
+GET http://localhost:8080/wishlist/2
 Accept: application/json
+Authorization: Bearer token
