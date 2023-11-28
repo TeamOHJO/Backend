@@ -8,6 +8,7 @@ import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +37,16 @@ public class UserController {
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
         ResponseDTO<?> response = userService.deleteUser(principalDetails.getUser().getId());
         return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<ResponseDTO<CreateUserResponse>> getMyPageInfo(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        CreateUserResponse userInfo = CreateUserResponse.fromEntity(user);
+        ResponseDTO<CreateUserResponse> response = ResponseDTO.res(
+            HttpStatus.OK, "사용자 정보 조회 성공", userInfo);
+        return ResponseEntity.ok(response);
     }
 
     // Authenticated user 샘플테스트 코드입니다
