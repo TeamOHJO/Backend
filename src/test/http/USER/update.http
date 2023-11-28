@@ -1,0 +1,9 @@
+### 사용자 정보 수정
+PUT http://localhost:8080/user/update
+Authorization: token
+Content-Type: application/json
+
+{
+    "username": "변경 이름",
+    "phonenumber": "01012345678"
+}
