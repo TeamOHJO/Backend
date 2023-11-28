@@ -1,6 +1,5 @@
 package com.example.yanolja.domain.wishlist.controller;
 
-import com.example.yanolja.domain.accommodation.exception.RoomNotFoundException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
@@ -19,14 +18,6 @@ public class WishlistControllerAdvice {
     ) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ResponseDTO.res(HttpStatus.NOT_FOUND, exception.getMessage()));
-    }
-
-    @ExceptionHandler(RoomNotFoundException.class)
-    public ResponseEntity<ResponseDTO<Object>> handleRoomNotFound(RoomNotFoundException exception) {
-        return ResponseEntity
-            .status(exception.getErrorCode().getHttpStatus())
-            .body(
-                ResponseDTO.res(exception.getErrorCode().getHttpStatus(), exception.getMessage()));
     }
 
 }

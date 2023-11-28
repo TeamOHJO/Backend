@@ -7,6 +7,4 @@ public interface WishlistService {
 
     List<WishlistDTO> getUserWishlist(Long userId);
 
-    void toggleLikeStatus(Long userId, Long accommodationId);
-
 }
