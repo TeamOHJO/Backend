@@ -22,6 +22,7 @@ import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -108,6 +109,10 @@ public class BasketServiceImpl implements BasketService {
                     reservationContent.getRoom().getRoomId(),
                     reservationContent.getStartDate(), reservationContent.getEndDate()
                 );
+
+            if (reservationContent.getStartDate().isBefore(LocalDate.now())) {
+                canReserve = false;
+            }
 
             if (conflictingReservations.isPresent()) {
                 canReserve = false;
