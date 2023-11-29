@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WishlistDTO {
 
+    private Long accommodationId;
     private String image;
     private String name;
     private String category;

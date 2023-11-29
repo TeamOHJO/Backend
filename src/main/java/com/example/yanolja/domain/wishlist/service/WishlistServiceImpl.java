@@ -51,6 +51,7 @@ public class WishlistServiceImpl implements WishlistService {
             accommodation.getAccommodationId());
 
         return new WishlistDTO(
+            accommodation.getAccommodationId(),
             imageUrl,
             accommodation.getAccommodationName(),
             accommodation.getCategory().getCategory(),
@@ -59,5 +60,4 @@ public class WishlistServiceImpl implements WishlistService {
             lowestPrice
         );
     }
-
 }
