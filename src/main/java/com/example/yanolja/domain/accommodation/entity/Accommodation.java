@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -60,4 +61,23 @@ public class Accommodation extends BaseTimeEntity {
     @OneToMany(mappedBy = "accommodation")
     private List<AccommodationRooms> roomlist = new ArrayList<>();
 
+    @Builder
+    public Accommodation(Long accommodationId, AccommodationCategory category,
+        String accommodationName,
+        String location, String tag, boolean isDomestic, String explanation, String cancelInfo,
+        String useGuide, String reservationNotice, String serviceInfo,
+        List<AccommodationRooms> roomlist) {
+        this.accommodationId = accommodationId;
+        this.category = category;
+        this.accommodationName = accommodationName;
+        this.location = location;
+        this.tag = tag;
+        this.isDomestic = isDomestic;
+        this.explanation = explanation;
+        this.cancelInfo = cancelInfo;
+        this.useGuide = useGuide;
+        this.reservationNotice = reservationNotice;
+        this.serviceInfo = serviceInfo;
+        this.roomlist = roomlist;
+    }
 }

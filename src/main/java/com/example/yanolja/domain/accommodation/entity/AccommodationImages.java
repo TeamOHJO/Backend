@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,12 @@ public class AccommodationImages extends BaseTimeEntity {
 
     @Column(name = "image", nullable = false)
     private String image;
+
+
+    @Builder
+    public AccommodationImages(Long imageId, Accommodation accommodation, String image) {
+        this.imageId = imageId;
+        this.accommodation = accommodation;
+        this.image = image;
+    }
 }

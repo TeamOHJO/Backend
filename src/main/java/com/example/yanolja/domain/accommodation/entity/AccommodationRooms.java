@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -53,4 +54,23 @@ public class AccommodationRooms extends BaseTimeEntity {
 
     @Column(name = "serviceInfo")
     private String serviceInfo;
+
+
+    @Builder
+    public AccommodationRooms(Long roomId, Accommodation accommodation, String name, int price,
+        int discountPercentage, String checkinExplanation, int minCapacity, int maxCapacity,
+        String tag,
+        String explanation, String serviceInfo) {
+        this.roomId = roomId;
+        this.accommodation = accommodation;
+        this.name = name;
+        this.price = price;
+        this.discountPercentage = discountPercentage;
+        this.checkinExplanation = checkinExplanation;
+        this.minCapacity = minCapacity;
+        this.maxCapacity = maxCapacity;
+        this.tag = tag;
+        this.explanation = explanation;
+        this.serviceInfo = serviceInfo;
+    }
 }
