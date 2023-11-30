@@ -37,15 +37,12 @@ public enum ErrorCode {
     //Permission
     PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "해당 작업을 수행 할 권한이 존재하지 않습니다."),
 
-  
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 에러"),
-    ACCOMMODATION_NOT_FOUND(HttpStatus.NOT_FOUND, "숙소를 찾을 수 없습니다."),
 
     //APIService
     JSON_PARSING_ERROR(HttpStatus.BAD_REQUEST, "JSON 파싱 오류가 발생했습니다."),
     API_CALL_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 호출에 실패했습니다."),
     API_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 처리 중 오류가 발생했습니다.");
-
 
 
     private HttpStatus httpStatus;
