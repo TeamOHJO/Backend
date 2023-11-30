@@ -110,9 +110,7 @@ public class BasketServiceImpl implements BasketService {
                     reservationContent.getStartDate(), reservationContent.getEndDate()
                 );
 
-            if (reservationContent.getStartDate().isBefore(LocalDate.now())) {
-                canReserve = false;
-            }
+            canReserve = !reservationContent.getStartDate().isBefore(LocalDate.now());
 
             if (conflictingReservations.isPresent()) {
                 canReserve = false;
