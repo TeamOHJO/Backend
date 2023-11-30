@@ -44,16 +44,16 @@
 # [링크](https://documenter.getpostman.com/view/14269013/2s9YeBfu36#f3b52c96-ce6c-42fb-b1e5-cc8c93017f97)  
 
 ## 📌ERD  
-![erd](https://github.com/BackInGone/-----2/assets/64956292/097edab4-55ef-404f-b955-65c53deb9541)  
+![accommodation](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/65541248/16f75b06-04e1-4def-ad51-219ff9ac9f20)
 
-![YBE_20231130_174414](https://github.com/BackInGone/-----2/assets/64956292/c353b50f-e4e7-46e8-ac17-915cf8e23d5f)  
-
+![YBE_20231130_174414](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/65541248/e64a81db-6bcf-4aac-92a3-d49fbd59d270)
 
 ## 📌Persistence View  
-![Persistence View](https://github.com/BackInGone/-----2/assets/64956292/9a6c943b-b8f2-4646-8fd5-491e48b5cf0c)  
+![persistence view](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/65541248/20759a28-3aec-48cf-9c52-66e6cfffa346)
 
 ## 📌FlowChart  
-![Flow Chart](https://github.com/BackInGone/-----2/assets/64956292/9f7865fc-4b9a-4144-8a29-fdcb4aa8c769)  
+![flow chart](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/65541248/0903d4ea-37d1-4df7-ac62-7293a628ba39)
+
 
   
   
