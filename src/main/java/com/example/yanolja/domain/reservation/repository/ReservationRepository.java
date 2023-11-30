@@ -20,7 +20,7 @@ public interface ReservationRepository
         "WHERE r.room.roomId = :roomId " +
         "AND (:startDate <= r.endDate AND :endDate>= r.startDate " +
         "OR :startDate >= r.startDate AND :endDate <= r.endDate) " +
-        "AND r.paymentCompleted = true")
+        "AND r.paymentCompleted = true AND r.deletedAt is NULL")
     Optional<Reservations> findConflictingReservations(@Param("roomId") Long roomId,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
