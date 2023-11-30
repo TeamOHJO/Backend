@@ -1,6 +1,6 @@
 # MiniProject 5조 백엔드  
 
-## 📌서비스 : https://dashing-tiramisu-cbdade.netlify.app/accommodation/1
+## 📌서비스 : https://dashing-tiramisu-cbdade.netlify.app
 
 
 ## 📌프로젝트 내용
