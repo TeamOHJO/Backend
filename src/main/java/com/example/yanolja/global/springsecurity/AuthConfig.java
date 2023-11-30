@@ -50,7 +50,7 @@ public class AuthConfig {
     }
 
     private PrincipalDetails loadUserByUsername(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findNotDeletedUserByEmail(email)
             .map(PrincipalDetails::new)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
