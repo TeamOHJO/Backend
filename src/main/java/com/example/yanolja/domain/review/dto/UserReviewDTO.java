@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserReviewDTO {
 
+    private Long reviewId;
     private int star;
     private List<String> reviewImages;
     private String accommodationCategory;
@@ -22,6 +23,7 @@ public class UserReviewDTO {
     private String reviewContent;
 
     public UserReviewDTO(Review review) {
+        this.reviewId = review.getReviewId();
         this.star = review.getStar();
         this.reviewImages = review.getReviewImages().stream()
             .map(ReviewImages::getImage)
