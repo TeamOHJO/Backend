@@ -1,0 +1,9 @@
+POST http://localhost:8080/reservation/rooms/1
+Content-Type: application/json
+Authorization: token
+
+{
+  "startDate": "2023-11-22",
+  "endDate": "2023-11-24",
+  "numberOfPerson": 2
+}

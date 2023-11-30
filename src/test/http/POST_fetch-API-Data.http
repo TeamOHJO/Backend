@@ -1,0 +1,3 @@
+POST http://localhost:8080/openapi/accommodations
+Content-Type: application/json
+Authorization: token

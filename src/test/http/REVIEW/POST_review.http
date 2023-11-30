@@ -1,0 +1,14 @@
+### 리뷰 생성
+POST https://localhost:8080/review/reservations/4
+Content-Type: application/json
+Authorization: eyJraWQiOiJrZXkxIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMDg0OTUzLCJleHAiOjE3MDEyMjg5NTN9.CMor3dKGOYg7HrHDfPRhdTEIeQsVjSI3DsgSnBMHGolQjcUNAtM8kPKqVAip6i8qcd_b7CFHIqKkxdHdc6nlfg
+
+{
+  "reviewContent": "판교역 바로 옆에 위치해 교통이 편리했습니다.",
+  "images": [
+    "https://a.cdn-hotels.com/gdcs/production110/d1295/985557b1-8062-4894-9a32-0d2bc8ae0e7b.jpg",
+    "https://a.cdn-hotels.com/gdcs/production110/d1295/985557b1-8062-4894-9a32-0d2bc8ae0e7b.jpg",
+    "https://a.cdn-hotels.com/gdcs/production110/d1295/985557b1-8062-4894-9a32-0d2bc8ae0e7b.jpg",
+    "https://a.cdn-hotels.com/gdcs/production110/d1295/985557b1-8062-4894-9a32-0d2bc8ae0e7b.jpg"],
+  "star": 5
+}

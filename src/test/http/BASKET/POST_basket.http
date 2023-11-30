@@ -1,0 +1,9 @@
+POST http://localhost:8080/basket/rooms/1
+Content-Type: application/json
+Authorization: token
+
+{
+  "startDate": "2023-11-02",
+  "endDate": "2023-11-08",
+  "numberOfPerson": 2
+}
