@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import com.example.yanolja.domain.user.request.EmailRequest;
+import com.example.yanolja.domain.user.dto.EmailRequest;
 import com.example.yanolja.domain.user.service.EmailService;
 
 @RestController

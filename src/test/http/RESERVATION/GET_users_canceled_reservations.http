@@ -1,0 +1,3 @@
+GET https://localhost:8080/reservation/canceled
+Content-Type: application/json
+Authorization: eyJraWQiOiJrZXkxIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMTY2MzcxLCJleHAiOjE3MDEzMTAzNzF9.Qz4LDZUYL8uNfdCBxbh3X1ueKzjriWKj88Cp8j8Es0IEcJ4U8LEYUMhrD5GLCdwG9PT0eDkOs-f9zZtzGuiQzA

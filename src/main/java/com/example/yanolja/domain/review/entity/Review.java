@@ -1,5 +1,6 @@
 package com.example.yanolja.domain.review.entity;
 
+import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.user.entity.User;
@@ -11,19 +12,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Data
-@Builder
-@AllArgsConstructor
 public class Review extends BaseTimeEntity {
 
     @Id
@@ -43,17 +42,35 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "reservationId", referencedColumnName = "reservationId")
     private Reservations reservation;
 
-    @Column(name = "reviewContent", nullable = false)
-    private String reviewContent;
+    @OneToMany(mappedBy = "review")
+    private List<ReviewImages> reviewImages = new ArrayList<>();
 
-    @Column(name = "image", nullable = false)
-    private String image;
+    @Column(name = "reviewContent", nullable = false, length = 500)
+    private String reviewContent;
 
     @Column(name = "star", nullable = false)
     private int star;
 
-    private boolean active;
+    @ManyToOne
+    @JoinColumn(name = "accommodationId")
+    private Accommodation accommodation;
 
+    @Builder
+    public Review(AccommodationRooms accommodationRooms,User user,
+        Reservations reservations,Accommodation accommodation,
+        String reviewContent,int star
+    ) {
+        this.room = accommodationRooms;
+        this.user = user;
+        this.reservation =reservations;
+        this.reviewContent = reviewContent;
+        this.star = star;
+        this.accommodation = accommodation;
+    }
 
+    public void editReview(String reviewContent,int star){
+        this.reviewContent = reviewContent;
+        this.star = star;
+    }
 }
 

@@ -4,7 +4,7 @@ import com.example.yanolja.global.exception.ApplicationException;
 import com.example.yanolja.global.exception.ErrorCode;
 
 public class AccommodationNotFoundException extends ApplicationException {
-  public AccommodationNotFoundException(ErrorCode errorCode) {
-    super(errorCode);
+  public AccommodationNotFoundException() {
+    super(ErrorCode.ACCOMMODATION_NOT_FOUND);
   }
 }

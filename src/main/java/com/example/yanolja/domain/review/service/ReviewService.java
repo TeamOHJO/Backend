@@ -2,21 +2,20 @@ package com.example.yanolja.domain.review.service;
 
 import com.example.yanolja.domain.review.dto.AccommodationReviewResponse;
 import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
-import com.example.yanolja.domain.review.dto.ReviewUpdateRequest;
-import com.example.yanolja.domain.review.dto.RoomReviewResponse;
+import com.example.yanolja.domain.review.dto.UserReviewDTO;
+import com.example.yanolja.domain.user.entity.User;
+import com.example.yanolja.global.util.ResponseDTO;
 import java.util.List;
 
 public interface ReviewService {
 
-    RoomReviewResponse createReview(Long roomId, ReviewCreateRequest request);
+    ResponseDTO<?> createReview(User user, Long reservationId, ReviewCreateRequest request);
 
     List<AccommodationReviewResponse> getReviewsByAccommodationId(Long accommodationId);
 
-    List<RoomReviewResponse> getReviewsByRoomId(Long roomId);
+    void deleteReview(User user, Long reviewId);
 
-    RoomReviewResponse getReviewById(Long reviewId);
+    ResponseDTO<?> editReview(User user, Long reviewId, ReviewCreateRequest request);
 
-    RoomReviewResponse updateReview(Long reviewId, ReviewUpdateRequest request);
-
-    void deleteReview(Long reviewId);
+    ResponseDTO<List<UserReviewDTO>> getUserReviews(User user);
 }

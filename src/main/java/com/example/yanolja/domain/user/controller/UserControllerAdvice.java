@@ -2,6 +2,7 @@ package com.example.yanolja.domain.user.controller;
 
 import com.example.yanolja.domain.user.exception.EmailDuplicateError;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
+import com.example.yanolja.domain.user.exception.InvalidPasswordException;
 import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.global.util.ResponseDTO;
@@ -55,5 +56,15 @@ public class UserControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ResponseDTO.res(HttpStatus.NOT_FOUND, exception.getMessage()));
     }
+
+    @ExceptionHandler(value = InvalidPasswordException.class)
+    public ResponseEntity<ResponseDTO<Object>> handleInvalidPasswordException(
+        InvalidPasswordException exception) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, exception.getMessage()));
+    }
+
+
 }
 

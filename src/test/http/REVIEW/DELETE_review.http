@@ -1,3 +1,4 @@
 ### 리뷰 삭제
-DELETE http://localhost:8080/review/31
+DELETE https://localhost:8080/review/1
 Content-Type: application/json
+Authorization: eyJraWQiOiJrZXkxIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMDg0OTUzLCJleHAiOjE3MDEyMjg5NTN9.CMor3dKGOYg7HrHDfPRhdTEIeQsVjSI3DsgSnBMHGolQjcUNAtM8kPKqVAip6i8qcd_b7CFHIqKkxdHdc6nlfg

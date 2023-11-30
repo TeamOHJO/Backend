@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 public record GetBasketResponse(
     Long basketId,
+    String accommodationName,
     Long roomId,
     String tag,
     AccommodationCategory category,
@@ -17,17 +18,21 @@ public record GetBasketResponse(
     LocalDate startDate,
     LocalDate endDate,
     String checkInOutExplanation,
-    int star,
+    double star,
     int price,
+    int discountPercentage,
     String image,
-    boolean canReserve
+    boolean canReserve,
+    int numberOfPerson,
+    String location
 ) {
 
     public static GetBasketResponse fromEntity(Basket basket, Accommodation accommodation,
         Reservations reservations, AccommodationRooms rooms, String image,
-        boolean canReserve) {
+        boolean canReserve, double averageStar) {
         return new GetBasketResponse(
             basket.getBasketId(),
+            accommodation.getAccommodationName(),
             rooms.getRoomId(),
             rooms.getTag(),
             accommodation.getCategory(),
@@ -36,10 +41,13 @@ public record GetBasketResponse(
             reservations.getStartDate(),
             reservations.getEndDate(),
             rooms.getCheckinExplanation(),
-            4, //TODO ::: 리뷰별점 반영하여 점수 수정
+            averageStar,
             rooms.getPrice(),
+            rooms.getDiscountPercentage(),
             image,
-            canReserve
+            canReserve,
+            reservations.getNumberOfPerson(),
+            accommodation.getLocation()
         );
     }
 }

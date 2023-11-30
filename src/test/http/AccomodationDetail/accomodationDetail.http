@@ -1,0 +1,3 @@
+### 숙박 상세 정보 요청
+GET  http://localhost:8080/accommodation/detail/{accommodationId}?maxCapacity=2&startDate=2023-01-01&endDate=2023-01-02
+

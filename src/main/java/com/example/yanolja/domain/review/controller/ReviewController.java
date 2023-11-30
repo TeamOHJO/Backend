@@ -2,15 +2,16 @@ package com.example.yanolja.domain.review.controller;
 
 import com.example.yanolja.domain.review.dto.AccommodationReviewResponse;
 import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
-import com.example.yanolja.domain.review.dto.ReviewUpdateRequest;
-import com.example.yanolja.domain.review.dto.RoomReviewResponse;
+import com.example.yanolja.domain.review.dto.UserReviewDTO;
 import com.example.yanolja.domain.review.service.ReviewService;
+import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,14 +28,16 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/{roomId}")
-    public ResponseEntity<ResponseDTO<RoomReviewResponse>> createReview(@PathVariable Long roomId,
+    @PostMapping("/reservations/{reservationId}")
+    public ResponseEntity<ResponseDTO<?>> createReview(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @PathVariable Long reservationId,
         @Valid @RequestBody ReviewCreateRequest request) {
-        RoomReviewResponse reviewResponse = reviewService.createReview(roomId, request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ResponseDTO.res(HttpStatus.CREATED, "리뷰가 성공적으로 생성되었습니다.", reviewResponse));
-    }
 
+        ResponseDTO<?> response = reviewService.createReview(
+            principalDetails.getUser(), reservationId, request);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 
     @GetMapping("/accommodation/{accommodationId}")
     public ResponseEntity<ResponseDTO<List<AccommodationReviewResponse>>> getReviewsByAccommodationId(
@@ -44,32 +47,31 @@ public class ReviewController {
         return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "조회 성공", reviews));
     }
 
-    @GetMapping("/room/{roomId}")
-    public ResponseEntity<ResponseDTO<List<RoomReviewResponse>>> getReviewsByRoomId(
-        @PathVariable Long roomId) {
-        List<RoomReviewResponse> reviews = reviewService.getReviewsByRoomId(roomId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "조회 성공", reviews));
-    }
-
-    @GetMapping("/{reviewId}")
-    public ResponseEntity<ResponseDTO<RoomReviewResponse>> getReviewById(
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ResponseDTO<Object>> deleteReview(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
         @PathVariable Long reviewId) {
-        RoomReviewResponse reviewResponse = reviewService.getReviewById(reviewId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "상세 조회 성공", reviewResponse));
+
+        reviewService.deleteReview(principalDetails.getUser(), reviewId);
+        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰가 성공적으로 삭제되었습니다."));
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<ResponseDTO<RoomReviewResponse>> updateReview(@PathVariable Long reviewId,
-        @Valid @RequestBody
-        ReviewUpdateRequest request) {
-        RoomReviewResponse reviewResponse = reviewService.updateReview(reviewId, request);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰 업데이트 성공", reviewResponse));
+    public ResponseEntity<ResponseDTO<?>> editReview(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @PathVariable Long reviewId,
+        @Valid @RequestBody ReviewCreateRequest request) {
+
+        ResponseDTO<?> response = reviewService.editReview(
+            principalDetails.getUser(), reviewId, request);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ResponseDTO<Object>> deleteReview(@PathVariable Long reviewId) {
-        reviewService.deleteReview(reviewId);
-        return ResponseEntity.ok(ResponseDTO.res(HttpStatus.OK, "리뷰가 성공적으로 삭제되었습니다.", null));
-    }
+    @GetMapping("/user/list")
+    public ResponseEntity<ResponseDTO<List<UserReviewDTO>>> getUserReviews(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
+        ResponseDTO<List<UserReviewDTO>> response = reviewService.getUserReviews(principalDetails.getUser());
+        return ResponseEntity.ok(response);
+    }
 }

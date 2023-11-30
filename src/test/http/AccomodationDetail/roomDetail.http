@@ -1,0 +1,2 @@
+### 방 정보 상세조회
+GET http://localhost:8080/accommodation/detail/room/{roomId}

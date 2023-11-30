@@ -1,0 +1,9 @@
+### 사용자 정보 수정
+PUT https://localhost:8080/user
+Authorization: eyJraWQiOiJrZXkzIiwiYWxnIjoiSFM1MTIifQ.eyJzdWIiOiJsaXl1c2FuZzFAbmF2ZXIuY29tIiwiaWF0IjoxNzAxMTY5OTM0LCJleHAiOjE3MDEzMTM5MzR9.7x9F1ZVO0sSjxwt3RFXU-mpmrGhzpIhc4DasnapGAebGo8cWgk4SViRx9KkOusp_GKaoRVpHhOyhXC2Rv4GCvg
+Content-Type: application/json
+
+{
+    "username": "이유상",
+    "phonenumber": "01077777777"
+}

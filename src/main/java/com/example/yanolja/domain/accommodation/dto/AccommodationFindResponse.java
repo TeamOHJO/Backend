@@ -22,6 +22,7 @@ public class AccommodationFindResponse {
     private String reservationNotice;
     private List<String> serviceInfoList;
     private List<String> accommodationImageList;
+    private int minPrice;
     private double averageReviewScore; // 리뷰 평균 점수
     private boolean isLiked; // 좋아요 여부
 
@@ -30,7 +31,7 @@ public class AccommodationFindResponse {
         Long accommodationId, AccommodationCategory category, String accommodationName,
         String location, String tag, boolean isDomestic, String explanation, String cancelInfo,
         String useGuide, String reservationNotice, List<String> serviceInfoList,
-        List<String> accommodationImageList, boolean isLike) {
+        List<String> accommodationImageList, boolean isLike,int minPrice,double averageReviewScore) {
         this.accommodationId = accommodationId;
         this.category = category;
         this.accommodationName = accommodationName;
@@ -43,12 +44,13 @@ public class AccommodationFindResponse {
         this.reservationNotice = reservationNotice;
         this.serviceInfoList = serviceInfoList;
         this.accommodationImageList = accommodationImageList;
-        this.averageReviewScore = 4;
+        this.minPrice = minPrice;
+        this.averageReviewScore = averageReviewScore;
         this.isLiked = isLike;
     }
 
     public static AccommodationFindResponse fromEntity(Accommodation accommodation,
-        List<String> imageList,boolean isLike) {
+        List<String> imageList,boolean isLike,int minPrice,double averageReviewScore) {
 
         List<String> serviceList = Arrays.asList(
             accommodation.getServiceInfo().split(",")); // 콤마로 구분된 문자열을 리스트로 변환
@@ -66,6 +68,8 @@ public class AccommodationFindResponse {
             .reservationNotice(accommodation.getReservationNotice())
             .serviceInfoList(serviceList)
             .accommodationImageList(imageList)
+            .minPrice(minPrice)
+            .averageReviewScore(averageReviewScore)
             .isLike(isLike)
             .build();
     }

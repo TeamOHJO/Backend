@@ -1,3 +1,0 @@
-### roomId로 리뷰 조회
-GET http://localhost:8080/review/room/3
-Content-Type: application/json

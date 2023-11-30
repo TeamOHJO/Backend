@@ -54,4 +54,23 @@ public class ReservationController {
         ResponseDTO<?> response = reservationService.cancelReservation(user, reservationId);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+
+    //유저의 예약 내역 조회
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO<?>> getUsersReservation(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+
+        ResponseDTO<?> response = reservationService.getUsersReservation(user);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/canceled")
+    public ResponseEntity<ResponseDTO<?>> getUsersCanceledReservation(
+        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+
+        ResponseDTO<?> response = reservationService.getUsersCanceledReservation(user);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 }
