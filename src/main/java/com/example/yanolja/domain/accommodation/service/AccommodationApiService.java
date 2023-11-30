@@ -6,25 +6,32 @@ import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
+import com.example.yanolja.domain.accommodation.exception.ApiCallError;
+import com.example.yanolja.domain.accommodation.exception.ApiProcessingError;
+import com.example.yanolja.domain.accommodation.exception.JsonParsingError;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
+import com.example.yanolja.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class AccommodationApiService {
 
@@ -34,15 +41,15 @@ public class AccommodationApiService {
   private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
   private final RestTemplate restTemplate = new RestTemplate();
 
-  private final String apiUrl = "https://apis.data.go.kr/B551011/KorService1/searchStay1?numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&arrange=D&serviceKey=xdzR0MEh2Mf8PxUEnYyM9djcwiBAuT22jXTmsI8Aj1Wf4iEkZPLk1K4EI4bRnFZiige6WMBTLmWgzf6onKh59Q==";
   private final String apiKey = "xdzR0MEh2Mf8PxUEnYyM9djcwiBAuT22jXTmsI8Aj1Wf4iEkZPLk1K4EI4bRnFZiige6WMBTLmWgzf6onKh59Q==";
+  private final String sta1ApiUrl = "https://apis.data.go.kr/B551011/KorService1/searchStay1?numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&arrange=D&serviceKey="+apiKey;
+  private final String DetailInfo1ApiUrl1 = "https://apis.data.go.kr/B551011/KorService1/detailInfo1?MobileOS=ETC&MobileApp=testApp&_type=json&contentId=";
+  private final String DetailInfo1ApiUrl2 = "&contentTypeId=32&numOfRows=100&pageNo=1&serviceKey=";
 
 
   @Transactional  //DetailInfo1 API에 대한 처리 요청 처리 모듈
   public void processDetailInfo1(String contentId, Accommodation accommodation) {
-    String url = "https://apis.data.go.kr/B551011/KorService1/detailInfo1?MobileOS=ETC&MobileApp=testApp&_type=json&contentId="
-        + contentId
-        + "&contentTypeId=32&numOfRows=100&pageNo=1&serviceKey=" + apiKey;
+    String url = DetailInfo1ApiUrl1 + contentId + DetailInfo1ApiUrl2 + apiKey;
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
     if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
@@ -55,7 +62,6 @@ public class AccommodationApiService {
           JSONArray items = ((JSONObject) itemsObj).getJSONArray("item");
           for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            System.out.println("API Item: " + item.toString());  //API 응답 내용 확인
 
             IntegratedAccommodationDTO dto = parseJsonToDto(item);
 
@@ -65,10 +71,12 @@ public class AccommodationApiService {
           System.out.println("DetailInfo1 API 응답에서 항목을 찾을 수 없거나 예상치 못한 형식입니다.");
         }
       } catch (JSONException e) {
-        System.out.println("DetailInfo1 API 호출에서 JSON 파싱 오류: " + e.getMessage());
+        log.error("JSON 파싱 오류", e);
+        throw new JsonParsingError(ErrorCode.JSON_PARSING_ERROR);
+      } catch (RestClientException e) {
+        log.error("API 호출 실패", e);
+        throw new ApiCallError(ErrorCode.API_CALL_FAILURE);
       }
-    } else {
-      System.out.println("DetailInfo1 API 호출 오류: " + response.getStatusCode());
     }
 
   }
@@ -77,7 +85,7 @@ public class AccommodationApiService {
   @Transactional  //Stay1 API에 대한 요청 처리 모듈
   public void processSearchStay1Api () {
     try {
-      ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+      ResponseEntity<String> response = restTemplate.getForEntity(sta1ApiUrl, String.class);
 
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
 
@@ -92,19 +100,19 @@ public class AccommodationApiService {
           Accommodation accommodation = saveAccommodation(dto);
           processDetailInfo1(dto.getContentid(), accommodation);
 
-          //todo 방금 저장된 accommodation 데이터의 serviceinfo 를 dto로 채우기 코드
         }
       } else {
         System.out.println("SearchStay1 API 호출 오류");
       }
 
     } catch (Exception e) {
-      System.out.println("API 호출 중 예외 발생: " + e.getMessage());
+      log.error("API 처리 중 오류", e);
+      throw new ApiProcessingError(ErrorCode.API_PROCESSING_ERROR);
     }
   }
 
 
-  @Transactional //Json 에서 Dto 로 파싱 함수
+  @Transactional //Json 에서 Dto 로 파싱 
   public IntegratedAccommodationDTO parseJsonToDto(JSONObject item) {
     List<String> serviceInfo = new ArrayList<>();
 
@@ -126,18 +134,14 @@ public class AccommodationApiService {
       }
     }
 
-    String roomOffSeasonMinFee1 = item.optString("roomoffseasonminfee1", "0");
-    System.out.println("API에서 받은 roomoffseasonminfee1 값: " + roomOffSeasonMinFee1);
-
     int price;
     try {
-      price = Integer.parseInt(roomOffSeasonMinFee1);
+      price = Integer.parseInt(item.optString("roomoffseasonminfee1"));
     } catch (NumberFormatException e) {
       System.out.println("roomoffseasonminfee1 파싱 중 오류 발생: " + e.getMessage());
       price = 0; // 파싱에 실패한 경우 기본값으로 설정
     }
 
-    System.out.println("변환된 price 값: " + price);
 
     return IntegratedAccommodationDTO.builder()
         .title(item.optString("title"))
