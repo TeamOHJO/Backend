@@ -126,11 +126,24 @@ public class AccommodationApiService {
       }
     }
 
+    String roomOffSeasonMinFee1 = item.optString("roomoffseasonminfee1", "0");
+    System.out.println("API에서 받은 roomoffseasonminfee1 값: " + roomOffSeasonMinFee1);
+
+    int price;
+    try {
+      price = Integer.parseInt(roomOffSeasonMinFee1);
+    } catch (NumberFormatException e) {
+      System.out.println("roomoffseasonminfee1 파싱 중 오류 발생: " + e.getMessage());
+      price = 0; // 파싱에 실패한 경우 기본값으로 설정
+    }
+
+    System.out.println("변환된 price 값: " + price);
+
     return IntegratedAccommodationDTO.builder()
         .title(item.optString("title"))
         .addr1(item.optString("addr1"))
         .roomTitle(item.optString("roomtitle"))
-        .roomoffseasonminfee1((item.optString("roomoffseasoninfee1","0")))
+        .roomoffseasonminfee1((String.valueOf(price)))
         .roomIntro(item.optString("roomtintro"))
         .roombasecount((item.optString("roombasecount")))
         .roommaxcount((item.optString("roommaxcount")))
@@ -189,7 +202,8 @@ public class AccommodationApiService {
     String subdetailoverview = dto.getSubdetailoverview() != null ? dto.getSubdetailoverview() : "기본 방 설명";
     int minCapacity = (dto.getRoombasecount() != null && !dto.getRoombasecount().isEmpty() && dto.getRoombasecount().matches("\\d+")) ? Integer.parseInt(dto.getRoombasecount()) : 1;
     int maxCapacity = (dto.getRoommaxcount() != null && !dto.getRoommaxcount().isEmpty() && dto.getRoommaxcount().matches("\\d+")) ? Integer.parseInt(dto.getRoommaxcount()) : 2;
-    int price = (dto.getRoomoffseasonminfee1() != null && !dto.getRoomoffseasonminfee1().isEmpty() && dto.getRoomoffseasonminfee1().matches("\\d+")) ? Integer.parseInt(dto.getRoomoffseasonminfee1()) : 0;
+    int price = Integer.parseInt(dto.getRoomoffseasonminfee1());
+    System.out.println("price saverooms 체크 = " + price);
 
     AccommodationRooms accommodationRoom = AccommodationRooms.builder()
         .accommodation(accommodation)
@@ -203,6 +217,8 @@ public class AccommodationApiService {
         .build();
 
     accommodationRoomRepository.save(accommodationRoom);
+    updateAccommodationServiceInfo(accommodation, combinedServiceInfo);  //시설정보를 accommodation 테이블에도 저장(시설정보가 존재하는 컬럼만)
+
 
     SaveRoomImages(accommodationRoom, dto);
     //todo price 입력값 0
@@ -233,6 +249,24 @@ public class AccommodationApiService {
         accommodationRoomImagesRepository.save(accommodationRoomImage);
       }
     }
+  }
+
+  @Transactional
+  public void updateAccommodationServiceInfo(Accommodation accommodation, String serviceInfo) {
+    Accommodation updatedAccommodation = Accommodation.builder()
+        .accommodationId(accommodation.getAccommodationId())
+        .category(accommodation.getCategory())
+        .accommodationName(accommodation.getAccommodationName())
+        .location(accommodation.getLocation())
+        .tag(accommodation.getTag())
+        .isDomestic(true)
+        .explanation(accommodation.getExplanation())
+        .cancelInfo(accommodation.getCancelInfo())
+        .useGuide(accommodation.getUseGuide())
+        .reservationNotice(accommodation.getReservationNotice())
+        .serviceInfo(serviceInfo) // 업데이트할 부분
+        .build();
+    accommodationRepository.save(updatedAccommodation);
   }
 
 }
