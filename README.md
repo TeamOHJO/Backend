@@ -16,6 +16,21 @@
 > - ### DBMS : ![MySQL](https://img.shields.io/badge/DBMS-MySQL-blue.svg)
 > - ### 배포환경 : ![GCP VM](https://img.shields.io/badge/배포%20환경-GCP%20VM%20ubuntu%2020-blue.svg)
 
+## 📌실행환경 설정 방법
+- **`.env` 파일을 만들어서 최상단 디렉토리에 위치하여야 합니다.**
+- env 파일은 아래의 형식으로 만들어야 합니다.
+```properties
+JWT_SECRET_KEY1=key1key1key1key1key1key1key1key1key1key1key1key1key1key1key1key1key1key1
+JWT_SECRET_KEY2=key2key2key2key2key2key2key2key2key2key2key2key2key2key2key2key2key2key2
+JWT_SECRET_KEY3=key3key3key3key3key3key3key3key3key3key3key3key3key3key3key3key3key3key3
+TEST_ID=id
+TEST_ID_PASSWORD=password
+TEST_ID_EMAIL=email
+```
+
+- **docker 실행 후 docker-compose.yml을 실행해 데이터베이스 환경을 만들어야 합니다.**
+
+
 ## 📌컨벤션
 > - ![Code Convention](https://img.shields.io/badge/Code%20Convention-IntelliJ%20Java%20Google%20Style-brightgreen.svg)
 > - ![GitFlow](https://img.shields.io/badge/GitFlow-Workflow-orange.svg)
