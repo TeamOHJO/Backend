@@ -8,7 +8,7 @@
 > - 프로젝트 기간 : 11/20(월) ~ 12.01(금)
 
 ## 📌기술스택 & 구현환경
-> - ### Java : ![Java](https://img.shields.io/badge/java-11-red.svg)
+> - ### Java : ![Java](https://img.shields.io/badge/java-17-red.svg)
 > - ### FrameWork : ![Spring Boot](https://img.shields.io/badge/springboot-3.1.5-brightgreen.svg)  ![Spring Security](https://img.shields.io/badge/springsecurity-brightgreen.svg) ![Spring Data JPA](https://img.shields.io/badge/spring%20data%20JPA-brightgreen.svg)  ![Spring Web](https://img.shields.io/badge/spring%20web-brightgreen.svg)
 > - ### Build : ![Gradle](https://img.shields.io/badge/Build-Gradle-blue.svg)
 > - ### VCS : ![Git](https://img.shields.io/badge/VCS-Git-orange.svg) ![GitHub](https://img.shields.io/badge/Github-black.svg)
@@ -29,15 +29,15 @@
  │   ├── reservation  
  │   ├── accommodationLikes  
  │   ├── basket  
- │　├── wishlist  
+ │   ├── wishlist  
  │   ...  
  └── global  
-    ├── springsecurity  
-    ├── entity  
-    ├── config  
-    ├── exception  
-    ├── jwt  
-    └── util  
+   │  ├── springsecurity  
+   │  ├── entity  
+   │  ├── config  
+   │  ├── exception  
+   │  ├── jwt  
+   │  └── util  
 
 
 ## 📌API명세 / 설계  
