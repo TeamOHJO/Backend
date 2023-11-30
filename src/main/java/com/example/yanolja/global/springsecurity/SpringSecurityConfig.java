@@ -74,7 +74,9 @@ public class SpringSecurityConfig {
             .requestMatchers(new AntPathRequestMatcher("/user/email/confirmation/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/user/verify/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/accommodation/**")).permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/fetch/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/review/accommodation/**")).permitAll()
+
 
             .requestMatchers(HttpMethod.OPTIONS, "/basket/**").permitAll() // OPTIONS 메서드에 대한 권한 허용
             .anyRequest().authenticated());

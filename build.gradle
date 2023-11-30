@@ -46,6 +46,10 @@ dependencies {
 
     // dotenv-java
     implementation 'io.github.cdimascio:java-dotenv:+'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20230618'
+
 }
 
 tasks.named('bootBuildImage') {
