@@ -1,21 +1,15 @@
 package com.example.yanolja.domain.user.service;
 
 
-import static com.example.yanolja.global.exception.ErrorCode.INVALID_EMAIL;
-import static com.example.yanolja.global.exception.ErrorCode.INVALID_PASSWORD;
-import static com.example.yanolja.global.exception.ErrorCode.INVALID_PHONENUMBER;
-import static com.example.yanolja.global.exception.ErrorCode.USER_ALREADY_REGISTERED;
-import static com.example.yanolja.global.exception.ErrorCode.USER_NOT_FOUND;
-
 import com.example.yanolja.domain.user.dto.ChangePasswordRequest;
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
 import com.example.yanolja.domain.user.dto.CreateUserResponse;
 import com.example.yanolja.domain.user.dto.UpdateUserRequest;
 import com.example.yanolja.domain.user.entity.User;
-import com.example.yanolja.domain.user.exception.EmailDuplicateError;
+import com.example.yanolja.domain.user.exception.EmailDuplicateException;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPasswordException;
-import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
+import com.example.yanolja.domain.user.exception.InvalidPhonenumberException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.util.ResponseDTO;
@@ -68,15 +62,15 @@ public class UserServiceImpl implements UserService {
 
             //이메일 유효성 검사
             if (!isValidEmail(createUserRequest.email())) {
-                throw new InvalidEmailException(INVALID_EMAIL);
+                throw new InvalidEmailException();
             }
             //휴대폰 번호 유효성 검사
             if (!isValidPhonenumber(createUserRequest.phonenumber())) {
-                throw new InvalidPhonenumberError(INVALID_PHONENUMBER);
+                throw new InvalidPhonenumberException();
             }
             //이메일 중복 검사
             if (userRepository.findByEmail(createUserRequest.email()).isPresent()) {
-                throw new EmailDuplicateError(USER_ALREADY_REGISTERED);
+                throw new EmailDuplicateException();
             }
 
             User newUser = createUserRequest.toEntity();
@@ -90,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public ResponseDTO<Object> deleteUser(Long userId) {
         try {
             User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException());
             user.delete(LocalDateTime.now());
             userRepository.save(user);
             return ResponseDTO.res(HttpStatus.OK, "회원 탈퇴 처리 완료");
@@ -104,10 +98,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseDTO<?> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserNotFoundException());
 
         if (!isValidPhonenumber(updateUserRequest.getPhonenumber())) {
-            throw new InvalidPhonenumberError(INVALID_PHONENUMBER);
+            throw new InvalidPhonenumberException();
         }
 
         boolean isUpdated = false;
@@ -132,10 +126,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseDTO<?> changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UserNotFoundException());
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw new InvalidPasswordException(INVALID_PASSWORD);
+            throw new InvalidPasswordException();
         }
 
         if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {

@@ -3,13 +3,12 @@ package com.example.yanolja.domain.user.exception;
 import com.example.yanolja.global.exception.ApplicationException;
 import com.example.yanolja.global.exception.ErrorCode;
 
-public class InvalidPasswordException extends ApplicationException {
+public class EmailDuplicateException extends ApplicationException {
 
-    private static final ErrorCode ERROR_CODE = ErrorCode.INVALID_PASSWORD;
+    private static final ErrorCode ERROR_CODE = ErrorCode.USER_ALREADY_REGISTERED;
 
+    public EmailDuplicateException() {
 
-    public InvalidPasswordException() {
         super(ERROR_CODE);
     }
-
 }

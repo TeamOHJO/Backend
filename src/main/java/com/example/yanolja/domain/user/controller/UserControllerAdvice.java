@@ -1,9 +1,9 @@
 package com.example.yanolja.domain.user.controller;
 
-import com.example.yanolja.domain.user.exception.EmailDuplicateError;
+import com.example.yanolja.domain.user.exception.EmailDuplicateException;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPasswordException;
-import com.example.yanolja.domain.user.exception.InvalidPhonenumberError;
+import com.example.yanolja.domain.user.exception.InvalidPhonenumberException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserControllerAdvice {
 
     @ExceptionHandler(value = {
-        EmailDuplicateError.class
+        EmailDuplicateException.class
     })
     public ResponseEntity<ResponseDTO<Object>> handleEmailDuplicateError(
-        EmailDuplicateError exception
+        EmailDuplicateException exception
     ) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ResponseDTO.res(HttpStatus.BAD_REQUEST,
@@ -37,10 +37,10 @@ public class UserControllerAdvice {
     }
 
     @ExceptionHandler(value = {
-        InvalidPhonenumberError.class
+        InvalidPhonenumberException.class
     })
     public ResponseEntity<ResponseDTO<Object>> handlePhonenumberException(
-        InvalidPhonenumberError exception
+        InvalidPhonenumberException exception
     ) {
         return ResponseEntity.status(HttpStatus.LENGTH_REQUIRED).body(
             ResponseDTO.res(HttpStatus.LENGTH_REQUIRED,
