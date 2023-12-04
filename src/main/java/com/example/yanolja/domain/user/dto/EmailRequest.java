@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 public class EmailRequest {
 
     private String email;
+    private String code;
 
 }
