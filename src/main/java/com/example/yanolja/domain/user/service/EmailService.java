@@ -1,20 +1,25 @@
 package com.example.yanolja.domain.user.service;
 
-
+import com.example.yanolja.domain.user.exception.EmailSendingException;
+import com.example.yanolja.domain.user.exception.EmailTemplateLoadException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +36,13 @@ public class EmailService {
     public String sendVerificationEmail(String to) throws Exception {
         String authCode = generateAuthCode();
         MimeMessage message = createMessage(to, authCode);
-        javaMailSender.send(message);
-        verificationCodes.put(to, authCode);
-        return authCode;
+        try {
+            javaMailSender.send(message);
+            verificationCodes.put(to, authCode);
+            return authCode;
+        } catch (MailException ex) {
+            throw new EmailSendingException();
+        }
     }
 
     public boolean verifyEmailCode(String email, String code) {
@@ -67,19 +76,28 @@ public class EmailService {
         String title = "회원가입 인증 번호";
 
         MimeMessage message = javaMailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, to);
-        message.setSubject(title);
-        message.setFrom(new InternetAddress(setFrom, "Your Name", "UTF-8"));
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        String htmlContent = "<div style='margin:100px;'>"
-            + "<h1>안녕하세요 OHNOLZA 입니다.</h1>"
-            + "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요.</p><br>"
-            + "<div align='center' style='border:1px solid black; font-family:verdana'>"
-            + "<h3 style='color:#9AC1D1;'>회원가입 인증 코드</h3>"
-            + "<div style='font-size:130%'>CODE : <strong>" + authCode + "</strong></div><br/>"
-            + "</div>";
+        String emailTemplate = loadEmailTemplate("email_template.html");
 
-        message.setContent(htmlContent, "text/html; charset=utf-8");
+        emailTemplate = emailTemplate.replace("{{authCode}}", authCode);
+
+        helper.setSubject(title);
+        helper.setFrom(new InternetAddress(setFrom, "Your Name", "UTF-8"));
+        helper.setTo(to);
+        helper.setText(emailTemplate, true);
+
         return message;
+    }
+
+    private String loadEmailTemplate(String templateName) {
+        try {
+            Resource resource = new ClassPathResource("email-templates/" + templateName);
+            InputStream inputStream = resource.getInputStream();
+            byte[] templateBytes = inputStream.readAllBytes();
+            return new String(templateBytes, "UTF-8");
+        } catch (IOException ex) {
+            throw new EmailTemplateLoadException();
+        }
     }
 }
