@@ -1,14 +1,23 @@
 package com.example.yanolja.domain.user.service;
 
+import com.example.yanolja.domain.user.exception.EmailSendingException;
+import com.example.yanolja.domain.user.exception.EmailTemplateLoadException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,18 +27,34 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
-    private String authNum;
+
     @Value("${TEST_ID_EMAIL}")
     private String TEST_ID_EMAIL;
 
+    private final Map<String, String> verificationCodes = new HashMap<>();
 
-    public void createCode() {
+    public String sendVerificationEmail(String to) throws Exception {
+        String authCode = generateAuthCode();
+        MimeMessage message = createMessage(to, authCode);
+        try {
+            javaMailSender.send(message);
+            verificationCodes.put(to, authCode);
+            return authCode;
+        } catch (MailException ex) {
+            throw new EmailSendingException();
+        }
+    }
+
+    public boolean verifyEmailCode(String email, String code) {
+        String storedCode = verificationCodes.get(email);
+        return storedCode != null && storedCode.equals(code);
+    }
+
+    private String generateAuthCode() {
         Random random = new Random();
-        StringBuffer key = new StringBuffer();
-
+        StringBuilder key = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             int index = random.nextInt(3);
-
             switch (index) {
                 case 0:
                     key.append((char) (random.nextInt(26) + 97));
@@ -38,49 +63,41 @@ public class EmailService {
                     key.append((char) (random.nextInt(26) + 65));
                     break;
                 case 2:
-                    key.append(random.nextInt(9));
+                    key.append(random.nextInt(10));
                     break;
             }
         }
-        authNum = key.toString();
+        return key.toString();
     }
 
-
-    public MimeMessage createMessage(String to)
+    private MimeMessage createMessage(String to, String authCode)
         throws MessagingException, UnsupportedEncodingException {
-        createCode();
-        String setFrom = TEST_ID_EMAIL; //TEST계정 이메일 추가
+        String setFrom = TEST_ID_EMAIL;
         String title = "회원가입 인증 번호";
 
         MimeMessage message = javaMailSender.createMimeMessage();
-        message.addRecipients(MimeMessage.RecipientType.TO, to);
-        message.setSubject(title);
-        message.setFrom(new InternetAddress(setFrom, "Your Name", "UTF-8"));
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        String htmlContent = "<div style='margin:100px;'>";
-        htmlContent += "<h1>안녕하세요 OHNOLZA 입니다.</h1>";
-        htmlContent += "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요.</p>";
-        htmlContent += "<br>";
-        htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
-        htmlContent += "<h3 style='color:#9AC1D1;'>회원가입 인증 코드</h3>";
-        htmlContent += "<div style='font-size:130%'>";
-        htmlContent += "CODE : <strong>" + authNum + "</strong><div><br/>";
-        htmlContent += "</div>";
+        String emailTemplate = loadEmailTemplate("email_template.html");
 
-        message.setContent(htmlContent, "text/html; charset=utf-8");
+        emailTemplate = emailTemplate.replace("{{authCode}}", authCode);
+
+        helper.setSubject(title);
+        helper.setFrom(new InternetAddress(setFrom, "Ohnolja", "UTF-8"));
+        helper.setTo(to);
+        helper.setText(emailTemplate, true);
 
         return message;
     }
 
-
-    public String sendSimpleMessage(String to) throws Exception {
-        MimeMessage message = createMessage(to);
+    private String loadEmailTemplate(String templateName) {
         try {
-            javaMailSender.send((message));
-        } catch (MailException es) {
-            es.printStackTrace();
-            throw new IllegalArgumentException();
+            Resource resource = new ClassPathResource("templates/" + templateName);
+            InputStream inputStream = resource.getInputStream();
+            byte[] templateBytes = inputStream.readAllBytes();
+            return new String(templateBytes, "UTF-8");
+        } catch (IOException ex) {
+            throw new EmailTemplateLoadException();
         }
-        return authNum;
     }
 }

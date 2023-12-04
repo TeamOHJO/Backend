@@ -5,7 +5,10 @@ import com.example.yanolja.global.exception.ErrorCode;
 
 public class InvalidEmailException extends ApplicationException {
 
-    public InvalidEmailException(ErrorCode errorCode) {
-        super(errorCode);
+    private static final ErrorCode ERROR_CODE = ErrorCode.INVALID_EMAIL;
+
+
+    public InvalidEmailException() {
+        super(ERROR_CODE);
     }
 }
