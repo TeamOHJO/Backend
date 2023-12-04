@@ -83,7 +83,7 @@ public class EmailService {
         emailTemplate = emailTemplate.replace("{{authCode}}", authCode);
 
         helper.setSubject(title);
-        helper.setFrom(new InternetAddress(setFrom, "Your Name", "UTF-8"));
+        helper.setFrom(new InternetAddress(setFrom, "Ohnolja", "UTF-8"));
         helper.setTo(to);
         helper.setText(emailTemplate, true);
 
@@ -92,7 +92,7 @@ public class EmailService {
 
     private String loadEmailTemplate(String templateName) {
         try {
-            Resource resource = new ClassPathResource("email-templates/" + templateName);
+            Resource resource = new ClassPathResource("templates/" + templateName);
             InputStream inputStream = resource.getInputStream();
             byte[] templateBytes = inputStream.readAllBytes();
             return new String(templateBytes, "UTF-8");
