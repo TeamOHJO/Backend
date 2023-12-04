@@ -1,6 +1,8 @@
 package com.example.yanolja.domain.user.controller;
 
 import com.example.yanolja.domain.user.exception.EmailDuplicateException;
+import com.example.yanolja.domain.user.exception.EmailSendingException;
+import com.example.yanolja.domain.user.exception.EmailTemplateLoadException;
 import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPasswordException;
 import com.example.yanolja.domain.user.exception.InvalidPhonenumberException;
@@ -15,54 +17,34 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserControllerAdvice {
 
     @ExceptionHandler(value = {
-        EmailDuplicateException.class
-    })
-    public ResponseEntity<ResponseDTO<Object>> handleEmailDuplicateError(
-        EmailDuplicateException exception
-    ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ResponseDTO.res(HttpStatus.BAD_REQUEST,
-                exception.getMessage()));
-    }
-
-    @ExceptionHandler(value = {
-        InvalidEmailException.class
-    })
-    public ResponseEntity<ResponseDTO<Object>> handleInvalidEmailException(
-        InvalidEmailException exception
-    ) {
-        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(
-            ResponseDTO.res(HttpStatus.PRECONDITION_FAILED,
-                exception.getMessage()));
-    }
-
-    @ExceptionHandler(value = {
-        InvalidPhonenumberException.class
-    })
-    public ResponseEntity<ResponseDTO<Object>> handlePhonenumberException(
-        InvalidPhonenumberException exception
-    ) {
-        return ResponseEntity.status(HttpStatus.LENGTH_REQUIRED).body(
-            ResponseDTO.res(HttpStatus.LENGTH_REQUIRED,
-                exception.getMessage()));
-    }
-
-    @ExceptionHandler(value = {
+        EmailDuplicateException.class,
+        EmailSendingException.class,
+        EmailTemplateLoadException.class,
+        InvalidEmailException.class,
+        InvalidPasswordException.class,
+        InvalidPhonenumberException.class,
         UserNotFoundException.class
     })
-    public ResponseEntity<ResponseDTO<Object>> handleUserNotFoundException(
-        UserNotFoundException exception
-    ) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-            ResponseDTO.res(HttpStatus.NOT_FOUND, exception.getMessage()));
-    }
+    public ResponseEntity<ResponseDTO<Object>> handleUserControllerExceptions(
+        RuntimeException exception) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (exception instanceof EmailDuplicateException) {
+            status = HttpStatus.BAD_REQUEST;
+        } else if (exception instanceof EmailSendingException
+            || exception instanceof EmailTemplateLoadException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        } else if (exception instanceof InvalidEmailException) {
+            status = HttpStatus.PRECONDITION_FAILED;
+        } else if (exception instanceof InvalidPasswordException) {
+            status = HttpStatus.BAD_REQUEST;
+        } else if (exception instanceof InvalidPhonenumberException) {
+            status = HttpStatus.LENGTH_REQUIRED;
+        } else if (exception instanceof UserNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        }
 
-    @ExceptionHandler(value = InvalidPasswordException.class)
-    public ResponseEntity<ResponseDTO<Object>> handleInvalidPasswordException(
-        InvalidPasswordException exception) {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(ResponseDTO.res(HttpStatus.BAD_REQUEST, exception.getMessage()));
+        return ResponseEntity.status(status).body(
+            ResponseDTO.res(status, exception.getMessage()));
     }
 
 
