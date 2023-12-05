@@ -29,11 +29,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDTO<?> signup(CreateUserRequest createUserRequest) {
-        String encodedPassword = passwordEncoder.encode(createUserRequest.password());
 
         userRepository.findByEmail(createUserRequest.email()).ifPresent(user -> {
             throw new EmailDuplicateException();
         });
+
+        String encodedPassword = passwordEncoder.encode(createUserRequest.password());
 
         User newUser = User.builder()
             .email(createUserRequest.email())
@@ -45,10 +46,10 @@ public class UserServiceImpl implements UserService {
             .build();
 
         userRepository.save(newUser);
+
         return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
             CreateUserResponse.fromEntity(newUser));
     }
-
 
     public ResponseDTO<Object> deleteUser(Long userId) {
         try {
@@ -86,7 +87,6 @@ public class UserServiceImpl implements UserService {
 
         return ResponseDTO.res(HttpStatus.OK, "사용자 정보 업데이트 성공");
     }
-
 
     @Override
     public ResponseDTO<?> changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
