@@ -31,7 +31,7 @@ public record CreateUserRequest(
         return User.builder()
             .email(email)
             .username(username)
-            .password(passwordEncoder.encode(password))
+            .password(password)
             .phonenumber(phonenumber)
             .authority("ROLE_USER")
             .updatedAt(LocalDateTime.now())
