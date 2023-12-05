@@ -7,16 +7,11 @@ import com.example.yanolja.domain.user.dto.CreateUserResponse;
 import com.example.yanolja.domain.user.dto.UpdateUserRequest;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.exception.EmailDuplicateException;
-import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPasswordException;
-import com.example.yanolja.domain.user.exception.InvalidPhonenumberException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.util.ResponseDTO;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,54 +25,28 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private static final String EMAIL_PATTERN =
-        "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    private static final String PHONENUMBER_REGEX =
-        "^010[0-9]{8}$";
-    private static final Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
-    private static final Pattern phonenumberPattern = Pattern.compile(PHONENUMBER_REGEX);
 
-    private static boolean isValidEmail(String email) {
-        Matcher matcher = emailPattern.matcher(email);
-        return matcher.matches();
-    }
-
-    private static boolean isValidPhonenumber(String phonenumber) {
-        Matcher matcher = phonenumberPattern.matcher(phonenumber);
-        return matcher.matches();
-    }
 
     @Override
     public ResponseDTO<?> signup(CreateUserRequest createUserRequest) {
+        String encodedPassword = passwordEncoder.encode(createUserRequest.password());
 
-        Optional<User> softDeletedUser = userRepository.findSoftDeletedByEmail(
-            createUserRequest.email(), LocalDateTime.now().minusYears(1));
-        if (softDeletedUser.isPresent()) {
-            User user = softDeletedUser.get();
-            user.restore();
-            userRepository.save(user);
-            return ResponseDTO.res(HttpStatus.OK, "기존 계정 복구 완료",
-                CreateUserResponse.fromEntity(user));
-        } else {
+        userRepository.findByEmail(createUserRequest.email()).ifPresent(user -> {
+            throw new EmailDuplicateException();
+        });
 
-            //이메일 유효성 검사
-            if (!isValidEmail(createUserRequest.email())) {
-                throw new InvalidEmailException();
-            }
-            //휴대폰 번호 유효성 검사
-            if (!isValidPhonenumber(createUserRequest.phonenumber())) {
-                throw new InvalidPhonenumberException();
-            }
-            //이메일 중복 검사
-            if (userRepository.findByEmail(createUserRequest.email()).isPresent()) {
-                throw new EmailDuplicateException();
-            }
+        User newUser = User.builder()
+            .email(createUserRequest.email())
+            .username(createUserRequest.username())
+            .password(encodedPassword)
+            .phonenumber(createUserRequest.phonenumber())
+            .authority("ROLE_USER")
+            .updatedAt(LocalDateTime.now())
+            .build();
 
-            User newUser = createUserRequest.toEntity();
-            userRepository.save(newUser);
-            return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
-                CreateUserResponse.fromEntity(newUser));
-        }
+        userRepository.save(newUser);
+        return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
+            CreateUserResponse.fromEntity(newUser));
     }
 
 
@@ -99,10 +68,6 @@ public class UserServiceImpl implements UserService {
     public ResponseDTO<?> updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException());
-
-        if (!isValidPhonenumber(updateUserRequest.getPhonenumber())) {
-            throw new InvalidPhonenumberException();
-        }
 
         boolean isUpdated = false;
         if (!user.getUsername().equals(updateUserRequest.getUsername())) {
