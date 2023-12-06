@@ -28,6 +28,9 @@ public class User extends BaseTimeEntity {
 
     private String phonenumber;
 
+    private String authority;
+
+
     @Builder
     public User(String email, String username, String password, String phonenumber,
         String authority, LocalDateTime updatedAt, LocalDateTime deletedAt) {
@@ -38,6 +41,16 @@ public class User extends BaseTimeEntity {
         this.authority = authority;
         super.updatedAt = updatedAt;
         super.deletedAt = deletedAt;
+    }
+
+
+    public void updateUserInfo(String username, String phonenumber) {
+        this.username = username;
+        this.phonenumber = phonenumber;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 
     @Override
@@ -52,21 +65,6 @@ public class User extends BaseTimeEntity {
 
     public Long getId() {
         return this.userId;
-    }
-
-
-    private String authority;
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setPhonenumber(String phonenumber) {
-        this.phonenumber = phonenumber;
     }
 
 

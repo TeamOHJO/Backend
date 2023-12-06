@@ -4,13 +4,11 @@ import com.example.yanolja.domain.user.entity.User;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateUserResponse(
-    @NotNull
+
     String email,
 
-    @NotNull
     String name,
 
-    @NotNull
     String phonenumber
 
 ) {
