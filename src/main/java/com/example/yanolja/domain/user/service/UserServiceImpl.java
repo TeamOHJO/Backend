@@ -82,15 +82,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDTO<?> changePassword(Long userId, ChangePasswordRequest changePasswordRequest) {
+
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException());
+            .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new InvalidPasswordException();
+        }
+
+        if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {
+            return ResponseDTO.res(HttpStatus.BAD_REQUEST, "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
         }
 
         user.changePassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
         return ResponseDTO.res(HttpStatus.OK, "비밀번호 변경 성공");
     }
+
 }
