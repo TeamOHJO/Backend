@@ -3,9 +3,7 @@ package com.example.yanolja.domain.user.controller;
 import com.example.yanolja.domain.user.exception.EmailDuplicateException;
 import com.example.yanolja.domain.user.exception.EmailSendingException;
 import com.example.yanolja.domain.user.exception.EmailTemplateLoadException;
-import com.example.yanolja.domain.user.exception.InvalidEmailException;
 import com.example.yanolja.domain.user.exception.InvalidPasswordException;
-import com.example.yanolja.domain.user.exception.InvalidPhonenumberException;
 import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.global.util.ResponseDTO;
 import org.springframework.http.HttpStatus;
@@ -20,9 +18,7 @@ public class UserControllerAdvice {
         EmailDuplicateException.class,
         EmailSendingException.class,
         EmailTemplateLoadException.class,
-        InvalidEmailException.class,
         InvalidPasswordException.class,
-        InvalidPhonenumberException.class,
         UserNotFoundException.class
     })
     public ResponseEntity<ResponseDTO<Object>> handleUserControllerExceptions(
@@ -33,12 +29,8 @@ public class UserControllerAdvice {
         } else if (exception instanceof EmailSendingException
             || exception instanceof EmailTemplateLoadException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-        } else if (exception instanceof InvalidEmailException) {
-            status = HttpStatus.PRECONDITION_FAILED;
         } else if (exception instanceof InvalidPasswordException) {
             status = HttpStatus.BAD_REQUEST;
-        } else if (exception instanceof InvalidPhonenumberException) {
-            status = HttpStatus.LENGTH_REQUIRED;
         } else if (exception instanceof UserNotFoundException) {
             status = HttpStatus.NOT_FOUND;
         }
