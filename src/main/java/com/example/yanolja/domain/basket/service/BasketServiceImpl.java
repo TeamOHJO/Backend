@@ -17,12 +17,12 @@ import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.reservation.repository.ReservationRepositoryCustom;
-import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import com.example.yanolja.global.util.ReviewRatingUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,14 +118,6 @@ public class BasketServiceImpl implements BasketService {
                 canReserve = false;
             }
 
-            double averageRating = reviewRepository.findByAccommodationId(
-                    reservationContent.getRoom()
-                        .getAccommodation().getAccommodationId()).stream()
-                .mapToInt(Review::getStar)
-                .average()
-                .orElse(0.0);
-            averageRating = Math.round(averageRating * 10) / 10.0;
-
             getBasketResponses.add(GetBasketResponse.fromEntity(
                 basketRepository.findByReservationReservationId(
                     reservationContent.getReservationId()),
@@ -133,7 +125,8 @@ public class BasketServiceImpl implements BasketService {
                 reservationContent,
                 reservationContent.getRoom(),
                 imageList.get(0), canReserve,
-                averageRating)
+                ReviewRatingUtils.calculateAverageRating(reservationContent.getRoom()
+                    .getAccommodation().getAccommodationId(), reviewRepository))
             );
         }
 
