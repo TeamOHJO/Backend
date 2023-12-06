@@ -52,12 +52,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+
     @PutMapping("")
     public ResponseEntity<ResponseDTO<?>> updateUserInfo(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestBody UpdateUserRequest updateUserRequest) {
+        @Valid @RequestBody UpdateUserRequest updateUserRequest) {
 
-        ResponseDTO<?> response = userService.updateUser(principalDetails.getUser().getId(), updateUserRequest);
+        ResponseDTO<?> response = userService.updateUser(principalDetails.getUser().getId(),
+            updateUserRequest);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
@@ -66,7 +68,8 @@ public class UserController {
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestBody ChangePasswordRequest changePasswordRequest) {
 
-        ResponseDTO<?> response = userService.changePassword(principalDetails.getUser().getId(), changePasswordRequest);
+        ResponseDTO<?> response = userService.changePassword(principalDetails.getUser().getId(),
+            changePasswordRequest);
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
