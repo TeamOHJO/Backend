@@ -12,6 +12,7 @@ import com.example.yanolja.domain.user.exception.UserNotFoundException;
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.util.ResponseDTO;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDTO<?> signup(CreateUserRequest createUserRequest) {
+        Optional<User> softDeletedUser = userRepository.findSoftDeletedByEmail(
+            createUserRequest.email(), LocalDateTime.now().minusYears(1));
+
+        if (softDeletedUser.isPresent()) {
+            User user = softDeletedUser.get();
+            user.restore();
+            userRepository.save(user);
+            return ResponseDTO.res(HttpStatus.OK, "기존 계정 복구 완료",
+                CreateUserResponse.fromEntity(user));
+        }
+
         userRepository.findByEmail(createUserRequest.email()).ifPresent(user -> {
             throw new EmailDuplicateException();
         });
@@ -48,6 +60,7 @@ public class UserServiceImpl implements UserService {
         return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
             CreateUserResponse.fromEntity(newUser));
     }
+
 
     public ResponseDTO<Object> deleteUser(Long userId) {
         User user = userRepository.findByUserId(userId)
