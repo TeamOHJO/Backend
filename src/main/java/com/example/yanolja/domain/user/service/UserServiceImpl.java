@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDTO<?> signup(CreateUserRequest createUserRequest) {
-
         userRepository.findByEmail(createUserRequest.email()).ifPresent(user -> {
             throw new EmailDuplicateException();
         });
@@ -46,23 +45,16 @@ public class UserServiceImpl implements UserService {
             .build();
 
         userRepository.save(newUser);
-
         return ResponseDTO.res(HttpStatus.CREATED, "회원 가입 성공",
             CreateUserResponse.fromEntity(newUser));
     }
 
     public ResponseDTO<Object> deleteUser(Long userId) {
-        try {
-            User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException());
-            user.delete(LocalDateTime.now());
-            userRepository.save(user);
-            return ResponseDTO.res(HttpStatus.OK, "회원 탈퇴 처리 완료");
-        } catch (UserNotFoundException e) {
-            return ResponseDTO.res(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
-            return ResponseDTO.res(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러: " + e.getMessage());
-        }
+        User user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new UserNotFoundException());
+        user.delete(LocalDateTime.now());
+        userRepository.save(user);
+        return ResponseDTO.res(HttpStatus.OK, "회원 탈퇴 처리 완료");
     }
 
     @Override
@@ -70,21 +62,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException());
 
-        boolean isUpdated = false;
-        if (!user.getUsername().equals(updateUserRequest.getUsername())) {
-            user.setUsername(updateUserRequest.getUsername());
-            isUpdated = true;
-        }
-
-        if (!user.getPhonenumber().equals(updateUserRequest.getPhonenumber())) {
-            user.setPhonenumber(updateUserRequest.getPhonenumber());
-            isUpdated = true;
-        }
-
-        if (isUpdated) {
-            userRepository.save(user);
-        }
-
+        user.updateUserInfo(updateUserRequest.getUsername(), updateUserRequest.getPhonenumber());
+        userRepository.save(user);
         return ResponseDTO.res(HttpStatus.OK, "사용자 정보 업데이트 성공");
     }
 
@@ -97,15 +76,8 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException();
         }
 
-        if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {
-            return ResponseDTO.res(HttpStatus.BAD_REQUEST, "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
-        }
-
-        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        user.changePassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
-
         return ResponseDTO.res(HttpStatus.OK, "비밀번호 변경 성공");
     }
-
-
 }
