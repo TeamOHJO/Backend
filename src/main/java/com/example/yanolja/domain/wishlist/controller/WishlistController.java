@@ -5,6 +5,7 @@ import com.example.yanolja.domain.wishlist.service.WishlistService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ public class WishlistController {
 
     private final WishlistService wishlistService;
 
+    @Autowired
     public WishlistController(WishlistService wishlistService) {
         this.wishlistService = wishlistService;
     }

@@ -32,32 +32,44 @@ public class WishlistServiceImpl implements WishlistService {
 
         return likes.stream()
             .filter(like -> like.getAccommodation() != null) // 좋아요 표시된 숙박업체가 있는지 확인!
-            .map(this::convertToDTO)
+            .map(like -> {
+                Accommodation accommodation = like.getAccommodation();
+                List<AccommodationImages> images = accommodationImageRepository
+                    .findByAccommodation_AccommodationId(accommodation.getAccommodationId());
+                String imageUrl = images.stream()
+                    .flatMap(img -> Arrays.stream(img.getImage().split(",\\s*")))
+                    .findFirst()
+                    .orElse(null);
+
+                int lowestPrice = accommodationRoomRepository.selectMinPrice(accommodation.getAccommodationId());
+
+                return WishlistDTO.from(like, imageUrl, lowestPrice);
+            })
             .collect(Collectors.toList());
     }
 
-    private WishlistDTO convertToDTO(AccommodationLikes like) {
-        Accommodation accommodation = like.getAccommodation(); // 좋아요 표시된 숙박업체
-
-        List<AccommodationImages> images = accommodationImageRepository
-            .findByAccommodation_AccommodationId(accommodation.getAccommodationId());
-        // 이미지 URL 문자열을 쉼표로 분리하고 첫 번째 URL 선택
-        String imageUrl = images.stream()
-            .flatMap(img -> Arrays.stream(img.getImage().split(",\\s*")))
-            .findFirst()
-            .orElse(null);
-
-        int lowestPrice = accommodationRoomRepository.selectMinPrice(
-            accommodation.getAccommodationId());
-
-        return new WishlistDTO(
-            accommodation.getAccommodationId(),
-            imageUrl,
-            accommodation.getAccommodationName(),
-            accommodation.getCategory().getCategory(),
-            like.getIsLike(),
-            accommodation.getLocation(),
-            lowestPrice
-        );
-    }
+//    private WishlistDTO convertToDTO(AccommodationLikes like) {
+//        Accommodation accommodation = like.getAccommodation(); // 좋아요 표시된 숙박업체
+//
+//        List<AccommodationImages> images = accommodationImageRepository
+//            .findByAccommodation_AccommodationId(accommodation.getAccommodationId());
+//        // 이미지 URL 문자열을 쉼표로 분리하고 첫 번째 URL 선택
+//        String imageUrl = images.stream()
+//            .flatMap(img -> Arrays.stream(img.getImage().split(",\\s*")))
+//            .findFirst()
+//            .orElse(null);
+//
+//        int lowestPrice = accommodationRoomRepository.selectMinPrice(
+//            accommodation.getAccommodationId());
+//
+//        return new WishlistDTO(
+//            accommodation.getAccommodationId(),
+//            imageUrl,
+//            accommodation.getAccommodationName(),
+//            accommodation.getCategory().getCategory(),
+//            like.getIsLike(),
+//            accommodation.getLocation(),
+//            lowestPrice
+//        );
+//    }
 }
