@@ -44,7 +44,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(a).on(ar.accommodation.accommodationId.eq(a.accommodationId))
             .leftJoin(r).on(ar.roomId.eq(r.room.roomId).and(reservationCondition))
             .where(a.category.eq(category)
-                .and(a.isDomestic.isTrue())
+                .and(a.isDomestic.eq(isDomestic))
                 .and(conflictingCondition)
                 .and(capacityCondition))
             .offset(pageable.getOffset())
