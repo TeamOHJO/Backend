@@ -16,6 +16,7 @@ import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
+import com.example.yanolja.domain.reservation.repository.ReservationRepositoryCustom;
 import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
@@ -43,6 +44,7 @@ public class BasketServiceImpl implements BasketService {
     private final BasketRepository basketRepository;
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
     private final ReviewRepository reviewRepository;
+    private final ReservationRepositoryCustom reservationRepositoryCustom;
 
     @Override
     public ResponseDTO<?> addBasket(CreateBasketRequest createBasketRequest, User user,
@@ -105,7 +107,7 @@ public class BasketServiceImpl implements BasketService {
             boolean canReserve = true;
             // 예약이 가능한지 체크
             Optional<Reservations> conflictingReservations =
-                reservationRepository.findConflictingReservations(
+                reservationRepositoryCustom.findConflictingReservations(
                     reservationContent.getRoom().getRoomId(),
                     reservationContent.getStartDate(), reservationContent.getEndDate()
                 );
