@@ -15,6 +15,5 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     Page<Accommodation> findByIsDomestic(boolean isDomestic, Pageable pageable);
 
-    Page<Accommodation> findByCategoryAndIsDomestic(AccommodationCategory category,
-        boolean isDomestic, Pageable pageable);
+    Accommodation findByAccommodationId(Long accommodationId);
 }

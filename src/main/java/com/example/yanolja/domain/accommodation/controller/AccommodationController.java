@@ -1,6 +1,7 @@
 package com.example.yanolja.domain.accommodation.controller;
 
 import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
+import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.service.AccommodationService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
@@ -46,7 +47,7 @@ public class AccommodationController {
     @GetMapping("")
     public ResponseEntity<ResponseDTO<List<AccommodationFindResponse>>> getAccommodationsInMainPage(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam String category,
+        @RequestParam AccommodationCategory category,
         @RequestParam boolean isDomestic,
         @RequestParam LocalDate startDate,
         @RequestParam LocalDate endDate,

@@ -4,9 +4,9 @@ import com.example.yanolja.domain.accommodation.dto.AccommodationFindResponse;
 import com.example.yanolja.domain.accommodation.entity.Accommodation;
 import com.example.yanolja.domain.accommodation.entity.AccommodationCategory;
 import com.example.yanolja.domain.accommodation.entity.AccommodationImages;
-import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
 import com.example.yanolja.domain.accommodation.repository.AccommodationImageRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
+import com.example.yanolja.domain.accommodation.repository.AccommodationRepositoryCustom;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.accommodationLikes.entity.AccommodationLikes;
 import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
@@ -35,6 +35,7 @@ public class AccommodationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReviewRepository reviewRepository;
+    private final AccommodationRepositoryCustom accommodationRepositoryCustom;
 
     @Transactional
     public Page<AccommodationFindResponse> getAllAccommodation(Pageable pageable) {
@@ -61,35 +62,14 @@ public class AccommodationService {
 
     @Transactional
     public List<AccommodationFindResponse> getAccommodationsInMainPage(
-        PrincipalDetails principalDetails, String categoryStr,
+        PrincipalDetails principalDetails, AccommodationCategory category,
         boolean isDomestic, Pageable pageable, LocalDate startDate, LocalDate endDate,
         int numberOfPeople) {
-        AccommodationCategory category = AccommodationCategory.valueOf(categoryStr.toUpperCase());
+        Page<Long> acIds = accommodationRepositoryCustom.findAccommodationIds(
+            category, isDomestic, pageable, startDate, endDate, numberOfPeople);
 
-        Page<Accommodation> accommodations = accommodationRepository.findByCategoryAndIsDomestic(
-            category, isDomestic, pageable);
-        List<Accommodation> accommodationList = new ArrayList<>();
-
-        boolean capacityAvailable = false;
-        for (Accommodation accommodationContents : accommodations) {
-            List<AccommodationRooms> roomlist = accommodationContents.getRoomlist();
-            int fullRoomCount = 0;
-
-            for (AccommodationRooms accommodationRoomContents : roomlist) {
-                if (accommodationRoomContents.getMaxCapacity() >= numberOfPeople &&
-                    accommodationRoomContents.getMinCapacity() <= numberOfPeople) {
-                    capacityAvailable = true;
-                }
-                //예약 충돌 검사
-                if (reservationRepository.findConflictingReservations(
-                    accommodationRoomContents.getRoomId(), startDate, endDate).isPresent()) {
-                    fullRoomCount++;
-                }
-            }
-            if (fullRoomCount < roomlist.size() && capacityAvailable) {
-                accommodationList.add(accommodationContents);
-            }
-        }
+        List<Accommodation> accommodationList =
+            acIds.stream().map(accommodationRepository::findByAccommodationId).toList();
 
         double averageRating = 0;
         List<AccommodationFindResponse> accommodationFindResponses = new ArrayList<>();
