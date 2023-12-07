@@ -25,8 +25,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oauth2User = super.loadUser(userRequest);
 
-        String provider = userRequest.getClientRegistration()
-            .getClientId(); //google kakao facebook...
+        String provider = userRequest.getClientRegistration().getRegistrationId(); //google kakao facebook...
         String provideId = oauth2User.getAttribute("sub");
         String email = oauth2User.getAttribute("email");
         String username = oauth2User.getAttribute("name");
