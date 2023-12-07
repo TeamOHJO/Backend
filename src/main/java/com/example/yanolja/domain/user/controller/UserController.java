@@ -3,6 +3,7 @@ package com.example.yanolja.domain.user.controller;
 import com.example.yanolja.domain.user.dto.ChangePasswordRequest;
 import com.example.yanolja.domain.user.dto.CreateUserRequest;
 import com.example.yanolja.domain.user.dto.CreateUserResponse;
+import com.example.yanolja.domain.user.dto.TestUserResponse;
 import com.example.yanolja.domain.user.dto.UpdateUserRequest;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.domain.user.service.UserService;
@@ -78,8 +79,7 @@ public class UserController {
     public ResponseEntity<?> test(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
 
-        CreateUserResponse createUserResponse = new CreateUserResponse(user.getEmail(),
-            user.getUsername(), user.getPhonenumber());
-        return ResponseEntity.ok(createUserResponse);
+        TestUserResponse testUserResponse = TestUserResponse.fromEntity(user);
+        return ResponseEntity.ok(testUserResponse);
     }
 }
