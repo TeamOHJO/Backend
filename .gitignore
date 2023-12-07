@@ -41,3 +41,6 @@ out/
 /logs/spring-boot-logger.log
 /logs/archived/**
 /src/main/resources/keystore.p12
+
+# generated code
+/src/main/generated/**
