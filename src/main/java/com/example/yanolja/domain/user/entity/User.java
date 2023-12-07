@@ -30,19 +30,20 @@ public class User extends BaseTimeEntity {
 
     private String authority;
 
+    private String provider;  //어떤 소셜로그인인지
 
     @Builder
     public User(String email, String username, String password, String phonenumber,
-        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt, String provider) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.phonenumber = phonenumber;
         this.authority = authority;
+        this.provider = provider;
         super.updatedAt = updatedAt;
         super.deletedAt = deletedAt;
     }
-
 
     public void updateUserInfo(String username, String phonenumber) {
         this.username = username;
@@ -66,6 +67,4 @@ public class User extends BaseTimeEntity {
     public Long getId() {
         return this.userId;
     }
-
-
 }

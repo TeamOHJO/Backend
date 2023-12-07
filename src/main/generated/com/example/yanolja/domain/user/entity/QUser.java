@@ -35,6 +35,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath phonenumber = createString("phonenumber");
 
+    public final StringPath provider = createString("provider");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
