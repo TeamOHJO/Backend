@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,16 +42,19 @@ public class AccommodationApiService {
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final String apiKey = "xdzR0MEh2Mf8PxUEnYyM9djcwiBAuT22jXTmsI8Aj1Wf4iEkZPLk1K4EI4bRnFZiige6WMBTLmWgzf6onKh59Q==";
-    private final String sta1ApiUrl =
-        "https://apis.data.go.kr/B551011/KorService1/searchStay1?numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&arrange=D&serviceKey="
-            + apiKey;
-    private final String DetailInfo1ApiUrl1 = "https://apis.data.go.kr/B551011/KorService1/detailInfo1?MobileOS=ETC&MobileApp=testApp&_type=json&contentId=";
-    private final String DetailInfo1ApiUrl2 = "&contentTypeId=32&numOfRows=100&pageNo=1&serviceKey=";
+    @Value("${api.key}")
+    private String apiKey;
+    @Value("${api.stay1url}")
+    private String stayApiUrl;
+    @Value("${api.detailInfoUrl1}")
+    private String roomUrlPart1;
+    @Value("${api.detailInfoUrl2}")
+    private String roomUrlPart2;
+
 
     @Transactional  //DetailInfo1 API에 대한 처리 요청 처리 모듈
-    public void processDetailInfo1(String contentId, Accommodation accommodation) {
-        String url = DetailInfo1ApiUrl1 + contentId + DetailInfo1ApiUrl2 + apiKey;
+    public void processRoomApi(String contentId, Accommodation accommodation) {
+        String url = roomUrlPart1 + contentId + roomUrlPart2 + apiKey;
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
@@ -82,9 +86,9 @@ public class AccommodationApiService {
     }
 
     @Transactional  //Stay1 API에 대한 요청 처리 모듈
-    public void processSearchStay1Api() {
+    public void processStay1Api() {
         try {
-            ResponseEntity<String> response = restTemplate.getForEntity(sta1ApiUrl, String.class);
+            ResponseEntity<String> response = restTemplate.getForEntity(stayApiUrl + apiKey, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
 
@@ -97,7 +101,7 @@ public class AccommodationApiService {
                     System.out.println("API Item: " + item.toString());  //API 응답 내용 확인
                     IntegratedAccommodationDTO dto = parseJsonToDto(item);
                     Accommodation accommodation = saveAccommodation(dto);
-                    processDetailInfo1(dto.getContentid(), accommodation);
+                    processRoomApi(dto.getContentid(), accommodation);
 
                 }
             } else {
@@ -226,7 +230,7 @@ public class AccommodationApiService {
         int maxCapacity = (dto.getRoommaxcount() != null && !dto.getRoommaxcount().isEmpty()
             && dto.getRoommaxcount().matches("\\d+")) ? Integer.parseInt(dto.getRoommaxcount()) : 2;
         int price = Integer.parseInt(dto.getRoomoffseasonminfee1());
-        System.out.println("price saverooms 체크 = " + price);
+        log.info("price saverooms 체크 = {}", price);
 
         AccommodationRooms accommodationRoom = AccommodationRooms.builder()
             .accommodation(accommodation)
@@ -241,10 +245,9 @@ public class AccommodationApiService {
 
         accommodationRoomRepository.save(accommodationRoom);
         updateAccommodationServiceInfo(accommodation,
-            combinedServiceInfo);  //시설정보를 accommodation 테이블에도 저장(시설정보가 존재하는 컬럼만)
+            combinedServiceInfo);
 
         SaveRoomImages(accommodationRoom, dto);
-        //todo price 입력값 0
     }
 
 
@@ -289,7 +292,7 @@ public class AccommodationApiService {
             .cancelInfo(accommodation.getCancelInfo())
             .useGuide(accommodation.getUseGuide())
             .reservationNotice(accommodation.getReservationNotice())
-            .serviceInfo(serviceInfo) // 업데이트할 부분
+            .serviceInfo(serviceInfo)
             .build();
         accommodationRepository.save(updatedAccommodation);
     }

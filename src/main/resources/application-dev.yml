@@ -21,3 +21,9 @@ spring:
 logging:
   level:
     "[org.springframework.security]": DEBUG
+
+api:
+  key: xdzR0MEh2Mf8PxUEnYyM9djcwiBAuT22jXTmsI8Aj1Wf4iEkZPLk1K4EI4bRnFZiige6WMBTLmWgzf6onKh59Q==
+  stay1url: https://apis.data.go.kr/B551011/KorService1/searchStay1?numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&arrange=D&serviceKey=
+  detailInfoUrl1: https://apis.data.go.kr/B551011/KorService1/detailInfo1?MobileOS=ETC&MobileApp=testApp&_type=json&contentId=
+  detailInfoUrl2: &contentTypeId=32&numOfRows=100&pageNo=1&serviceKey=

@@ -14,7 +14,7 @@ public class AccommodationApiController {
 
     @PostMapping("/openapi/accommodations")
     public ResponseEntity<String> fetchAccommodations() {
-        accommodationApiService.processSearchStay1Api();
+        accommodationApiService.processStay1Api();
         return ResponseEntity.ok("성공적으로 저장됐습니다!");
     }
 }
