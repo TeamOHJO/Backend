@@ -23,4 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findSoftDeletedByEmail(@Param("email") String email,
         @Param("dateTime") LocalDateTime dateTime);
 
+    Optional<User> findByEmailAndProvider(String email,String provider);
 }
