@@ -59,12 +59,9 @@ public class AccommodationApiService {
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             try {
-                JSONObject json = new JSONObject(response.getBody());
-                JSONObject body = json.getJSONObject("response").getJSONObject("body");
-                Object itemsObj = body.get("items");
+                JSONObject body = extractBodyFromResponse(response.getBody());
+                JSONArray items = extractItems(body);
 
-                if (itemsObj instanceof JSONObject && ((JSONObject) itemsObj).has("item")) {
-                    JSONArray items = ((JSONObject) itemsObj).getJSONArray("item");
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
 
@@ -72,9 +69,7 @@ public class AccommodationApiService {
 
                         saveAccommodationRooms(dto, accommodation);
                     }
-                } else {
-                    System.out.println("DetailInfo1 API 응답에서 항목을 찾을 수 없거나 예상치 못한 형식입니다.");
-                }
+
             } catch (JSONException e) {
                 log.error("JSON 파싱 오류", e);
                 throw new JsonParsingError(ErrorCode.JSON_PARSING_ERROR);
@@ -87,30 +82,46 @@ public class AccommodationApiService {
 
     @Transactional  //Stay1 API에 대한 요청 처리 모듈
     public void processStay1Api() {
-        try {
             ResponseEntity<String> response = restTemplate.getForEntity(stayApiUrl + apiKey, String.class);
 
+        try {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
 
-                JSONObject json = new JSONObject(response.getBody());
-                JSONArray items = json.getJSONObject("response").getJSONObject("body")
-                    .getJSONObject("items").getJSONArray("item");
+                    JSONObject body = extractBodyFromResponse(response.getBody());
+                    JSONArray items = extractItems(body);
 
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    System.out.println("API Item: " + item.toString());  //API 응답 내용 확인
-                    IntegratedAccommodationDTO dto = parseJsonToDto(item);
-                    Accommodation accommodation = saveAccommodation(dto);
-                    processRoomApi(dto.getContentid(), accommodation);
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        System.out.println("API Item: " + item.toString());  //API 응답 내용 확인
+                        IntegratedAccommodationDTO dto = parseJsonToDto(item);
+                        Accommodation accommodation = saveAccommodation(dto);
+                        processRoomApi(dto.getContentid(), accommodation);
 
+                    }
+                } else{
+                    log.info("SearchStay1 API 응답에서 항목을 찾을 수 없거나 예상치 못한 형식입니다.");
+                throw new ApiCallError(ErrorCode.API_CALL_FAILURE);
                 }
-            } else {
-                System.out.println("SearchStay1 API 호출 오류");
-            }
 
         } catch (Exception e) {
             log.error("API 처리 중 오류", e);
             throw new ApiProcessingError(ErrorCode.API_PROCESSING_ERROR);
+        }
+    }
+
+    private JSONObject extractBodyFromResponse(String responseBody) throws JSONException {
+        JSONObject json = new JSONObject(responseBody);
+        return json.getJSONObject("response").getJSONObject("body");
+    }
+
+    private JSONArray extractItems(JSONObject body) throws JSONException {
+        Object itemsObj = body.get("items");
+
+        if (itemsObj instanceof JSONObject && ((JSONObject) itemsObj).has("item")) {
+            return ((JSONObject) itemsObj).getJSONArray("item");
+        } else {
+            log.info("API 응답에서 항목을 찾을 수 없거나 예상치 못한 형식입니다.");
+            return new JSONArray();
         }
     }
 
