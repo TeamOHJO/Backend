@@ -67,7 +67,7 @@ public class Reservations extends BaseTimeEntity {
         super.delete(currentTime);
     }
 
-    public void createReservationInBasket() {
+    public void changePaymentCompletedStatus() {
         this.paymentCompleted = true;
     }
 }
