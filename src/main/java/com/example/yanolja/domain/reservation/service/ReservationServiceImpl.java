@@ -2,7 +2,6 @@ package com.example.yanolja.domain.reservation.service;
 
 import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
-import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.basket.repository.BasketRepository;
@@ -15,12 +14,11 @@ import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoom
 import com.example.yanolja.domain.reservation.exception.InvalidCancelReservationRequestException;
 import com.example.yanolja.domain.reservation.exception.ReservationConflictException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
-import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
-import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import com.example.yanolja.global.util.ReviewRatingUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
 
-    private final UserRepository userRepository;
-    private final AccommodationRepository accommodationRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReservationRepository reservationRepository;
     private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
@@ -44,24 +40,18 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReviewRepository reviewRepository;
 
     @Override
-    public ResponseDTO<?> createReservation(CreateReservationRequest createReservationRequest,
+    public ResponseDTO<CreateReservationResponse> createReservation(
+        CreateReservationRequest createReservationRequest,
         User user, long roomId) {
 
-        Optional<AccommodationRooms> accommodationRooms =
-            accommodationRoomRepository.findById(roomId);
+        // 방 정보 확인
+        AccommodationRooms rooms = accommodationRoomRepository.findById(roomId)
+            .orElseThrow(() -> new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID));
 
-        //roomsId에 해당하는 방이 존재하지 않는 경우
-        AccommodationRooms rooms = accommodationRooms.orElseThrow(() -> {
-            throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
-        });
-
-        //예약 충돌체크
-        Optional<Reservations> conflictingReservations =
-            reservationRepository.findConflictingReservations(
-                roomId,
-                createReservationRequest.startDate(), createReservationRequest.endDate()
-            );
-        if (conflictingReservations.isPresent()) {
+        // 예약 충돌 체크
+        if (reservationRepository.findConflictingReservations(
+            roomId, createReservationRequest.startDate(), createReservationRequest.endDate()
+        ).isPresent()) {
             throw new ReservationConflictException(ErrorCode.RESERVATION_CONFLICT);
         }
 
@@ -75,13 +65,12 @@ public class ReservationServiceImpl implements ReservationService {
         //장바구니에 있던 상품이라면 reseravtion테이블에 paymentCompleted만 변경해주면 된다.
         if (reservationsInBasket.isPresent()) {
             Reservations reservationInBasket = reservationsInBasket.get();
-            reservationInBasket.createReservationInBasket();
+            reservationInBasket.changePaymentCompletedStatus();
             reservationRepository.save(reservationInBasket);
 
             //결제가 완료된 상품이기에 장바구니에서 삭제
             basketRepository.delete(
-                basketRepository.findByReservationReservationId(
-                    reservationInBasket.getReservationId())
+                basketRepository.findByReservationReservationId(reservationInBasket.getReservationId())
             );
 
             return ResponseDTO.res(HttpStatus.CREATED, "예약 성공",
@@ -98,15 +87,15 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ResponseDTO<?> getReservationDetails(long roomId) {
+    public ResponseDTO<GetReservationDetailsResponse> getReservationDetails(long roomId) {
 
         Optional<AccommodationRooms> accommodationRooms =
             accommodationRoomRepository.findById(roomId);
 
         //roomsId에 해당하는 방이 존재하지 않는 경우
-        AccommodationRooms rooms = accommodationRooms.orElseThrow(() -> {
-            throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
-        });
+        AccommodationRooms rooms = accommodationRooms.orElseThrow(
+            () -> new InvalidAccommodationRoomIdException(
+                ErrorCode.INVALID_ACCOMMODATION_ID));
 
         AccommodationRoomImages accommodationRoomImages =
             accommodationRoomImagesRepository.findFirstByAccommodationRoomsRoomId(roomId);
@@ -117,23 +106,21 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ResponseDTO<?> cancelReservation(User user, long reservationId) {
+    public ResponseDTO<Void> cancelReservation(User user, long reservationId) {
 
         Reservations reservation =
-            reservationRepository.findByIdAndDeletedAt(reservationId).orElseThrow(() -> {
-                throw new
-                    InvalidCancelReservationRequestException
-                    (ErrorCode.INVALID_CANCEL_RESERVATION_REQUEST);
-            });
+            reservationRepository.findByIdAndDeletedAt(reservationId).orElseThrow(() -> new
+                InvalidCancelReservationRequestException
+                (ErrorCode.INVALID_CANCEL_RESERVATION_REQUEST));
 
         reservation.delete(LocalDateTime.now());
         reservationRepository.save(reservation);
 
-        return ResponseDTO.res(HttpStatus.NO_CONTENT, "예약 취소 완료");
+        return ResponseDTO.res(HttpStatus.NO_CONTENT, "예약 취소 완료",null);
     }
 
     @Override
-    public ResponseDTO<?> getUsersReservation(User user) {
+    public ResponseDTO<List<GetUsersReservationResponse>> getUsersReservation(User user) {
 
         List<Reservations> reservationsList =
             reservationRepository.findUsersReservation(user.getUserId());
@@ -145,18 +132,13 @@ public class ReservationServiceImpl implements ReservationService {
                     i.getRoom(),
                     i.getRoom().getAccommodation().getImagelist().get(0).getImage(),
                     i,
-                    Math.round(
-                        reviewRepository.findByAccommodationId(
-                                i.getRoom().getAccommodation().getAccommodationId()).stream()
-                            .mapToInt(Review::getStar)
-                            .average()
-                            .orElse(0.0) * 10 / 10.0)
-
+                    ReviewRatingUtils.calculateAverageRating(
+                        i.getRoom().getAccommodation().getAccommodationId(), reviewRepository)
                 )).collect(Collectors.toList()));
     }
 
     @Override
-    public ResponseDTO<?> getUsersCanceledReservation(User user) {
+    public ResponseDTO<List<GetUsersReservationResponse>> getUsersCanceledReservation(User user) {
         List<Reservations> reservationsList =
             reservationRepository.findUsersCanceledReservation(user.getUserId());
 
@@ -167,13 +149,8 @@ public class ReservationServiceImpl implements ReservationService {
                     i.getRoom(),
                     i.getRoom().getAccommodation().getImagelist().get(0).getImage(),
                     i,
-                    Math.round(
-                        reviewRepository.findByAccommodationId(
-                                i.getRoom().getAccommodation().getAccommodationId()).stream()
-                            .mapToInt(Review::getStar)
-                            .average()
-                            .orElse(0.0) * 10 / 10.0)
-
+                    ReviewRatingUtils.calculateAverageRating(
+                        i.getRoom().getAccommodation().getAccommodationId(), reviewRepository)
                 )).collect(Collectors.toList()));
     }
 }
