@@ -9,6 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,32 +31,35 @@ public class AccommodationRooms extends BaseTimeEntity {
     @JoinColumn(name = "accommodationId", nullable = false)
     private Accommodation accommodation;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "price", nullable = false)
+    @Column(nullable = false)
     private int price;
 
-    @Column(name = "discountPercentage", nullable = false)
+    @Column(nullable = false)
     private int discountPercentage;
 
-    @Column(name = "checkinExplanation", nullable = false)
+    @Column(nullable = false)
     private String checkinExplanation;
 
-    @Column(name = "minCapacity", nullable = false)
+    @Column(nullable = false)
     private int minCapacity;
 
-    @Column(name = "maxCapacity", nullable = false)
+    @Column(nullable = false)
     private int maxCapacity;
 
-    @Column(name = "tag")
+    @Column
     private String tag;
 
-    @Column(name = "explanation", nullable = false)
+    @Column(nullable = false)
     private String explanation;
 
-    @Column(name = "serviceInfo")
+    @Column
     private String serviceInfo;
+
+    @OneToMany(mappedBy = "accommodationRooms")
+    private List<AccommodationRoomImages> roomImages = new ArrayList<>();
 
 
     @Builder
