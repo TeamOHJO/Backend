@@ -10,10 +10,10 @@ import com.example.yanolja.domain.accommodation.repository.AccommodationReposito
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.accommodationLikes.entity.AccommodationLikes;
 import com.example.yanolja.domain.accommodationLikes.repository.AccommodationLikesRepository;
-import com.example.yanolja.domain.reservation.repository.ReservationRepository;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
+import com.example.yanolja.global.util.ResponseDTO;
 import com.example.yanolja.global.util.ReviewRatingUtils;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
@@ -23,6 +23,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -32,13 +33,12 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final AccommodationImageRepository accommodationImageRepository;
     private final AccommodationLikesRepository accommodationLikesRepository;
-    private final ReservationRepository reservationRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReviewRepository reviewRepository;
     private final AccommodationRepositoryCustom accommodationRepositoryCustom;
 
     @Transactional
-    public List<AccommodationFindResponse> getAccommodationsInMainPage(
+    public ResponseDTO<List<AccommodationFindResponse>> getAccommodationsInMainPage(
         PrincipalDetails principalDetails, AccommodationCategory category,
         boolean isDomestic, Pageable pageable, LocalDate startDate, LocalDate endDate,
         int numberOfPeople) {
@@ -66,7 +66,7 @@ public class AccommodationService {
             })
             .forEach(accommodationFindResponses::add);
 
-        return accommodationFindResponses;
+        return ResponseDTO.res(HttpStatus.OK, "카테고리와 국내/국외별 숙소 조회 성공", accommodationFindResponses);
     }
 
     //숙소 별 이미지 리스트(String) 조회 모듈
