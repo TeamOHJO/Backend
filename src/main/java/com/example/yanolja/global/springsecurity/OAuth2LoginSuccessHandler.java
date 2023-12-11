@@ -37,11 +37,12 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         //한국어 인코딩 설정
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
         
-        String redirectUrl = "http://localhost:5173/social-loading?token=" + token
+        String redirectUrl = "https://dashing-tiramisu-cbdade.netlify.app/social-loading?token=" + token
         +"&email="+email+"&name="+encodedName;
         
         //프론트 배포사이트
         //https://dashing-tiramisu-cbdade.netlify.app/
+        //http://localhost:5173/
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 }
