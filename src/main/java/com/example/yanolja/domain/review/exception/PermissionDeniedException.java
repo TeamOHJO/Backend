@@ -1,11 +1,14 @@
-package com.example.yanolja.domain.review.error;
+package com.example.yanolja.domain.review.exception;
 
 import com.example.yanolja.global.exception.ApplicationException;
 import com.example.yanolja.global.exception.ErrorCode;
 
 public class PermissionDeniedException extends ApplicationException {
 
-    public PermissionDeniedException(ErrorCode errorCode) {
-        super(errorCode);
+    private static final ErrorCode ERROR_CODE = ErrorCode.PERMISSION_DENIED;
+
+    public PermissionDeniedException() {
+
+        super(ERROR_CODE);
     }
 }
