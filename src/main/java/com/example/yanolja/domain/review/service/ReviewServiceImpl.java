@@ -44,6 +44,52 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccommodationReviewResponse> getReviewsByAccommodationId(Long accommodationId) {
+        List<Review> reviews = reviewRepository.findByAccommodationId(accommodationId);
+        return reviews.stream()
+            .map(this::createAccommodationReviewResponse)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteReview(User user, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewNotFoundException());
+
+        reviewRepository.findByReviewIdAndUserId(reviewId, user.getUserId())
+            .orElseThrow(() -> new PermissionDeniedException());
+
+        reviewImageRepository.deleteAll(
+            reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
+        reviewRepository.delete(review);
+    }
+
+    @Override
+    public ResponseDTO<?> editReview(User user, Long reviewId, UpdateReviewRequest request) {
+        Review review = getExistingReview(reviewId);
+
+        updateReviewContentAndImages(review, request);
+        Review updatedReview = reviewRepository.save(review);
+
+        return updateReviewResponse(updatedReview);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseDTO<List<UserReviewResponse>> getUserReviews(User user) {
+        List<Review> reviews = reviewRepository.findByUserId(user.getId());
+
+        if (reviews.isEmpty()) {
+            return ResponseDTO.res(HttpStatus.OK, "작성한 리뷰가 없습니다.", new ArrayList<>());
+        }
+        List<UserReviewResponse> reviewDTOs = reviews.stream()
+            .map(review -> new UserReviewResponse(review))
+            .collect(Collectors.toList());
+        return ResponseDTO.res(HttpStatus.OK, "리뷰 조회 성공", reviewDTOs);
+    }
+
     private Reservations getValidReservation(Long reservationId, User user) {
         Reservations reservation = reservationRepository.findById(reservationId)
             .orElseThrow(() -> new InvalidReservationException(ErrorCode.INVALID_RESERVATION_ID));
@@ -76,75 +122,47 @@ public class ReviewServiceImpl implements ReviewService {
         return ResponseDTO.res(HttpStatus.CREATED, "리뷰 작성 성공", reviewResponse);
     }
 
-
-    @Override
-    public List<AccommodationReviewResponse> getReviewsByAccommodationId(Long accommodationId) {
-        return reviewRepository.findByAccommodationId(accommodationId).stream()
-            .map(review -> new AccommodationReviewResponse(
-                review.getReviewId(),
-                review.getRoom().getRoomId(),
-                review.getUser().getUsername(),
-                review.getRoom().getAccommodation().getAccommodationName(),
-                review.getRoom().getName(),
-                review.getRoom().getAccommodation().getCategory(),
-                review.getReviewContent(),
-                review.getStar(),
-                review.getReviewImages().stream().map(ReviewImages::getImage).collect(
-                    Collectors.toList()),
-                review.getUpdatedAt()))
-            .collect(Collectors.toList());
+    private Review getExistingReview(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewNotFoundException());
     }
 
-    @Override
-    @Transactional
-    public void deleteReview(User user, Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new ReviewNotFoundException());
-
-        reviewRepository.findByReviewIdAndUserId(reviewId, user.getUserId())
-            .orElseThrow(() -> new PermissionDeniedException());
-
-        reviewImageRepository.deleteAll(
-            reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
-        reviewRepository.delete(review);
-    }
-
-    @Override
-    public ResponseDTO<?> editReview(User user, Long reviewId, UpdateReviewRequest request) {
-        Review review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new ReviewNotFoundException());
-
-        reviewRepository.findByReviewIdAndUserId(reviewId, user.getUserId())
-            .orElseThrow(() -> new PermissionDeniedException());
-
+    private void updateReviewContentAndImages(Review review, UpdateReviewRequest request) {
         review.editReview(request.getReviewContent(), request.getStar());
-        Review savedReview = reviewRepository.save(review);
 
-        reviewImageRepository.deleteAll(
-            reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
         if (request.getImage() != null && !request.getImage().isEmpty()) {
-            ReviewImages newImage = ReviewImages.builder()
-                .review(savedReview)
-                .image(request.getImage())
-                .build();
-            reviewImageRepository.save(newImage);
+            reviewImageRepository.deleteAll(
+                reviewImageRepository.findAllByReviewReviewId(review.getReviewId()));
+            reviewImageRepository.save(new ReviewImages(review, request.getImage()));
         }
-
-        return ResponseDTO.res(HttpStatus.OK, "리뷰 수정 성공",
-            CreateReviewResponse.fromReview(savedReview, List.of(request.getImage())));
     }
 
-    @Override
-    public ResponseDTO<List<UserReviewResponse>> getUserReviews(User user) {
-        List<Review> reviews = reviewRepository.findByUserId(user.getId());
-
-        if (reviews.isEmpty()) {
-            return ResponseDTO.res(HttpStatus.OK, "작성한 리뷰가 없습니다.", new ArrayList<>());
-        }
-        List<UserReviewResponse> reviewDTOs = reviews.stream()
-            .map(review -> new UserReviewResponse(review))
+    private ResponseDTO<?> updateReviewResponse(Review review) {
+        List<String> imageUrls = review.getReviewImages().stream()
+            .map(ReviewImages::getImage)
             .collect(Collectors.toList());
-        return ResponseDTO.res(HttpStatus.OK, "리뷰 조회 성공", reviewDTOs);
+        CreateReviewResponse reviewResponse = CreateReviewResponse.fromReview(review, imageUrls);
+
+        return ResponseDTO.res(HttpStatus.OK, "리뷰 수정 성공", reviewResponse);
+    }
+
+    private AccommodationReviewResponse createAccommodationReviewResponse(Review review) {
+        List<String> images = review.getReviewImages().stream()
+            .map(ReviewImages::getImage)
+            .collect(Collectors.toList());
+
+        return new AccommodationReviewResponse(
+            review.getReviewId(),
+            review.getRoom().getRoomId(),
+            review.getUser().getUsername(),
+            review.getRoom().getAccommodation().getAccommodationName(),
+            review.getRoom().getName(),
+            review.getRoom().getAccommodation().getCategory(),
+            review.getReviewContent(),
+            review.getStar(),
+            images,
+            review.getUpdatedAt()
+        );
     }
 
 
