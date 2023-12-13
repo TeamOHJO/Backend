@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 
-public record ReviewCreateRequest(
+public record CreateReviewRequest(
     @NotNull
     @Size(max = 500, message = "리뷰 내용은 500자를 넘으면 안됩니다.")
     String reviewContent,

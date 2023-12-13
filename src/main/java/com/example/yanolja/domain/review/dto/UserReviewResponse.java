@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class UserReviewDTO {
+public class UserReviewResponse {
 
     private Long reviewId;
     private int star;
@@ -22,7 +22,7 @@ public class UserReviewDTO {
     private LocalDate endDate;
     private String reviewContent;
 
-    public UserReviewDTO(Review review) {
+    public UserReviewResponse(Review review) {
         this.reviewId = review.getReviewId();
         this.star = review.getStar();
         this.reviewImages = review.getReviewImages().stream()
