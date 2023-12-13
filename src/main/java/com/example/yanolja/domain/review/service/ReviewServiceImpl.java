@@ -85,7 +85,7 @@ public class ReviewServiceImpl implements ReviewService {
             return ResponseDTO.res(HttpStatus.OK, "작성한 리뷰가 없습니다.", new ArrayList<>());
         }
         List<UserReviewResponse> reviewDTOs = reviews.stream()
-            .map(review -> new UserReviewResponse(review))
+            .map(UserReviewResponse::fromReview)
             .collect(Collectors.toList());
         return ResponseDTO.res(HttpStatus.OK, "리뷰 조회 성공", reviewDTOs);
     }

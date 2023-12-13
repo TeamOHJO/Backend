@@ -22,25 +22,44 @@ public class UserReviewResponse {
     private LocalDate endDate;
     private String reviewContent;
 
-    public UserReviewResponse(Review review) {
-        this.reviewId = review.getReviewId();
-        this.star = review.getStar();
-        this.reviewImages = review.getReviewImages().stream()
+    public static UserReviewResponse fromReview(Review review) {
+        List<String> reviewImages = review.getReviewImages().stream()
             .map(ReviewImages::getImage)
             .collect(Collectors.toList());
-        this.accommodationCategory = review.getRoom().getAccommodation().getCategory()
-            .getCategory();
-        this.accommodationName = review.getRoom().getAccommodation().getAccommodationName();
-        this.roomName = review.getRoom().getName();
 
+        String accommodationCategory = review.getRoom().getAccommodation().getCategory()
+            .getCategory();
+        String accommodationName = review.getRoom().getAccommodation().getAccommodationName();
+        String roomName = review.getRoom().getName();
+
+        LocalDate startDate = null;
+        LocalDate endDate = null;
         if (review.getReservation() != null) {
-            this.startDate = review.getReservation().getStartDate();
-            this.endDate = review.getReservation().getEndDate();
-        } else {
-            this.startDate = null;
-            this.endDate = null;
+            startDate = review.getReservation().getStartDate();
+            endDate = review.getReservation().getEndDate();
         }
 
-        this.reviewContent = review.getReviewContent();
+        String reviewContent = review.getReviewContent();
+        int star = review.getStar();
+
+        return new UserReviewResponse(review.getReviewId(), star, reviewImages,
+            accommodationCategory, accommodationName, roomName,
+            startDate, endDate, reviewContent);
+    }
+
+
+    private UserReviewResponse(Long reviewId, int star, List<String> reviewImages,
+        String accommodationCategory, String accommodationName, String roomName,
+        LocalDate startDate, LocalDate endDate, String reviewContent) {
+        this.reviewId = reviewId;
+        this.star = star;
+        this.reviewImages = reviewImages;
+        this.accommodationCategory = accommodationCategory;
+        this.accommodationName = accommodationName;
+        this.roomName = roomName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reviewContent = reviewContent;
     }
 }
+
