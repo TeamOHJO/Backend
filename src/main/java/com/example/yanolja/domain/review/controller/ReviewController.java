@@ -1,8 +1,9 @@
 package com.example.yanolja.domain.review.controller;
 
 import com.example.yanolja.domain.review.dto.AccommodationReviewResponse;
-import com.example.yanolja.domain.review.dto.ReviewCreateRequest;
-import com.example.yanolja.domain.review.dto.UserReviewDTO;
+import com.example.yanolja.domain.review.dto.CreateReviewRequest;
+import com.example.yanolja.domain.review.dto.UpdateReviewRequest;
+import com.example.yanolja.domain.review.dto.UserReviewResponse;
 import com.example.yanolja.domain.review.service.ReviewService;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
 import com.example.yanolja.global.util.ResponseDTO;
@@ -32,11 +33,11 @@ public class ReviewController {
     public ResponseEntity<ResponseDTO<?>> createReview(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @PathVariable Long reservationId,
-        @Valid @RequestBody ReviewCreateRequest request) {
+        @Valid @RequestBody CreateReviewRequest request) {
 
-        ResponseDTO<?> response = reviewService.createReview(
-            principalDetails.getUser(), reservationId, request);
-        return ResponseEntity.status(response.getCode()).body(response);
+        ResponseDTO<?> response = reviewService.createReview(principalDetails.getUser(),
+            reservationId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/accommodation/{accommodationId}")
@@ -60,7 +61,7 @@ public class ReviewController {
     public ResponseEntity<ResponseDTO<?>> editReview(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @PathVariable Long reviewId,
-        @Valid @RequestBody ReviewCreateRequest request) {
+        @Valid @RequestBody UpdateReviewRequest request) {
 
         ResponseDTO<?> response = reviewService.editReview(
             principalDetails.getUser(), reviewId, request);
@@ -68,10 +69,11 @@ public class ReviewController {
     }
 
     @GetMapping("/user/list")
-    public ResponseEntity<ResponseDTO<List<UserReviewDTO>>> getUserReviews(
+    public ResponseEntity<ResponseDTO<List<UserReviewResponse>>> getUserReviews(
         @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        ResponseDTO<List<UserReviewDTO>> response = reviewService.getUserReviews(principalDetails.getUser());
+        ResponseDTO<List<UserReviewResponse>> response = reviewService.getUserReviews(
+            principalDetails.getUser());
         return ResponseEntity.ok(response);
     }
 }

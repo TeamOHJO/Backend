@@ -30,7 +30,7 @@ public class ReviewImages {
     private String image;
 
     @Builder
-    ReviewImages(Review review, String image) {
+    public ReviewImages(Review review, String image) {
         this.review = review;
         this.image = image;
     }
