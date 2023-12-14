@@ -11,6 +11,19 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author liyusang1
+ * @implNote
+ *
+ * OAuth2 client라이브러리에서 redirect된 경로의 로그인 성공 후 후처리를 하는 클래스
+ * 로그인 성공 시 accesstoken과 사용자 정보를 같이 지급받게 되며,
+ * 발급받은 accesstoken 및 사용자 정보를 아래와 같이 코드로 확인할 수 있다.
+ *
+ * System.out.println(" getClientRegistration : " + userRequest.getClientRegistration ());
+ * System.out.println("getAccessToken: " + userRequest.getAccessToken());
+ * System.out.println("getAttributes: " + super.loadUser(userRequest).getAttributes())
+ */
+
 @Service
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
@@ -20,12 +33,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
-      /*  System.out.println("getClientRegistration: " + userRequest.getClientRegistration());
-        System.out.println("getAccessToken: " + userRequest.getAccessToken());
-        System.out.println("getAttributes: " + super.loadUser(userRequest).getAttributes());*/
-
         OAuth2User oauth2User = super.loadUser(userRequest);
-
         OAuth2UserInfo oauth2Userinfo = null;
         String provider = userRequest.getClientRegistration()
             .getRegistrationId(); //google kakao facebook...
