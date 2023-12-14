@@ -76,7 +76,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     /**
-     * 인증성공
+     * 인증 성공시
+     * @author liyusang1
+     * @implNote
+     * 쿠키에 jwt토큰을 담으려면 아래와 같이 바꾸면 됨
+     * Cookie cookie = new Cookie(JwtProperties.COOKIE_NAME, token);
+     *         cookie.setMaxAge(JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME / 1000 * 2);// setMaxAge는 초단위
+     *         cookie.setSecure(true);
+     *         cookie.setPath("/");
+     *         response.addCookie(cookie)
+     *
+     *         // 발급후 redirect로 이동 -> 클라이언트에게 http 리다이렉션 요청 코드
+     *         response.sendRedirect("/");
      */
     @Override
     protected void successfulAuthentication(
@@ -87,13 +98,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     ) throws IOException {
         User user = ((PrincipalDetails) authResult.getPrincipal()).getUser();
         String token = jwtProvider.createToken(user);
-        // 쿠키 생성
-      /*  Cookie cookie = new Cookie(JwtProperties.COOKIE_NAME, token);
-        cookie.setMaxAge(JwtProperties.ACCESS_TOKEN_EXPIRATION_TIME / 1000 * 2);// setMaxAge는 초단위
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);*/
-        //response.sendRedirect("/");  // 발급후 redirect로 이동 -> 클라이언트에게 http 리다이렉션 요청 코드
 
         // 로그인 성공 시 JSON 응답을 생성
         ResponseDTO<Object> loginResponse = ResponseDTO.res(
