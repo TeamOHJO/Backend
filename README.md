@@ -159,9 +159,10 @@ Docker에 대해 좀 더 공부해보고 더 다양한 기술들을 써보고 �
 <details>
 <summary>백인권</summary>
 <div markdown="1">
-
-??
-
+관련 개발지식 부족 및 숙련도 부족으로 개발속도도 느리고 코드의 완성도도 부족했다고 느껴집니다.<br/>
+그래서 프로젝트진행 페이스를 올리는데 플러스되지 못하고, 적절한 효율을 만드는 소통도 못했던 것 같습니다.<br/>
+다른 팀원들을 능동적으로 도와주지 못하고 그저 많이 배우기만 했던 것 같아서 개인적으로 아쉽습니다.<br/>
+좋은 코드리뷰와 고민해주신 팀원들 감사합니다!
 </div>
 </details>
 
@@ -175,3 +176,25 @@ Docker에 대해 좀 더 공부해보고 더 다양한 기술들을 써보고 �
 
 </div>
 </details>
+
+----------------------
+### 🎀시연 영상
+
+![main](https://github.com/yanolja-finalproject/Backend/assets/105612931/4943d9dd-29c3-45c9-b5cc-3bf488de918c)
+
+![login](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/8cb9be6c-ae4b-4da2-b57e-ba21507910f2)
+
+![detail](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/b519125e-77b9-4072-9105-47a12b7ae1be)
+
+![reservation](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/618ef7df-3c68-423c-96a1-7758a46de27c)
+
+![basket](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/ca38eef2-3597-4f34-8f59-27a22ea8581c)
+
+![wishlist](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/5f203088-e745-4eb2-820e-026f2145ae8d)
+
+![reservationdetail](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/838d0c6c-e4f3-4654-87a5-f02e526fd973)
+
+![myreview](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/ac625344-6295-4252-9ff7-1ed9b63f2dc9)
+
+![mypage](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/47866e00-21b7-45a6-b378-72c1b23deb45)
+
