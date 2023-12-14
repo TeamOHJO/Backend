@@ -63,7 +63,7 @@
 --------------------
 
 ### ⭐ERD  
-![image](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/f907dc34-eef5-4ad1-8af4-80b844b0d679)
+<img src="https://github.com/TeamOHJO/yanoljaProject-Backend/assets/105612931/f907dc34-eef5-4ad1-8af4-80b844b0d679" width="500px" />
 
 ### ⭐FlowChart  
 ![flow chart](https://github.com/TeamOHJO/yanoljaProject-Backend/assets/65541248/0903d4ea-37d1-4df7-ac62-7293a628ba39)
