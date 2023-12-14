@@ -2,6 +2,12 @@ package com.example.yanolja.global.springsecurity;
 
 import java.util.Map;
 
+/**
+ * @author liyusang1
+ * @implNote OAuth2 구글 로그인 후 받아온 값에서 사용자 정보를 저장하기 위한 클래스 입니다.
+ * 구글,카카오,페이스북 등 로그인하고자 하는 대상별로 제공하는 세부 값들이 다르기에 따로 클래스를 생성했습니다.
+ */
+
 public class GoogleUserInfo implements OAuth2UserInfo{
 
     private Map<String, Object> attributes;
