@@ -2,17 +2,13 @@ package com.example.yanolja.global.jwt;
 
 import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.springsecurity.PrincipalDetails;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +23,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
 
     public JwtAuthorizationFilter(
         UserRepository userRepository,
@@ -37,54 +32,32 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         this.jwtProvider = jwtProvider;
     }
 
+    /**
+     * @author liyusang1
+     * @implNote
+     * header가 아닌 cookie에서 토큰을 가져오려고 하는 경우 아래와 같이 바꾸면 된다.
+     *             accessToken = Arrays.stream(request.getCookies())
+     *                 .filter(cookie -> cookie.getName().equals(JwtProperties.COOKIE_NAME)).findFirst()
+     *                 .map(Cookie::getValue)
+     *                 .orElse(null);
+     */
     @Override
     protected void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
         FilterChain chain
     ) throws IOException, ServletException {
-        String accessToken = null;
-        try {
-           /* // cookie 에서 JWT token을 가져옵니다.
-            accessToken = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(JwtProperties.COOKIE_NAME)).findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);*/
+        //header에서 가져옴
+        List<String> headerValues = Collections.list(request.getHeaders("Authorization"));
+        String accessToken = headerValues.stream()
+            .findFirst()
+            .map(header -> header.replace("Bearer ", ""))
+            .orElse(null);
 
-            //header에서 가져옴
-            List<String> headerValues = Collections.list(request.getHeaders("Authorization"));
-            accessToken = headerValues.stream()
-                .findFirst()
-                .map(header -> header.replace("Bearer ", ""))
-                .orElse(null);
+        //현재 토큰을 사용 하여 인증을 시도 합니다.
+        Authentication authentication = getUsernamePasswordAuthenticationToken(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (Exception ignored) {
-            //
-        }
-
-        if (accessToken != null) {
-            try {
-                //현재 토큰을 사용 하여 인증을 시도 합니다.
-                Authentication authentication = getUsernamePasswordAuthenticationToken(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (ExpiredJwtException ex) {
-                try {
-                    String userEmail = ex.getClaims().getSubject();
-                    String refreshedToken = jwtProvider.createRefreshToken(
-                        userEmail); // 이 메서드를 구현하여 토큰을 새로고침.
-                    Authentication authentication = getUsernamePasswordAuthenticationToken(
-                        refreshedToken); //refresh토큰 생성
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } catch (Exception e) {
-                    logger.error("Refresh token 생성 중 에러 발생", e);
-                }
-
-                //토큰이 만료된 경우 refresh토큰을 사용하여 새로운 jwt토큰을 생성
-                Cookie cookie = new Cookie(JwtProperties.COOKIE_NAME, null);
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-            }
-        }
         chain.doFilter(request, response);
     }
 

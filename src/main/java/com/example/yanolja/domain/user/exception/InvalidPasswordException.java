@@ -5,9 +5,11 @@ import com.example.yanolja.global.exception.ErrorCode;
 
 public class InvalidPasswordException extends ApplicationException {
 
-    public InvalidPasswordException(ErrorCode errorCode) {
+    private static final ErrorCode ERROR_CODE = ErrorCode.INVALID_PASSWORD;
 
-        super(errorCode);
+
+    public InvalidPasswordException() {
+        super(ERROR_CODE);
     }
 
 }

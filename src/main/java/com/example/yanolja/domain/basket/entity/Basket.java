@@ -44,9 +44,9 @@ public class Basket extends BaseTimeEntity {
     private boolean isSelected;
 
     @Builder
-    public Basket(User user, AccommodationRooms rooms, Reservations reservation) {
+    public Basket(User user, AccommodationRooms room, Reservations reservation) {
         this.user = user;
-        this.room = rooms;
+        this.room = room;
         this.reservation = reservation;
     }
 }

@@ -1,7 +1,6 @@
 
 package com.example.yanolja.domain.accommodation.entity;
 
-import com.example.yanolja.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class AccommodationImages extends BaseTimeEntity {
+public class AccommodationImages {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

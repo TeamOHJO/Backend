@@ -25,7 +25,7 @@ public record CreateBasketRequest(
         User user, AccommodationRooms rooms, Reservations reservations) {
         return Basket.builder()
             .user(user)
-            .rooms(rooms)
+            .room(rooms)
             .reservation(reservations)
             .build();
     }

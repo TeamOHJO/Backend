@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccommodationReviewResponse {
@@ -21,5 +22,5 @@ public class AccommodationReviewResponse {
     private String reviewContent;
     private int star;
     private List<String> images;
-    private LocalDateTime updatedAt;    // 리뷰 수정 시간
+    private LocalDateTime updatedAt;
 }

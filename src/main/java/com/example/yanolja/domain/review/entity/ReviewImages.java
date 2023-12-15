@@ -1,7 +1,6 @@
 
 package com.example.yanolja.domain.review.entity;
 
-import com.example.yanolja.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ReviewImages extends BaseTimeEntity {
+public class ReviewImages {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +30,7 @@ public class ReviewImages extends BaseTimeEntity {
     private String image;
 
     @Builder
-    ReviewImages(Review review, String image) {
+    public ReviewImages(Review review, String image) {
         this.review = review;
         this.image = image;
     }

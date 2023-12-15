@@ -6,8 +6,10 @@ import com.example.yanolja.global.exception.ErrorCode;
 
 public class UserNotFoundException extends ApplicationException {
 
-    public UserNotFoundException(ErrorCode errorCode) {
+    private static final ErrorCode ERROR_CODE = ErrorCode.USER_NOT_FOUND;
 
-        super(errorCode);
+
+    public UserNotFoundException() {
+        super(ERROR_CODE);
     }
 }

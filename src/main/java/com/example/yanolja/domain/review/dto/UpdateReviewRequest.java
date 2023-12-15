@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewUpdateRequest {
+public class UpdateReviewRequest {
 
     @NotBlank(message = "리뷰 내용이 공백이면 안됩니다.")
     @Size(max = 500, message = "리뷰 내용은 500자를 넘길 수 없습니다.")

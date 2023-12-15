@@ -28,16 +28,30 @@ public class User extends BaseTimeEntity {
 
     private String phonenumber;
 
+    private String authority;
+
+    private String provider;  //어떤 소셜로그인인지
+
     @Builder
     public User(String email, String username, String password, String phonenumber,
-        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        String authority, LocalDateTime updatedAt, LocalDateTime deletedAt, String provider) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.phonenumber = phonenumber;
         this.authority = authority;
+        this.provider = provider;
         super.updatedAt = updatedAt;
         super.deletedAt = deletedAt;
+    }
+
+    public void updateUserInfo(String username, String phonenumber) {
+        this.username = username;
+        this.phonenumber = phonenumber;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 
     @Override
@@ -53,21 +67,4 @@ public class User extends BaseTimeEntity {
     public Long getId() {
         return this.userId;
     }
-
-
-    private String authority;
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setPhonenumber(String phonenumber) {
-        this.phonenumber = phonenumber;
-    }
-
-
 }

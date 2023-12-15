@@ -1,9 +1,6 @@
 package com.example.yanolja.domain.basket.service;
 
-import com.example.yanolja.domain.accommodation.entity.AccommodationRoomImages;
 import com.example.yanolja.domain.accommodation.entity.AccommodationRooms;
-import com.example.yanolja.domain.accommodation.repository.AccommodationRepository;
-import com.example.yanolja.domain.accommodation.repository.AccommodationRoomImagesRepository;
 import com.example.yanolja.domain.accommodation.repository.AccommodationRoomRepository;
 import com.example.yanolja.domain.basket.dto.CreateBasketRequest;
 import com.example.yanolja.domain.basket.dto.CreateBasketResponse;
@@ -16,12 +13,11 @@ import com.example.yanolja.domain.reservation.dto.CreateReservationRequest;
 import com.example.yanolja.domain.reservation.entity.Reservations;
 import com.example.yanolja.domain.reservation.exception.InvalidAccommodationRoomIdException;
 import com.example.yanolja.domain.reservation.repository.ReservationRepository;
-import com.example.yanolja.domain.review.entity.Review;
 import com.example.yanolja.domain.review.repository.ReviewRepository;
 import com.example.yanolja.domain.user.entity.User;
-import com.example.yanolja.domain.user.repository.UserRepository;
 import com.example.yanolja.global.exception.ErrorCode;
 import com.example.yanolja.global.util.ResponseDTO;
+import com.example.yanolja.global.util.ReviewRatingUtils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,25 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BasketServiceImpl implements BasketService {
 
-    private final UserRepository userRepository;
-    private final AccommodationRepository accommodationRepository;
     private final AccommodationRoomRepository accommodationRoomRepository;
     private final ReservationRepository reservationRepository;
     private final BasketRepository basketRepository;
-    private final AccommodationRoomImagesRepository accommodationRoomImagesRepository;
     private final ReviewRepository reviewRepository;
 
     @Override
-    public ResponseDTO<?> addBasket(CreateBasketRequest createBasketRequest, User user,
+    public ResponseDTO<CreateBasketResponse> addBasket(CreateBasketRequest createBasketRequest,
+        User user,
         long roomsId) {
 
         Optional<AccommodationRooms> accommodationRooms =
             accommodationRoomRepository.findById(roomsId);
 
         //roomsId에 해당하는 방이 존재하지 않는 경우
-        AccommodationRooms rooms = accommodationRooms.orElseThrow(() -> {
-            throw new InvalidAccommodationRoomIdException(ErrorCode.INVALID_ACCOMMODATION_ID);
-        });
+        AccommodationRooms rooms = accommodationRooms.orElseThrow(
+            () -> new InvalidAccommodationRoomIdException(
+                ErrorCode.INVALID_ACCOMMODATION_ID));
 
         //장바구니에 같은 값을 다시 넣으려고 하는경우
         Optional<Reservations> checkDuplicate =
@@ -83,7 +77,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
-    public ResponseDTO<?> getBasket(User user) {
+    public ResponseDTO<List<GetBasketResponse>> getBasket(User user) {
 
         //paymentCompleted가false인 항목은 장바구니에 있는 항목
         List<Reservations> reservations =
@@ -92,37 +86,8 @@ public class BasketServiceImpl implements BasketService {
         List<GetBasketResponse> getBasketResponses = new ArrayList<>();
 
         for (Reservations reservationContent : reservations) {
-            List<String> imageList = new ArrayList<>();
-
-            List<AccommodationRoomImages> accommodationRoomImages =
-                accommodationRoomImagesRepository.findAllByAccommodationRoomsRoomId(
-                    reservationContent.getRoom().getRoomId());
-
-            for (AccommodationRoomImages accommodationRoomImagesContent : accommodationRoomImages) {
-                imageList.add(accommodationRoomImagesContent.getImage());
-            }
-
-            boolean canReserve = true;
             // 예약이 가능한지 체크
-            Optional<Reservations> conflictingReservations =
-                reservationRepository.findConflictingReservations(
-                    reservationContent.getRoom().getRoomId(),
-                    reservationContent.getStartDate(), reservationContent.getEndDate()
-                );
-
-            canReserve = !reservationContent.getStartDate().isBefore(LocalDate.now());
-
-            if (conflictingReservations.isPresent()) {
-                canReserve = false;
-            }
-
-            double averageRating = reviewRepository.findByAccommodationId(
-                    reservationContent.getRoom()
-                        .getAccommodation().getAccommodationId()).stream()
-                .mapToInt(Review::getStar)
-                .average()
-                .orElse(0.0);
-            averageRating = Math.round(averageRating * 10) / 10.0;
+            boolean canReserve = checkConflictingReservations(reservationContent);
 
             getBasketResponses.add(GetBasketResponse.fromEntity(
                 basketRepository.findByReservationReservationId(
@@ -130,8 +95,10 @@ public class BasketServiceImpl implements BasketService {
                 reservationContent.getRoom().getAccommodation(),
                 reservationContent,
                 reservationContent.getRoom(),
-                imageList.get(0), canReserve,
-                averageRating)
+                reservationContent.getRoom().getRoomImages().get(0).getImage(),
+                canReserve,
+                ReviewRatingUtils.calculateAverageRating(reservationContent.getRoom()
+                    .getAccommodation().getAccommodationId(), reviewRepository))
             );
         }
 
@@ -140,7 +107,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @Override
-    public ResponseDTO<?> deleteBasket(User user, long basketId) {
+    public ResponseDTO<Void> deleteBasket(User user, long basketId) {
 
         Basket basket = basketRepository.findById(basketId).orElseThrow(() -> {
             throw new InvalidBasketIdException(ErrorCode.INVALID_BASKET_ID);
@@ -152,7 +119,23 @@ public class BasketServiceImpl implements BasketService {
                 basket.getReservation().getReservationId())
         );
 
-        return ResponseDTO.res(HttpStatus.NO_CONTENT, "장바구니 삭제 성공");
+        return ResponseDTO.res(HttpStatus.NO_CONTENT, "장바구니 삭제 성공", null);
+    }
+
+    private boolean checkConflictingReservations(Reservations reservationContent) {
+        Optional<Reservations> conflictingReservations =
+            reservationRepository.findConflictingReservations(
+                reservationContent.getRoom().getRoomId(),
+                reservationContent.getStartDate(), reservationContent.getEndDate()
+            );
+
+        boolean canReserve = !reservationContent.getStartDate().isBefore(LocalDate.now());
+
+        if (conflictingReservations.isPresent()) {
+            canReserve = false;
+        }
+
+        return canReserve;
     }
 }
 
